@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Register and start the fun!</h1>
+	
+	<p	th:if="${failureMessage}"	th:text="${failureMessage}">Message if username is taken or email already is registered</p>
+	
+	<form th:action="@{/register}" th:object="${user}" method="post">
+		<div>
+			<p>
+				First name: <input type="text" th:field="*{name}"/></p>
+			<ul>
+				<li th:each="err : ${#fields.errors('name')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Surname: <input type="text" th:field="*{surname}" /></p>
+				<ul>
+				<li th:each="err : ${#fields.errors('surname')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Username: <input type="text" th:field="*{username}"/>
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('username')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Password: <input type="password" th:field="*{password}" />
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('password')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Confirm password: <input type="password"
+					th:field="*{passwordConfirmed}" />
+			</p>
+			<ul>
+				<li th:if="${message}"	th:text="${message}"/>
+			</ul>
+		</div>
+		<div>
+			<p>
+				Email: <input type="text" th:field="*{email}" />
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('email')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<label th:text="'I subscribe to a newsletter'">Newsletter</label> <input
+				type="checkbox" th:field="*{generalSubscription}" /> 
+		</div>
+		<div>
+			<input type="submit" value="Next" />
+		</div>
+	</form>
+</body>
+</html>

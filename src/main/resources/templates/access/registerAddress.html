@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Please fill these address info:</h1>
+	<form th:action="@{/registerAddress}" th:object="${address}" method="post">
+		<div>
+			<p>
+				Street name: <input type="text" th:field="*{streetName}" />
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('streetName')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Street number: <input type="number" th:field="*{streetNumber}" />
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('streetNumber')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Optional - additional street number data(for example letter): <input type="text" th:field="*{additionalLetterToNumber}" />
+			</p>
+		</div>
+		<div>
+			<p>
+				Flat number: <input type="number" th:field="*{flatNumber}" />
+			</p>
+		</div>
+		<div>
+			<p>
+				Zip code: <input type="text"
+					th:field="*{zipCode}" />
+			</p>
+		</div>
+		<div>
+			<p>
+				City: <input type="text" th:field="*{city}" />
+			</p>
+				<ul>
+				<li th:each="err : ${#fields.errors('city')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Country: <input type="text" th:field="*{country}" />
+			</p>
+				<ul>
+				<li th:each="err : ${#fields.errors('country')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<input type="submit" value="Next" />
+		</div>
+	</form>
+</body>
+</html>

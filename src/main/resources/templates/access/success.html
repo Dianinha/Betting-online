@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Index</title>
+</head>
+<body>
+	<div sec:authorize="isAuthenticated()">
+		<p>
+			LoggedAs: <span sec:authentication="name"></span>
+		</p>
+		<p>
+			With roles: <span sec:authentication="authorities"></span>
+		</p>
+		<a th:href="@{/logout}">Log out</a>
+	</div>
+	<p th:text="'Register successful'">Hello txt</p>
+	<p th:text="'You will be redirect to login page in few seconds...'">Hello
+		txt</p>
+	<a th:href="@{/login}" th:text="'I do not want to wait. Redirect me now!'">I do not want to wait!</a>
+</body>
+</html>

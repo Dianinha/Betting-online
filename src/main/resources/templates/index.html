@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Index</title>
+</head>
+<body>
+	<!-- <div sec:authorize="isAuthenticated()">
+		<p>
+		LoggedAs: <span sec:authentication="name"></span>
+		</p>
+		<p>
+		With roles: <span sec:authentication="authorities"></span>
+		</p>
+		<a th:href="@{/logout}">Log out</a>
+	</div> -->
+	<p th:text="'It is index here, hello Sir!'">Hello txt</p>
+
+</body>
+</html>
