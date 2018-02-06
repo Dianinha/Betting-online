@@ -12,4 +12,6 @@ import pl.coderslab.model.Wallet;
 public interface OperationRepository extends JpaRepository<Operation, Long> {
 
 	List<Operation> findOperationsByWallet (Wallet wallet);
+	
+	
 }

@@ -4,6 +4,22 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
 <title>Index</title>
+<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		console.log("asd");
+		window.setInterval(function() {
+			var iTimeRemaining = $("#spnSeconds").html();
+			iTimeRemaining = eval(iTimeRemaining);
+			if (iTimeRemaining == 0) {
+				window.location.href = "/login";
+			} else {
+				$("#spnSeconds").html(iTimeRemaining - 1);
+			}
+		}, 1000);
+
+	});
+</script>
 </head>
 <body>
 	<div sec:authorize="isAuthenticated()">
@@ -15,9 +31,15 @@
 		</p>
 		<a th:href="@{/logout}">Log out</a>
 	</div>
-	<p th:text="'Register successful'">Hello txt</p>
-	<p th:text="'You will be redirect to login page in few seconds...'">Hello
-		txt</p>
-	<a th:href="@{/login}" th:text="'I do not want to wait. Redirect me now!'">I do not want to wait!</a>
+	<p> 
+	<span th:text="'Register successful'" > </span></p>
+	<p>
+	<span th:text="'You will be redirect to login page in '" >Hello txt </span>
+	<span id="spnSeconds">5</span> 
+	<span th:text="' seconds...'"> </span>
+	</p>
+	<p><a th:href="@{/login}"
+		th:text="'I do not want to wait. Redirect me now!'">I do not want
+		to wait!</a> </p>
 </body>
 </html>

@@ -15,6 +15,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.annotation.Transient;
 
 @Entity
 @Table(name = "creditCardInfos")
@@ -30,16 +31,17 @@ public class CreditCardInfo {
 	@JoinColumn
 	private Wallet wallet;
 
-	@NotBlank
-	@Digits(fraction = 0, integer = 16)
+	@Digits(fraction = 1, integer = 16)
 	private BigDecimal creditCardNumber;
 
-	@Size(min = 4, max = 4)
+	@Transient
 	private String lastFourDigits;
 
 	private int cvv;
 
-	private LocalDate expirationDate;
+	private int expirationMonth;
+
+	private int expirationYear;
 
 	@NotBlank
 	private String ownerName;
@@ -78,6 +80,7 @@ public class CreditCardInfo {
 
 	public void setCreditCardNumber(BigDecimal creditCardNumber) {
 		this.creditCardNumber = creditCardNumber;
+		this.setLastFourDigits();
 	}
 
 	public String getLastFourDigits() {
@@ -86,6 +89,11 @@ public class CreditCardInfo {
 
 	public void setLastFourDigits(String lastFourDigits) {
 		this.lastFourDigits = lastFourDigits;
+	}
+	
+	public void setLastFourDigits() {
+		String card = getCreditCardNumber().toString();
+		this.lastFourDigits = card.substring((card.length()-4), card.length());
 	}
 
 	public int getCvv() {
@@ -96,12 +104,20 @@ public class CreditCardInfo {
 		this.cvv = cvv;
 	}
 
-	public LocalDate getExpirationDate() {
-		return expirationDate;
+	public int getExpirationMonth() {
+		return expirationMonth;
 	}
 
-	public void setExpirationDate(LocalDate expirationDate) {
-		this.expirationDate = expirationDate;
+	public void setExpirationMonth(int expirationMonth) {
+		this.expirationMonth = expirationMonth;
+	}
+
+	public int getExpirationYear() {
+		return expirationYear;
+	}
+
+	public void setExpirationYear(int expirationYear) {
+		this.expirationYear = expirationYear;
 	}
 
 	public String getOwnerName() {
@@ -135,7 +151,6 @@ public class CreditCardInfo {
 		int result = 1;
 		result = prime * result + ((creditCardNumber == null) ? 0 : creditCardNumber.hashCode());
 		result = prime * result + cvv;
-		result = prime * result + ((expirationDate == null) ? 0 : expirationDate.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((lastFourDigits == null) ? 0 : lastFourDigits.hashCode());
 		result = prime * result + ((ownerName == null) ? 0 : ownerName.hashCode());
@@ -160,11 +175,6 @@ public class CreditCardInfo {
 		} else if (!creditCardNumber.equals(other.creditCardNumber))
 			return false;
 		if (cvv != other.cvv)
-			return false;
-		if (expirationDate == null) {
-			if (other.expirationDate != null)
-				return false;
-		} else if (!expirationDate.equals(other.expirationDate))
 			return false;
 		if (id != other.id)
 			return false;
@@ -200,8 +210,8 @@ public class CreditCardInfo {
 	@Override
 	public String toString() {
 		return "CreditCardInfo [id=" + id + ", wallet=" + wallet.getId() + ", creditCardNumber=" + creditCardNumber
-				+ ", lastFourDigits=" + lastFourDigits + ", cvv=" + cvv + ", expirationDate=" + expirationDate
-				+ ", ownerName=" + ownerName + ", ownerSurname=" + ownerSurname + ", type=" + type + "]";
+				+ ", lastFourDigits=" + lastFourDigits + ", cvv=" + cvv + ", ownerName=" + ownerName + ", ownerSurname="
+				+ ownerSurname + ", type=" + type + "]";
 	}
 
 }

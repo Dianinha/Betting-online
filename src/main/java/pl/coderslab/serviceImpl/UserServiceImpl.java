@@ -66,4 +66,9 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByUsername(username);
 	}
 
+	@Override
+	public User finfByWallet(Wallet wallet) {
+		return userRepository.findByWallet(wallet);
+	}
+
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	Add some funds:
+	<table>
+		<thead>
+			<tr>
+				<th>Cost</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>10 pln</td>
+				<td><a th:href="@{/user/addFunds(val=10)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>20 pln</td>
+				<td><a th:href="@{/user/addFunds(val=20)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>50 pln</td>
+				<td><a th:href="@{/user/addFunds(val=50)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>100 pln</td>
+				<td><a th:href="@{/user/addFunds(val=100)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>200 pln</td>
+				<td><a th:href="@{/user/addFunds(val=200)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>500 pln</td>
+				<td><a th:href="@{/user/addFunds(val=500)}">Add funds</a></td>
+			</tr>
+			<tr>
+				<td>1000 pln</td>
+				<td><a th:href="@{/user/addFunds(val=1000)}">Add funds</a></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

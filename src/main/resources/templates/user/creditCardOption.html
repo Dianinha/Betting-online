@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+	You want to add: <span th:text="${session.fundsToAdd} + ' PLN'"></span>
+	</div>
+	<div th:if="${creditCards}">
+		Your saved credit cards:
+		<ul>
+			<li th:each="credit: ${creditCards}"
+				th:text="'Credit card ends with: ****' + ${credit:.lastFourDigits}"></li>
+		</ul>
+
+
+	</div>
+
+	<div th:unless="${creditCards}">You do not have any credit cards
+		saved.</div>
+	<p>
+		<a th:href="@{/user/addCreditCard}" th:text="'I want to add new card'"></a>
+	</p>
+	<p>
+		<a th:href="@{/user/payment}"
+			th:text="'I want to pay without saving my credit card info'"></a>
+	</p>
+</body>
+</html>

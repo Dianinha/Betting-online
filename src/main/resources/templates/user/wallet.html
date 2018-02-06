@@ -3,11 +3,18 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Index</title>
+<title>Insert title here</title>
 </head>
 <body>
-	<p th:text="'Register was successful'">Hello txt</p>
-	<p th:text="'You can log in now.'">Hello txt</p>
+MENU:
+<ul>
+<li>Add funds</li>
+<li>Credit cards</li>
+<li>Wallet history</li>
+<li>Special codes</li>
+<li>Withdrawn money</li>
+</ul>
 
+<p>Your account: <span th:text="${wallet.amount}"></span></p>
 </body>
 </html>

@@ -8,4 +8,6 @@ public interface WalletService {
 	Wallet saveWallet(Wallet wallet);
 	
 	Wallet createWallet(User user);
+	
+	Wallet findByUser(User user);
 }

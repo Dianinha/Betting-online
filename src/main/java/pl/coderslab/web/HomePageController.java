@@ -54,13 +54,13 @@ public class HomePageController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String reg(Model model, @Valid User user, BindingResult result, HttpSession session) {
-		if (user.getPasswordConfirmed()!=null) {
-		if (!user.getPasswordConfirmed().equals(user.getPassword())) {
-			model.addAttribute("message", "Passwords does not match");
-			return "/access/register";
-		}
-		}
-		else{
+		if (user.getPasswordConfirmed() != null) {
+			if (!user.getPasswordConfirmed().equals(user.getPassword())) {
+				model.addAttribute("message", "Passwords does not match");
+				return "/access/register";
+			}
+
+		} else {
 			model.addAttribute("message", "Please confirm password");
 			return "/access/register";
 		}
@@ -73,11 +73,10 @@ public class HomePageController {
 			return "redirect:/registerAddress";
 		} catch (Exception e) {
 			System.out.println(e);
-			if (userService.findByEmail(user.getEmail())!=null) {
+			if (userService.findByEmail(user.getEmail()) != null) {
 				model.addAttribute("failureMessage", "User with this e-mail is already registered");
 				return "/access/register";
-			}
-			else if(userService.findByUsername(user.getUsername())!=null) {
+			} else if (userService.findByUsername(user.getUsername()) != null) {
 				model.addAttribute("failureMessage", "This username is already taken. Please pick another one.");
 				return "/access/register";
 			}
@@ -102,28 +101,20 @@ public class HomePageController {
 			Address userAddress = addressService.create(address, user);
 			user.setAddress(userAddress);
 			userService.saveUser(user);
-			return "redirect:/access/success";
+			return "redirect:/success";
 
 		} catch (Exception e) {
 			System.out.println(e);
 
-			
 		}
 		return "redirect:/failure";
 	}
-	
+
 	@RequestMapping(value = "/success", method = RequestMethod.GET)
 	public String test(Model model, HttpSession session) {
 		return "/access/success";
 	}
-	
 
-	@RequestMapping(value = "/optionalCreditCard", method = RequestMethod.GET)
-	public String optionalCreditCard(Model model) {
-		model.addAttribute("creditCard", new CreditCardInfo());
-		return "/access/optionalCreditCardInfo";
-	}
-	
 	@RequestMapping(value = "/failure", method = RequestMethod.GET)
 	public String test2(Model model) {
 		return "failure";

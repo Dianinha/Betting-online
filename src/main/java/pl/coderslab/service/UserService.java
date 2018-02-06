@@ -1,6 +1,7 @@
 package pl.coderslab.service;
 
 import pl.coderslab.model.User;
+import pl.coderslab.model.Wallet;
 
 public interface UserService {
 
@@ -11,5 +12,7 @@ public interface UserService {
 	User findByEmail(String email);
 
 	User findByUsername(String username);
+	
+	User finfByWallet(Wallet wallet);
 
 }

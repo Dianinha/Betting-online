@@ -26,7 +26,9 @@ public class Operation {
 
 	private BigDecimal amount;
 
-	private String creditCardLastForDigits;
+	private OperationType operationType;
+	
+	private String operationInfo;
 
 	@ManyToOne
 	@JoinColumn
@@ -65,11 +67,11 @@ public class Operation {
 	}
 
 	public String getCreditCardLastForDigits() {
-		return creditCardLastForDigits;
+		return operationInfo;
 	}
 
 	public void setCreditCardLastForDigits(String creditCardLastForDigits) {
-		this.creditCardLastForDigits = creditCardLastForDigits;
+		this.operationInfo = creditCardLastForDigits;
 	}
 
 	public Wallet getWallet() {
@@ -87,6 +89,23 @@ public class Operation {
 	public void setOptionalComment(String optionalComment) {
 		this.optionalComment = optionalComment;
 	}
+	
+
+	public OperationType getOperationType() {
+		return operationType;
+	}
+
+	public void setOperationType(OperationType operationType) {
+		this.operationType = operationType;
+	}
+
+	public String getOperationInfo() {
+		return operationInfo;
+	}
+
+	public void setOperationInfo(String operationInfo) {
+		this.operationInfo = operationInfo;
+	}
 
 	// hashCode and equals
 	@Override
@@ -94,7 +113,7 @@ public class Operation {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
-		result = prime * result + ((creditCardLastForDigits == null) ? 0 : creditCardLastForDigits.hashCode());
+		result = prime * result + ((operationInfo == null) ? 0 : operationInfo.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((optionalComment == null) ? 0 : optionalComment.hashCode());
 		result = prime * result + ((timeOfOperation == null) ? 0 : timeOfOperation.hashCode());
@@ -116,10 +135,10 @@ public class Operation {
 				return false;
 		} else if (!amount.equals(other.amount))
 			return false;
-		if (creditCardLastForDigits == null) {
-			if (other.creditCardLastForDigits != null)
+		if (operationInfo == null) {
+			if (other.operationInfo != null)
 				return false;
-		} else if (!creditCardLastForDigits.equals(other.creditCardLastForDigits))
+		} else if (!operationInfo.equals(other.operationInfo))
 			return false;
 		if (id != other.id)
 			return false;
@@ -145,7 +164,7 @@ public class Operation {
 	@Override
 	public String toString() {
 		return "Operation [id=" + id + ", timeOfOperation=" + timeOfOperation + ", amount=" + amount
-				+ ", creditCardLastForDigits=" + creditCardLastForDigits + ", wallet=" + wallet.getId()
+				+ ", creditCardLastForDigits=" + operationInfo + ", wallet=" + wallet.getId()
 				+ ", optionalComment=" + optionalComment + "]";
 	}
 

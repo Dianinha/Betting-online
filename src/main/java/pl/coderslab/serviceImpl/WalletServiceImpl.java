@@ -18,7 +18,7 @@ public class WalletServiceImpl implements WalletService {
 	
 	@Override
 	public Wallet saveWallet(Wallet wallet) {
-		return null;
+		return walletRepository.save(wallet);
 	}
 
 	@Override
@@ -27,6 +27,11 @@ public class WalletServiceImpl implements WalletService {
 		wallet.setUser(user);
 		wallet.setAmount(new BigDecimal(0));
 		return walletRepository.save(wallet);
+	}
+
+	@Override
+	public Wallet findByUser(User user) {
+		return walletRepository.findByUser(user);
 	}
 
 }
