@@ -89,7 +89,6 @@ public class Wallet {
 		result = prime * result + ((creditCards == null) ? 0 : creditCards.hashCode());
 		result = prime * result + ((history == null) ? 0 : history.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<p>
+		<span th:text="'Your saved credit cards:'"> </span>
+	<ul>
+		<li th:each="creditCard: ${creditCards}">
+		<span th:text="'Credit card ends with: ****' + ${creditCard.lastFourDigits}"></span>
+			<a th:href="@{/user/deleteCreditCard(cardId=${creditCard.id})}"
+			th:text="'Delete this credit card info'"><button type="button">
+				</button> </a>
+		</li>
+	</ul>
+	</p>
+	<p>
+	<a th:href="@{/user/addCreditCard}" th:text="'Add new card'"></a>
+	</p>
+
+
+</body>
+</html>

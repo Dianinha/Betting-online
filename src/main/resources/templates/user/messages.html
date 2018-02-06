@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+
+	<div>
+		<span th:text="'Here are messages that You have recieved:'"> </span>
+		<ul>
+			<li th:each="recieveM: ${recieved}"><span
+				th:text="'From: ' + ${recieveM.sender.username}"></span> <span
+				th:text="${recieveM.title}"></span> <span
+				th:text="${recieveM.content}"></span></li>
+		</ul>
+	</div>
+	<p>
+		<a th:href="@{/user/sendMessage}" th:text="'Send new message'"></a>
+	</p>
+	<div>
+		<span th:text="'Here are messages that You have send:'"> </span>
+
+		<ul>
+			<li th:each="sendM: ${send}">To:
+				<ul>
+					<li th:each="sendToU: ${sendM.recievers}"><span
+						th:text="${sendToU.username}"></span></li>
+				</ul> 
+				<span th:text="${sendM.title}"></span> <span
+				th:text="${sendM.content}"></span>
+			</li>
+		</ul>
+	</div>
+
+</body>
+</html>

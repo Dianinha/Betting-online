@@ -6,15 +6,17 @@
 <title>Insert title here</title>
 </head>
 <body>
-MENU:
-<ul>
-<li>Add funds</li>
-<li>Credit cards</li>
-<li>Wallet history</li>
-<li>Special codes</li>
-<li>Withdrawn money</li>
-</ul>
+	MENU:
+	<ul>
+		<li><a th:href="@{/user/funds}" th:text="'Add funds to Your wallet'"></a> </li>
+		<li><a th:href="@{/user/creditCards}" th:text="'Manage Your credit card info'"></a></li>
+		<li><a th:href="@{/user/operationHistory}" th:text="'See history of Your operations'"></a>Wallet history</li>
+		<li><a th:href="@{/user/codes}" th:text="'Do You have a code? Use it!'"></a>Special codes</li>
+		<li><a th:href="@{/user/withdrawn}" th:text="'Withdrawn money'"></a>Withdrawn money</li>
+	</ul>
 
-<p>Your account: <span th:text="${wallet.amount}"></span></p>
+	<p>
+		Your account: <span th:text="${wallet.amount}"></span>
+	</p>
 </body>
 </html>

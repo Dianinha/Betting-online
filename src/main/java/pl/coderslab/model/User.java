@@ -77,6 +77,13 @@ public class User {
 	@ManyToMany
 	@JoinTable(name = "user_category", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories;
+	
+	@OneToMany(mappedBy = "sender")
+	private List<Message> sendMessages;
+	
+	@ManyToMany
+	@JoinTable(name = "user_recievedMessages", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "message_id"))
+	private List<Message> recievedMessages;
 
 	// Constructor
 	public User() {
@@ -195,13 +202,30 @@ public class User {
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
 	}
+	
+	
+
+	public List<Message> getSendMessages() {
+		return sendMessages;
+	}
+
+	public void setSendMessages(List<Message> sendMessages) {
+		this.sendMessages = sendMessages;
+	}
+
+	public List<Message> getRecievedMessages() {
+		return recievedMessages;
+	}
+
+	public void setRecievedMessages(List<Message> recievedMessages) {
+		this.recievedMessages = recievedMessages;
+	}
 
 	// hashCode and equals
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((address == null) ? 0 : address.hashCode());
 		result = prime * result + ((categories == null) ? 0 : categories.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + (generalSubscription ? 1231 : 1237);

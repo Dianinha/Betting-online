@@ -6,15 +6,19 @@
 <title>Insert title here</title>
 </head>
 <body>
-MENU:
-<ul>
-<li>Your wallet</li>
-<li>Your bets</li>
-<li>Messages</li>
-<li>Categories You observe</li>
-<li>Edit Your data</li>
-<li>Change Your password</li>
-<li></li>
-</ul>
+	MENU:
+	<ul>
+		<li><a th:href="@{/user/wallet}"
+			th:text="'Your wallet'">I do not want
+				to wait!</a></li>
+		<li>Your bets</li>
+		<li><a th:href="@{/user/messages}"
+			th:text="'Your messages'">I do not want
+				to wait!</a></li>
+		<li>Categories You observe</li>
+		<li>Edit Your data</li>
+		<li>Change Your password</li>
+		<li></li>
+	</ul>
 </body>
 </html>

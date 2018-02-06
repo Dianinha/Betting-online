@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<p>
+		<span th:text="'Send message to Your friends!'"> </span>
+	</p>
+	<form th:action="@{/user/sendMessage}" th:object="${message}"
+		method="post">
+		<div>Send it to:
+		<input type="text" name="username" />
+		</div>
+		<div>
+			<label> Title: <input type="text"
+				name="title" />
+			</label>
+		</div>
+		<div>
+			<label> Content: <input type="text" name="content" />
+			</label>
+		</div>
+		<div>
+			<input type="submit" value="Send message" />
+		</div>
+	</form>
+</body>
+</html>

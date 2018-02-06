@@ -13,7 +13,7 @@
 		Your saved credit cards:
 		<ul>
 			<li th:each="credit: ${creditCards}"
-				th:text="'Credit card ends with: ****' + ${credit:.lastFourDigits}"></li>
+				th:text="'Credit card ends with: ****' + ${credit.lastFourDigits}"></li>
 		</ul>
 
 

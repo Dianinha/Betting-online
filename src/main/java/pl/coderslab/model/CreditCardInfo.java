@@ -156,7 +156,7 @@ public class CreditCardInfo {
 		result = prime * result + ((ownerName == null) ? 0 : ownerName.hashCode());
 		result = prime * result + ((ownerSurname == null) ? 0 : ownerSurname.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((wallet == null) ? 0 : wallet.hashCode());
+
 		return result;
 	}
 
