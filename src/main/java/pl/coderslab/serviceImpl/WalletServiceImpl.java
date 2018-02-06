@@ -34,4 +34,13 @@ public class WalletServiceImpl implements WalletService {
 		return walletRepository.findByUser(user);
 	}
 
+	@Override
+	public Wallet addFunds(Wallet wallet, BigDecimal amount) {
+		BigDecimal currentAmount = wallet.getAmount();
+		BigDecimal newAmount = currentAmount.add(amount);
+		wallet.setAmount(newAmount);
+		
+		return walletRepository.save(wallet);
+	}
+
 }

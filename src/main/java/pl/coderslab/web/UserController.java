@@ -1,5 +1,6 @@
 package pl.coderslab.web;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.coderslab.model.CreditCardInfo;
 import pl.coderslab.model.User;
+import pl.coderslab.model.Wallet;
 import pl.coderslab.service.CreditCardService;
+import pl.coderslab.service.OperationService;
 import pl.coderslab.service.UserService;
 import pl.coderslab.service.WalletService;
 
@@ -29,9 +32,12 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private WalletService walletService;
 	
 	@Autowired
-	private WalletService walletrService;
+	private OperationService operationService;
 
 	@RequestMapping(path = "/menu")
 	public String menu() {
@@ -46,7 +52,7 @@ public class UserController {
 			user = userService.findByUsername(name);
 		} catch (Exception e) {
 		}
-		model.addAttribute("wallet", walletrService.findByUser(user));
+		model.addAttribute("wallet", walletService.findByUser(user));
 
 		return "/user/wallet";
 	}
@@ -95,6 +101,35 @@ public class UserController {
 		}
 		model.addAttribute("creditCards", userCreditCards);
 		return "/user/creditCardOption";
+	}
+
+	@RequestMapping(value = "/payment", method = RequestMethod.GET)
+	public String paymentWithoutSavingCard(Model model, HttpSession session) {
+		model.addAttribute("creditCardInfo", new CreditCardInfo());
+		return "/user/payment";
+	}
+
+	@RequestMapping(value = "/payment", method = RequestMethod.POST)
+	public String paymentWithoutSavingCardPost(@Valid CreditCardInfo creditCardInfo, BindingResult result, Model model, HttpSession session, Authentication authentication) {
+		if(result.hasErrors()) {
+			return "/user/payment";
+		}
+		User user = null;
+		try {
+			String name = authentication.getName();
+			user = userService.findByUsername(name);
+		} catch (Exception e) {
+		}
+		try {
+			Wallet wallet = walletService.findByUser(user);
+			Integer amountInInteger =(Integer) session.getAttribute("fundsToAdd");
+			BigDecimal amount = BigDecimal.valueOf(amountInInteger);
+			walletService.addFunds(wallet, amount);
+			operationService.createAddOperation(wallet, amount, creditCardInfo.getLastFourDigits());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "redirect:/user/wallet";
 	}
 
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<div>
+		You want to add: <span th:text="${session.fundsToAdd} + ' PLN'"></span>
+	</div>
+	
+	<form th:action="@{/user/payment}" th:object="${creditCardInfo}"
+		method="post">
+		<div>
+			<label> Credit card number: <input type="number"
+				name="creditCardNumber" />
+			</label>
+		</div>
+		<div>
+			<label> Expiration date: <input type="number"
+				name="expirationMonth" /> / <input type="number"
+				name="expirationYear" />
+			</label>
+		</div>
+		<div>
+			<label> CVV: <input type="number" name="cvv" />
+			</label>
+		</div>
+		<div>
+			<label> Owner name: <input type="text" name="ownerName" />
+			</label>
+		</div>
+		<div>
+			<label> Owner surname: <input type="text" name="ownerSurname" />
+			</label>
+		</div>
+		<ul>
+			<li><input type="radio" name="type" th:value="'VISA'" /> <label
+				th:text="'VISA'">VISA</label></li>
+			<li><input type="radio" name="type" th:value="'MASTERCARD'" />
+				<label th:text="'MASTERCARD'">MASTERCARD</label></li>
+		</ul>
+		<div>
+			<input type="submit" value="Proceed to payment" />
+		</div>
+	</form>
+	
+</body>
+</html>
