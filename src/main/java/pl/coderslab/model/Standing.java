@@ -8,73 +8,72 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Standing
-{
-	
+public class Standing {
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
+
 	@ManyToOne
 	@JoinColumn
 	private Country country;
-	
+
 	@ManyToOne
 	@JoinColumn
 	private League league;
-	
+
 	private String teamName;
-	
+
 	private int leaguePosition;
-	
+
 	private int matchesPlayed;
-	
+
 	private int matchesWon;
-	
+
 	private int matchesDraw;
-	
+
 	private int matchesLost;
-	
+
 	private int goalsScored;
-	
+
 	private int goalsLost;
-	
+
 	private int points;
-	
-	//---------------------
-	
+
+	// ---------------------
+
 	private int homeLeaguePosition;
-	
+
 	private int homeMatchesPlayed;
-	
+
 	private int homeMatchesWon;
-	
+
 	private int homeMatchesDraw;
-	
+
 	private int homeMatchesLost;
-	
+
 	private int homeGoalsScored;
-	
+
 	private int homeGoalsLost;
-	
+
 	private int homePoints;
 
-	//---------------------
-	
+	// ---------------------
+
 	private int awayLeaguePosition;
-	
+
 	private int awayMatchesPlayed;
-	
+
 	private int awayMatchesWon;
-	
+
 	private int awayMatchesDraw;
-	
+
 	private int awayMatchesLost;
-	
+
 	private int awayGoalsScored;
-	
+
 	private int awayGoalsLost;
-	
+
 	private int awayPoints;
 
 	public Standing() {
@@ -305,8 +304,6 @@ public class Standing
 		this.awayPoints = awayPoints;
 	}
 
-	
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -421,8 +418,5 @@ public class Standing
 				+ awayMatchesLost + ", awayGoalsScored=" + awayGoalsScored + ", awayGoalsLost=" + awayGoalsLost
 				+ ", awayPoints=" + awayPoints + "]";
 	}
-	
-	
-	
+
 }
-	

@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,15 +32,17 @@ public class StandingServiceImpl implements StandingService {
 	
 
 	@Override
-	public void createStandings(League league) {
+	public List<Standing> createStandings(League league) {
 
 		String finalUrl = urlBegining + league.getId() + urlEnding;
 		JSONParser parser = new JSONParser();
+		List<Standing> standings = new ArrayList<>();
 		try {
 			URL getDataFrom = new URL(finalUrl);
 			URLConnection urlConn = getDataFrom.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			String inputLine;
+			
 			while ((inputLine = in.readLine()) != null) {
 				JSONArray jsonStandings = (JSONArray) parser.parse(inputLine);
 
@@ -84,13 +88,7 @@ public class StandingServiceImpl implements StandingService {
 					standingObject.setAwayGoalsLost(Integer.parseInt((String) standingJson.get("away_league_GA")));
 					standingObject.setAwayPoints(Integer.parseInt((String) standingJson.get("away_league_PTS")));
 					
-					
-					try {
-						standingRepository.save(standingObject);
-					} catch (Exception e) {
-						System.out.println(standingObject);
-						e.printStackTrace();
-					}
+					standings.add(standingObject);
 					
 				}
 			}
@@ -105,6 +103,25 @@ public class StandingServiceImpl implements StandingService {
 			e.printStackTrace();
 			System.out.println("here3");
 		}
+		return standings;
 
+	}
+
+
+	@Override
+	public void seeStandings(List<Standing> standings) {
+
+		for (Standing standing : standings) {
+			System.out.println(standing);
+		}
+	}
+
+
+	@Override
+	public void saveStandings(List<Standing> standings) {
+
+		for (int i = 0; i < standings.size(); i++) {
+			standingRepository.save(standings.get(i));
+		}
 	}
 }

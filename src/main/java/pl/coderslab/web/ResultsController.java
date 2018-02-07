@@ -36,7 +36,7 @@ public class ResultsController {
 		leagueService.createLeagues();
 		StandingServiceImpl ssi = new StandingServiceImpl();
 		League league = leagueRepository.findOne((long) 137);
-		ssi.createStandings(league);
+		ssi.saveStandings(ssi.createStandings(league));
 		return "Hello countries";
 	}
 }
