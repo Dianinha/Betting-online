@@ -26,7 +26,7 @@ import org.hibernate.validator.constraints.NotBlank;
 @Table(name = "users")
 public class User {
 
-	// attributes
+	// attributes - ADD AGE
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")

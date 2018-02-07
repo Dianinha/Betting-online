@@ -16,6 +16,8 @@ import javax.persistence.Table;
 @Table(name = "messages")
 public class Message {
 
+	//ADD TIME PLEASE
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;

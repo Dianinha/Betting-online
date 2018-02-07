@@ -51,7 +51,8 @@ public class UserServiceImpl implements UserService {
 		userRoles.add(roleRepository.findByName("ROLE_USER"));
 		user.setRoles(userRoles);
 		User savedUser = userRepository.save(user);
-		savedUser.setWallet(walletService.createWallet(savedUser));
+		Wallet wallet = walletService.createWallet(savedUser);
+		savedUser.setWallet(wallet);
 		savedUser = userRepository.save(savedUser);
 		return savedUser;
 	}

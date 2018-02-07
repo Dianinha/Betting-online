@@ -45,9 +45,9 @@ public class HomePageController {
 	public String registerNewUser(Model model) {
 		model.addAttribute("user", new User());
 		// PLEASE DO NOT FORGET TO DELETE IT
-		Role role = new Role();
-		role.setName("ROLE_USER");
-		roleRepository.save(role);
+//		Role role = new Role();
+//		role.setName("ROLE_USER");
+//		roleRepository.save(role);
 
 		return "/access/register";
 	}
@@ -72,7 +72,8 @@ public class HomePageController {
 			session.setAttribute("user", savedUser);
 			return "redirect:/registerAddress";
 		} catch (Exception e) {
-			System.out.println(e);
+			System.out.println(e + " creation failed");
+			e.printStackTrace();
 			if (userService.findByEmail(user.getEmail()) != null) {
 				model.addAttribute("failureMessage", "User with this e-mail is already registered");
 				return "/access/register";
