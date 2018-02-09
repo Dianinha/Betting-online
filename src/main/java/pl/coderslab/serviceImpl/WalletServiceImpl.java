@@ -15,7 +15,7 @@ public class WalletServiceImpl implements WalletService {
 
 	@Autowired
 	private WalletRepository walletRepository;
-	
+
 	@Override
 	public Wallet saveWallet(Wallet wallet) {
 		return walletRepository.save(wallet);
@@ -39,8 +39,23 @@ public class WalletServiceImpl implements WalletService {
 		BigDecimal currentAmount = wallet.getAmount();
 		BigDecimal newAmount = currentAmount.add(amount);
 		wallet.setAmount(newAmount);
-		
+
 		return walletRepository.save(wallet);
 	}
+
+	@Override
+	public Wallet substractFunds(Wallet wallet, BigDecimal amount) {
+		BigDecimal currentAmount = wallet.getAmount();
+		BigDecimal newAmount = currentAmount.subtract(amount);
+		wallet.setAmount(newAmount);
+		return walletRepository.save(wallet);
+	}
+
+	@Override
+	public boolean hasWalletSufficientFunds(Wallet wallet, BigDecimal amount) {
+		int result = wallet.getAmount().compareTo(amount);
+		return (result<0)?false:true;
+	}
+	
 
 }

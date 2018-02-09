@@ -69,4 +69,9 @@ public class LeagueServiceImpl implements LeagueService {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public League findById(long id) {
+		return leagueRepository.findOne(id);
+	}
 }

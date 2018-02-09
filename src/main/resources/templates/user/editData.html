@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Edit Your data</h1>
+	<h2>Attention! If You change your username or email You will have to log in again</h2>
+	
+	<p	th:if="${failureMessage}"	th:text="${failureMessage}">Message if username is taken or email already is registered</p>
+	
+	<form th:action="@{/user/editData}" th:object="${user}" method="post">
+		<div>
+			<p>
+				First name: <input type="text" th:field="*{name}" th:value="${user.name}"/></p>
+			<ul>
+				<li th:each="err : ${#fields.errors('name')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Surname: <input type="text" th:field="*{surname}" th:value="${user.surname}"/></p>
+				<ul>
+				<li th:each="err : ${#fields.errors('surname')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Username: <input type="text" th:field="*{username}" th:value="${user.username}"/>
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('username')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<p>
+				Email: <input type="text" th:field="*{email}" th:value="${user.email}"/>
+			</p>
+			<ul>
+				<li th:each="err : ${#fields.errors('email')}"
+					th:text="${err}" />
+			</ul>
+		</div>
+		<div>
+			<label th:text="'I subscribe to a newsletter'">Newsletter</label> <input
+				type="checkbox" th:field="*{generalSubscription}" th:value="${user.generalSubscription}"/> 
+		</div>
+		<div>
+			<input type="submit" value="Change data" />
+		</div>
+	</form>
+</body>
+</html>

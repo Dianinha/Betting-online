@@ -23,11 +23,11 @@ public class Bet {
 
 	@ManyToOne
 	@JoinColumn
-	private Game game;
+	private User user;
 
 	@ManyToOne
 	@JoinColumn
-	private User user;
+	private GameToBet game;
 
 	private BigDecimal amount;
 
@@ -44,16 +44,16 @@ public class Bet {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public Game getGame() {
+	public GameToBet getGame() {
 		return game;
 	}
 
-	public void setGame(Game game) {
+	public void setGame(GameToBet game) {
 		this.game = game;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public User getUser() {
@@ -86,7 +86,6 @@ public class Bet {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((amount == null) ? 0 : amount.hashCode());
-		result = prime * result + ((game == null) ? 0 : game.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((rate == null) ? 0 : rate.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
@@ -107,11 +106,6 @@ public class Bet {
 				return false;
 		} else if (!amount.equals(other.amount))
 			return false;
-		if (game == null) {
-			if (other.game != null)
-				return false;
-		} else if (!game.equals(other.game))
-			return false;
 		if (id != other.id)
 			return false;
 		if (rate == null) {
@@ -130,8 +124,7 @@ public class Bet {
 	// simplified to string
 	@Override
 	public String toString() {
-		return "Bet [id=" + id + ", game=" + game.getId() + ", user=" + user + ", amount=" + amount + ", rate=" + rate
-				+ "]";
+		return "Bet [id=" + id + ", user=" + user + ", amount=" + amount + ", rate=" + rate + "]";
 	}
 
 }

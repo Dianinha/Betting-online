@@ -1,40 +1,39 @@
 package pl.coderslab.model;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "games")
-public class Game {
+public class Player {
 
-	// attributes
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "game_id")
-	private long id;
-	
-	@OneToMany(mappedBy="game")
-	private List<Bet> bets;
- 
-	public Game() {
+	private Long id;
+
+	@Column(unique = true)
+	private String name;
+
+	public Player() {
 		super();
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
+	public String getName() {
+		return name;
+	}
 
-	
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

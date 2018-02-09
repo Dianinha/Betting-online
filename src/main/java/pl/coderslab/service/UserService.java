@@ -14,5 +14,9 @@ public interface UserService {
 	User findByUsername(String username);
 	
 	User finfByWallet(Wallet wallet);
+	
+	User changePassword(String password, User user);
+	
+	boolean checkPassword (String password, User user);
 
 }

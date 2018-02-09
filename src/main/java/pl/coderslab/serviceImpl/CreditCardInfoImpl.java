@@ -10,29 +10,25 @@ import pl.coderslab.model.User;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.repositories.CreditCardInfoRepository;
 import pl.coderslab.service.CreditCardService;
-import pl.coderslab.service.UserService;
 import pl.coderslab.service.WalletService;
 
 @Service
-public class CreditCardInfoImpl implements CreditCardService{
-	
+public class CreditCardInfoImpl implements CreditCardService {
+
 	@Autowired
 	private CreditCardInfoRepository creditCardRepo;
-	
-	@Autowired
-	private UserService userService;
-	
+
 	@Autowired
 	private WalletService walletService;
 
 	@Override
-	public List <CreditCardInfo> findByUser(User user) {
-		 Wallet usersWallet = walletService.findByUser(user);
-		 return creditCardRepo.findCreditCardInfosByWallet(usersWallet);
-	} 
+	public List<CreditCardInfo> findByUser(User user) {
+		Wallet usersWallet = walletService.findByUser(user);
+		return creditCardRepo.findCreditCardInfosByWallet(usersWallet);
+	}
 
 	@Override
-	public List <CreditCardInfo> findByWallet(Wallet wallet) {
+	public List<CreditCardInfo> findByWallet(Wallet wallet) {
 		return creditCardRepo.findCreditCardInfosByWallet(wallet);
 	}
 

@@ -3,11 +3,9 @@ package pl.coderslab.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import pl.coderslab.model.Standing;
+import pl.coderslab.model.Statistics;
 
 @Repository
-public interface StandingRepository extends JpaRepository<Standing, Long>{
+public interface StatisticsRepository extends JpaRepository<Statistics, Long>{
 
-	Standing findByTeamName(String teamName);
-	
 }

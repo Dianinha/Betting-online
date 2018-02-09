@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Index</title>
+<script type="text/javascript"
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script>
+	$(document).ready(function() {
+		function updateLiveScore() {
+			$.ajax({
+				url : "http://localhost:5555/results/updateHtmlResults",
+				dataType : "html",
+				cache : false,
+				success : function(data) {
+					$('#latestData').html(data);
+				}
+			});
+		}
+		updateLiveScore();
+		setInterval(updateLiveScore, 60000);
+	});
+</script>
+</head>
+<body>
+	<table style="border: 1px solid black;">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Time</th>
+				<th>In</th>
+				<th>League</th>
+				<th>Score</th>
+				<th>Home vs. Away</th>
+				<th>Home</th>
+				<th>Draw</th>
+				<th>Away</th>
+			</tr>
+		</thead>
+		<tbody id="latestData">
+		</tbody>
+	</table>
+	<a th:href="@{/bets/placeBet}">
+		<button type="button">Click Me!</button>
+	</a>
+
+</body>
+</html>

@@ -8,16 +8,14 @@
 <body>
 	MENU:
 	<ul>
-		<li><a th:href="@{/user/wallet}"
-			th:text="'Your wallet'">I do not want
-				to wait!</a></li>
+		<li><a th:href="@{/user/wallet}" th:text="'Your wallet'">I do
+				not want to wait!</a></li>
 		<li>Your bets</li>
-		<li><a th:href="@{/user/messages}"
-			th:text="'Your messages'">I do not want
-				to wait!</a></li>
+		<li><a th:href="@{/user/messages}" th:text="'Your messages'">I
+				do not want to wait!</a></li>
 		<li>Categories You observe</li>
-		<li>Edit Your data</li>
-		<li>Change Your password</li>
+		<li><a th:href="@{/user/editData}" th:text="'Edit Your data'"></a></li>
+		<li><a th:href="@{/user/changePassword}" th:text="'Change Your password'"></a></li>
 		<li></li>
 	</ul>
 </body>

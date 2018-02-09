@@ -1,0 +1,92 @@
+package pl.coderslab.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class GoalScorer {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
+	private String time;
+
+	@ManyToOne
+	@JoinColumn
+	private Player homeScorer;
+
+	@ManyToOne
+	@JoinColumn
+	private Player awayScorer;
+
+	private String score;
+
+	@ManyToOne
+	@JoinColumn
+	private Event event;
+
+	public GoalScorer() {
+		super();
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public Player getHomeScorer() {
+		return homeScorer;
+	}
+
+	public void setHomeScorer(Player homeScorer) {
+		this.homeScorer = homeScorer;
+	}
+
+	public Player getAwayScorer() {
+		return awayScorer;
+	}
+
+	public void setAwayScorer(Player awayScorer) {
+		this.awayScorer = awayScorer;
+	}
+
+	public String getScore() {
+		return score;
+	}
+
+	public void setScore(String score) {
+		this.score = score;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+	@Override
+	public String toString() {
+		return "GoalScorer [id=" + id + ", time=" + time + ", homeScorer=" + homeScorer + ", awayScorer=" + awayScorer
+				+ ", score=" + score + ", event=" + event + "]";
+	}
+
+	
+}

@@ -1,5 +1,6 @@
 package pl.coderslab.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +22,9 @@ public class Standing {
 	@ManyToOne
 	@JoinColumn
 	private League league;
+
+	@Column(unique = true)
+	private String season;
 
 	private String teamName;
 
@@ -237,7 +241,7 @@ public class Standing {
 	}
 
 	public void setHomePoints(int homePoints) {
-		homePoints = homePoints;
+		this.homePoints = homePoints;
 	}
 
 	public int getAwayLeaguePosition() {
@@ -302,6 +306,14 @@ public class Standing {
 
 	public void setAwayPoints(int awayPoints) {
 		this.awayPoints = awayPoints;
+	}
+
+	public String getSeason() {
+		return season;
+	}
+
+	public void setSeason(String season) {
+		this.season = season;
 	}
 
 	@Override

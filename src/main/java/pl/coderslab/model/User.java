@@ -65,8 +65,8 @@ public class User {
 	private List<Bet> userBets;
 
 	@ManyToMany
-	@JoinTable(name = "user_game", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "game_id"))
-	private Set<Game> userObservedGames;
+	@JoinTable(name = "user_event", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
+	private Set<Event> userObservedGames;
 
 	private boolean generalSubscription;
 
@@ -171,11 +171,12 @@ public class User {
 		this.userBets = userBets;
 	}
 
-	public Set<Game> getUserObservedGames() {
+
+	public Set<Event> getUserObservedGames() {
 		return userObservedGames;
 	}
 
-	public void setUserObservedGames(Set<Game> userObservedGames) {
+	public void setUserObservedGames(Set<Event> userObservedGames) {
 		this.userObservedGames = userObservedGames;
 	}
 
@@ -220,6 +221,7 @@ public class User {
 	public void setRecievedMessages(List<Message> recievedMessages) {
 		this.recievedMessages = recievedMessages;
 	}
+	
 
 	// hashCode and equals
 	@Override

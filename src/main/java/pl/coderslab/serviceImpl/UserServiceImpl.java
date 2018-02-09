@@ -3,8 +3,6 @@ package pl.coderslab.serviceImpl;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -70,6 +68,23 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User finfByWallet(Wallet wallet) {
 		return userRepository.findByWallet(wallet);
+	}
+
+	@Override
+	public User changePassword(String password, User user) {
+		
+		
+		User userToChangePassword = userRepository.findOne(user.getId());
+		user.setPassword(passwordEncoder.encode(password));
+		
+		
+		return userRepository.save(userToChangePassword);
+	}
+
+	@Override
+	public boolean checkPassword(String password, User user) {
+		
+		return passwordEncoder.matches(password, user.getPassword());
 	}
 
 }

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +25,13 @@ import pl.coderslab.service.StandingService;
 @Service
 public class StandingServiceImpl implements StandingService {
 
-	private String urlBegining = "https://apifootball.com/api/?action=get_standings&league_id=";
-	private String urlEnding = "&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
-
 	@Autowired
-	private StandingRepository standingRepository;
-	
+	StandingRepository standingRepo;
 
 	@Override
 	public List<Standing> createStandings(League league) {
+		String urlBegining = "https://apifootball.com/api/?action=get_standings&league_id=";
+		String urlEnding = "&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
 
 		String finalUrl = urlBegining + league.getId() + urlEnding;
 		JSONParser parser = new JSONParser();
@@ -42,7 +41,7 @@ public class StandingServiceImpl implements StandingService {
 			URLConnection urlConn = getDataFrom.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			String inputLine;
-			
+
 			while ((inputLine = in.readLine()) != null) {
 				JSONArray jsonStandings = (JSONArray) parser.parse(inputLine);
 
@@ -87,7 +86,8 @@ public class StandingServiceImpl implements StandingService {
 					standingObject.setAwayGoalsScored(Integer.parseInt((String) standingJson.get("away_league_GF")));
 					standingObject.setAwayGoalsLost(Integer.parseInt((String) standingJson.get("away_league_GA")));
 					standingObject.setAwayPoints(Integer.parseInt((String) standingJson.get("away_league_PTS")));
-					
+					int year = LocalDate.now().getYear();
+					standingObject.setSeason(year + standingObject.getTeamName());
 					standings.add(standingObject);
 					
 				}
@@ -103,10 +103,10 @@ public class StandingServiceImpl implements StandingService {
 			e.printStackTrace();
 			System.out.println("here3");
 		}
+		
 		return standings;
 
 	}
-
 
 	@Override
 	public void seeStandings(List<Standing> standings) {
@@ -114,14 +114,53 @@ public class StandingServiceImpl implements StandingService {
 		for (Standing standing : standings) {
 			System.out.println(standing);
 		}
+		System.out.println(standingRepo);
 	}
-
 
 	@Override
 	public void saveStandings(List<Standing> standings) {
 
 		for (int i = 0; i < standings.size(); i++) {
-			standingRepository.save(standings.get(i));
+			Standing standingFromDb = standingRepo.findOne(standings.get(i).getId());
+			standingFromDb = merge(standingFromDb, standings.get(i));
 		}
+
+	}
+
+	@Override
+	public Standing findStanfingByTeamName(String teamName) {
+		return standingRepo.findByTeamName(teamName);
+	}
+
+	private Standing merge(Standing standing, Standing newStanding) {
+		standing.setLeaguePosition(newStanding.getLeaguePosition());
+		standing.setMatchesPlayed(newStanding.getMatchesPlayed());
+		standing.setMatchesWon(newStanding.getMatchesWon());
+		standing.setMatchesLost(newStanding.getMatchesLost());
+		standing.setMatchesDraw(newStanding.getMatchesDraw());
+		standing.setGoalsScored(newStanding.getGoalsScored());
+		standing.setGoalsLost(newStanding.getGoalsLost());
+		standing.setPoints(newStanding.getPoints());
+		
+		standing.setHomeLeaguePosition(newStanding.getHomeLeaguePosition());
+		standing.setHomeMatchesPlayed(newStanding.getHomeMatchesPlayed());
+		standing.setHomeMatchesWon(newStanding.getHomeMatchesWon());
+		standing.setHomeMatchesDraw(newStanding.getHomeMatchesDraw());
+		standing.setHomeMatchesLost(newStanding.getHomeMatchesLost());
+		standing.setHomeGoalsScored(newStanding.getHomeGoalsScored());
+		standing.setHomeGoalsLost(newStanding.getHomeGoalsLost());
+		standing.setHomePoints(newStanding.getHomePoints());
+		
+		standing.setAwayLeaguePosition(newStanding.getAwayLeaguePosition());
+		standing.setAwayMatchesPlayed(newStanding.getAwayMatchesPlayed());
+		standing.setAwayMatchesWon(newStanding.getAwayMatchesWon());
+		standing.setAwayMatchesDraw(newStanding.getAwayMatchesDraw());
+		standing.setAwayMatchesLost(newStanding.getAwayMatchesLost());
+		standing.setAwayGoalsScored(newStanding.getAwayGoalsScored());
+		standing.setAwayGoalsLost(newStanding.getAwayGoalsLost());
+		standing.setAwayPoints(newStanding.getAwayPoints());
+		
+		return standingRepo.save(standing);
+
 	}
 }

@@ -3,11 +3,9 @@ package pl.coderslab.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import pl.coderslab.model.Standing;
+import pl.coderslab.model.GoalScorer;
 
 @Repository
-public interface StandingRepository extends JpaRepository<Standing, Long>{
+public interface GoalScorerRepository extends JpaRepository<GoalScorer, Long> {
 
-	Standing findByTeamName(String teamName);
-	
 }

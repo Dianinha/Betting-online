@@ -7,9 +7,11 @@ import pl.coderslab.model.Standing;
 
 public interface StandingService {
 
-	public List<Standing> createStandings(League league);
+	 List<Standing> createStandings(League league);
 	
-	public void seeStandings(List<Standing> standings);
+	 void seeStandings(List<Standing> standings);
 	
-	public void saveStandings(List<Standing> standings);
+	 void saveStandings(List<Standing> standings);
+	 
+	 Standing findStanfingByTeamName(String teamName);
 }

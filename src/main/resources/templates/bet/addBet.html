@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<p>
+		<span th:text="'You are betting on team: ' + ${team}"> </span>
+		<span th:text="'Your rate: ' + ${rate}"> </span>
+	</p>
+	<form th:action="@{/bet/addBet}" method="post">
+		<div>Type in the amount:
+		<input type="number" name="amount" />
+		</div>
+		<div>
+			<input type="submit" value="Place bet" />
+		</div>
+	</form>
+</body>
+</html>

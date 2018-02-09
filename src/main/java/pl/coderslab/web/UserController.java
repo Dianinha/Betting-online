@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -205,6 +206,79 @@ public class UserController {
 		}
 
 		return "redirect:/user/messages";
+	}
+
+	@RequestMapping(value = "/editData", method = RequestMethod.GET)
+	public String editUserData(Model model, Authentication authentication) {
+		User user = null;
+		try {
+			String name = authentication.getName();
+			user = userService.findByUsername(name);
+		} catch (Exception e) {
+			System.out.println("Auth failed");
+		}
+		model.addAttribute("user", user);
+		return "/user/editData";
+	}
+
+	@RequestMapping(value = "/editData", method = RequestMethod.POST)
+	public String editUserDataPost(@ModelAttribute User user, Authentication authentication) {
+		User userFromDb = null;
+		try {
+			String name = authentication.getName();
+			userFromDb = userService.findByUsername(name);
+		} catch (Exception e) {
+			System.out.println("Auth failed");
+		}
+		userFromDb.setName(user.getName());
+		userFromDb.setSurname(user.getSurname());
+		userFromDb.setGeneralSubscription(user.isGeneralSubscription());
+
+		if (!userFromDb.getEmail().equals(user.getEmail()) || !userFromDb.getUsername().equals(user.getUsername())) {
+			userFromDb.setUsername(user.getUsername());
+			userFromDb.setEmail(user.getEmail());
+			userService.saveUser(userFromDb);
+			return "redirect:/login";
+		}
+
+		userService.saveUser(userFromDb);
+
+		return "redirect:/user/menu";
+	}
+
+	@RequestMapping(value = "/changePassword", method = RequestMethod.GET)
+	public String changePassword() {
+
+		return "/user/changePassword";
+	}
+
+	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
+	public String changePasswordPost(@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("newPassword") String newPassword,
+			@RequestParam("confirmNewPassword") String confirmNewPassword, Authentication auth, Model model) {
+		
+		User userFromDb = null;
+		try {
+			String name = auth.getName();
+			userFromDb = userService.findByUsername(name);
+		} catch (Exception e) {
+			System.out.println("Auth failed");
+			return "redirect:/login";
+		}
+		
+		if (!confirmNewPassword.equals(newPassword)) {
+			model.addAttribute("message", "Your passwords does not match");
+			return "/user/changePassword";
+		}
+		if (!userService.checkPassword(oldPassword, userFromDb)) {
+			model.addAttribute("message", "Your password is incorrect");
+			return "/user/changePassword";
+		}
+		
+		userService.changePassword(newPassword, userFromDb);
+
+
+		return "redirect:/login";
 	}
 
 }
