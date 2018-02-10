@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 public class GameToBet {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@OneToOne

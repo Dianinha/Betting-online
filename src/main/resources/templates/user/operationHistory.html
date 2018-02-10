@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<ul>
+		<li th:each="op: ${usersOperations}">
+		<span th:text="'Id: '+ ${op.id}"></span>
+		<span th:text="'Time: '+ ${#temporals.format(op.timeOfOperation,'dd-MM-yyyy HH-mm')}"></span>
+		<span th:text="'Info: ' + ${op.operationInfo}"></span>
+		</li>
+	</ul>
+	Do You have question about operation? Write to us (userName = dianinhaBetsService) describing the problem and in message title put operation id.
+	<a th:href="@{/user/sendMessage}"
+		th:text="'Click here to send a message'">I do not want
+		to wait!</a>
+</body>
+</html>
+
+

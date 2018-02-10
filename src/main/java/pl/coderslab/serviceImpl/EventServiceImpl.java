@@ -52,8 +52,6 @@ public class EventServiceImpl implements EventService {
 
 		String finalUrl = beginingUrl + from + toUrl + to + leagueUrl + league.getId() + APIUrl;
 		JSONParser parser = new JSONParser();
-		// String tryUrl =
-		// "https://apifootball.com/api/?action=get_events&from=2018-02-01&to=2018-02-20&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
 		try {
 			URL getDataFrom = new URL(finalUrl);
 			URLConnection urlConn = getDataFrom.openConnection();
@@ -107,46 +105,55 @@ public class EventServiceImpl implements EventService {
 					for (Object jsonGoalScorer : jsonArraygoals) {
 						JSONObject goalJson = (JSONObject) jsonGoalScorer;
 						GoalScorer goalScorer = new GoalScorer();
+
 						goalScorer.setTime((String) goalJson.get("time"));
+						goalScorer.setId(event.getId() + goalScorer.getTime());
 						String homeScorer = (String) goalJson.get("home_scorer");
 						String awayScorer = (String) goalJson.get("away_scorer");
 						if (!homeScorer.equals("")) {
-							Player player = new Player();
-							player.setName(homeScorer);
+							Player player = null;
 							try {
-								player = playerRepo.save(player);
+								player = playerRepo.findByName(homeScorer);
 							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									player = playerRepo.findByName(homeScorer);
-								} catch (Exception e2) {
-								}
 							}
-							goalScorer.setHomeScorer(player);
+
+							if (player == null) {
+								player = new Player();
+								player.setName(homeScorer);
+								player = playerRepo.save(player);
+								goalScorer.setHomeScorer(player);
+							} else {
+								goalScorer.setHomeScorer(player);
+							}
+
 						}
 						if (!awayScorer.equals("")) {
-							Player player = new Player();
-							player.setName(awayScorer);
+							Player player = null;
 							try {
-								player = playerRepo.save(player);
+								player = playerRepo.findByName(awayScorer);
 							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									player = playerRepo.findByName(awayScorer);
-								} catch (Exception e2) {
-								}
 							}
-							goalScorer.setAwayScorer(player);
+
+							if (player == null) {
+								player = new Player();
+								player.setName(awayScorer);
+								player = playerRepo.save(player);
+								goalScorer.setAwayScorer(player);
+							} else {
+								goalScorer.setAwayScorer(player);
+							}
+
 						}
 
 						goalScorer.setScore((String) goalJson.get("score"));
 						goalScorers.add(goalScorer);
 					}
-					event.setGoalScorrers(goalScorers);
-					eventRepo.save(event);
+					
+					event = eventRepo.save(event);
+					
 					for (GoalScorer gs : goalScorers) {
 						gs.setEvent(eventRepo.findOne(event.getId()));
-
+						System.out.println(gs);
 					}
 					goalScorerRepo.save(goalScorers);
 					System.out.println(event);
@@ -156,7 +163,9 @@ public class EventServiceImpl implements EventService {
 				}
 			}
 			in.close();
-		} catch (MalformedURLException e) {
+		} catch (
+
+		MalformedURLException e) {
 			e.printStackTrace();
 			System.out.println("here1");
 		} catch (IOException e) {
@@ -197,6 +206,7 @@ public class EventServiceImpl implements EventService {
 					long leaugueid = Long.parseLong((String) eventJson.get("league_id"));
 					League league = leagueService.findById(leaugueid);
 					event.setLegaue(league);
+					event.setCountry(league.getCountry());
 					event.setStatus((String) eventJson.get("match_status"));
 					event.setTime((String) eventJson.get("match_time"));
 					event.setHomeTeamName((String) eventJson.get("match_hometeam_name"));
@@ -239,46 +249,53 @@ public class EventServiceImpl implements EventService {
 						JSONObject goalJson = (JSONObject) jsonGoalScorer;
 						GoalScorer goalScorer = new GoalScorer();
 						goalScorer.setTime((String) goalJson.get("time"));
+						goalScorer.setId(event.getId() + goalScorer.getTime());
 						String homeScorer = (String) goalJson.get("home_scorer");
 						String awayScorer = (String) goalJson.get("away_scorer");
 						if (!homeScorer.equals("")) {
-							Player player = new Player();
-							player.setName(homeScorer);
+							Player player = null;
 							try {
-								player = playerRepo.save(player);
+								player = playerRepo.findByName(homeScorer);
 							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									player = playerRepo.findByName(homeScorer);
-								} catch (Exception e2) {
-								}
 							}
-							goalScorer.setHomeScorer(player);
+
+							if (player == null) {
+								player = new Player();
+								player.setName(homeScorer);
+								player = playerRepo.save(player);
+								goalScorer.setHomeScorer(player);
+							} else {
+								goalScorer.setHomeScorer(player);
+							}
+
 						}
 						if (!awayScorer.equals("")) {
-							Player player = new Player();
-							player.setName(awayScorer);
+							Player player = null;
 							try {
-								player = playerRepo.save(player);
+								player = playerRepo.findByName(awayScorer);
 							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									player = playerRepo.findByName(awayScorer);
-								} catch (Exception e2) {
-								}
 							}
-							goalScorer.setAwayScorer(player);
-						}
 
+							if (player == null) {
+								player = new Player();
+								player.setName(awayScorer);
+								player = playerRepo.save(player);
+								goalScorer.setAwayScorer(player);
+							} else {
+								goalScorer.setAwayScorer(player);
+							}
+
+						}
 						goalScorer.setScore((String) goalJson.get("score"));
 						goalScorers.add(goalScorer);
 					}
-					event.setGoalScorrers(goalScorers);
+					
 					eventRepo.save(event);
+					
 					liveEvents.add(event);
 					for (GoalScorer gs : goalScorers) {
 						gs.setEvent(eventRepo.findOne(event.getId()));
-
+						System.out.println(gs);
 					}
 					goalScorerRepo.save(goalScorers);
 					System.out.println(event);

@@ -32,12 +32,14 @@ public class GameToBetServiceImpl implements GameToBetService {
 		List<Event> futureEvents = eventService.findByDate(LocalDate.now());
 		for (Event event : futureEvents) {
 			GameToBet game = new GameToBet();
+			
 			System.out.println(event.getStatus());
 			if (event.getStatus().equals("FT")) {
 				game.setActive(false);
 			} else {
 				game.setActive(true);
 			}
+			game.setId(event.getId());
 			game.setEvent(event);
 			Standing home = standingService.findStanfingByTeamName(event.getHomeTeamName());
 			Standing away = standingService.findStanfingByTeamName(event.getAwayTeamName());

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import pl.coderslab.model.GoalScorer;
 
 @Repository
-public interface GoalScorerRepository extends JpaRepository<GoalScorer, Long> {
+public interface GoalScorerRepository extends JpaRepository<GoalScorer, String> {
 
 }

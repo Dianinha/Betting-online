@@ -2,19 +2,561 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Index</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<title>DianinhaBET</title>
+
+
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="css/main.css" />
+
 </head>
+
 <body>
-	<!-- <div sec:authorize="isAuthenticated()">
-		<p>
-		LoggedAs: <span sec:authentication="name"></span>
-		</p>
-		<p>
-		With roles: <span sec:authentication="authorities"></span>
-		</p>
-		<a th:href="@{/logout}">Log out</a>
-	</div> -->
-	<p th:text="'It is index here, hello Sir!'">Hello txt</p>
+
+	<nav class="navbar navbar-expand-lg navbar-light">
+		<a class="navbar-brand" href="#"> <img src="logo.png" width="250"
+			height="25" alt="" />
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+			<ul class="nav navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0 ml-auto"
+						th:action="@{/register}" method="get">
+
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit">✚
+							register</button>
+
+					</form>
+				</li>
+				<li class="nav-item"><a class="nav-link" th:href="@{/login}">log
+						in</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container-fluid" id="topbg">
+		<div class="row py-5">
+			<div class="col mx-auto">
+				<div>
+					<h1 style="color: #e7e8e8; text-align: center" class="pt-5">Just
+						Start The Game.</h1>
+					<h2 style="color: #e7e8e8; text-align: center">Gain 10£ for
+						register</h2>
+					<form class="form-inline my-3 ml-auto">
+
+						<button class="btn btn-lg btn-outline-success my-3 mx-auto"
+							type="submit">Join</button>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container" id="community">
+		<div class="row justify-content-md-center pt-5">
+			<div class="col-md-auto">
+				<div>
+					<h1 style="color: #001021">Join the fastest growing community.</h1>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-5 pb-5">
+
+			<div class="col mt-5">
+				<img src="money.png" class="rounded mx-auto d-block" alt="bonuses" />
+				<h2 style="color: #001021" class="text-center mt-3">Extra
+					bonuses</h2>
+				<p class="text-center">Gain extra funds for your betting</p>
+			</div>
+			<div class="col mt-5">
+				<img src="circled.png" class="rounded mx-auto d-block" alt="bets" />
+				<h2 style="color: #001021" class="text-center mt-3">Only best
+					bets</h2>
+				<p class="text-center">The best rates on the Internet</p>
+			</div>
+			<div class="col mt-5">
+				<img src="block.png" class="rounded mx-auto d-block" alt="no-limits" />
+				<h2 style="color: #001021" class="text-center mt-3">No limits</h2>
+				<p class="text-center">No limits on withdrawals</p>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="container-fluid pb-5" id="livenow">
+		<div class="row justify-content-md-center pt-5 mb-3">
+			<div class="col-md-auto mt-4">
+				<div>
+					<h1 style="color: #e7e8e8">
+						Live <span class="now">NOW</span>.
+					</h1>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-1"></div>
+			<div class="col-10 match mb-1">
+				<div class="row">
+					<div class="col-11">
+
+						<div id="accordion" role="tablist" aria-multiselectable="true">
+							<div role="tab" id="headingOne">
+								<a data-toggle="collapse" data-parent="#accordion"
+									href="#collapseOne" aria-expanded="true"
+									aria-controls="collapseOne">
+									<p class="now my-auto py-2 font-weight-bold">˅ Football</p>
+								</a>
+							</div>
+						</div>
+
+					</div>
+					<div class="col-1">
+						<img src="football.png" class="rounded d-block py-2 float-right" />
+					</div>
+				</div>
+			</div>
+			<div class="col-1"></div>
+		</div>
+
+		<div id="collapseOne" class="collapse show" role="tabpanel"
+			aria-labelledby="headingOne">
+
+			<div id="latestData">Please refresh page</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<p class="now py-2 font-weight-bold">More results</p>
+				</div>
+				<div class="col-1"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-1"></div>
+			<div class="col-10 match mb-1">
+				<div class="row">
+					<div class="col-11">
+
+
+						<div role="tab" id="headingTwo">
+							<a class="collapsed" data-toggle="collapse"
+								data-parent="#accordion" href="#collapseTwo"
+								aria-expanded="false" aria-controls="collapseTwo">
+								<p class="now my-auto py-2 font-weight-bold">˅ Basketball</p>
+							</a>
+						</div>
+
+					</div>
+					<div class="col-1">
+						<img src="basketball.png" class="rounded d-block py-2 float-right" />
+					</div>
+				</div>
+			</div>
+			<div class="col-1"></div>
+		</div>
+
+		<div id="collapseTwo" class="collapse" role="tabpanel"
+			aria-labelledby="headingTwo">
+
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<p class="now py-2 font-weight-bold">More results</p>
+				</div>
+				<div class="col-1"></div>
+
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-1"></div>
+			<div class="col-10 match mb-1">
+				<div class="row">
+					<div class="col-11">
+
+
+						<div role="tab" id="headingThree">
+							<a class="collapsed" data-toggle="collapse"
+								data-parent="#accordion" href="#collapseThree"
+								aria-expanded="false" aria-controls="collapseThree">
+								<p class="now my-auto py-2 font-weight-bold">˅ Tennis</p>
+							</a>
+						</div>
+
+					</div>
+					<div class="col-1">
+						<img src="tennis.png" class="rounded d-block py-2 float-right" />
+					</div>
+				</div>
+			</div>
+			<div class="col-1"></div>
+		</div>
+
+		<div id="collapseThree" class="collapse" role="tabpanel"
+			aria-labelledby="headingThree">
+
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10 match mb-1">
+					<div class="row">
+						<div class="col-2">
+							<p class="now my-auto py-2 font-weight-bold">2:0</p>
+						</div>
+						<div class="col-4">
+							<p class="now my-auto py-2">
+								ManUtd <span style="color: #001021">vs </span>ManCity
+							</p>
+						</div>
+						<div class="col-2">
+							<p class="my-auto py-2" style="color: #001021">Start: 12.00</p>
+						</div>
+						<div class="col-4">
+							<p class="my-auto py-2">
+								<span style="color: #001021">Home: </span><span
+									class="now font-weight-bold">2.20</span> <span
+									style="color: #001021">Draw: </span><span
+									class="now font-weight-bold">3.20</span> <span
+									style="color: #001021">Away: </span><span
+									class="now font-weight-bold">2.65</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-1"></div>
+			</div>
+			<div class="row">
+				<div class="col-1"></div>
+				<div class="col-10">
+					<p class="now py-2 font-weight-bold">More results</p>
+				</div>
+				<div class="col-1"></div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<div class="container">
+		<div class="row justify-content-md-center pt-5">
+			<div class="col-md-auto mt-4">
+				<div>
+					<h1 style="color: #001021">Play with your Friends.</h1>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-5 pb-5">
+
+			<div class="col" id="liner">
+				<div class="row">
+					<div class="col mt-5">
+						<img src="1.png" class="rounded mx-auto d-block" alt="bonuses" />
+						<h2 style="color: #001021" class="text-center mt-3">Invite</h2>
+
+					</div>
+					<div class="col mt-5">
+						<img src="2.png" class="rounded mx-auto d-block" alt="bets" />
+						<h2 style="color: #001021" class="text-center mt-3">Share</h2>
+
+					</div>
+					<div class="col mt-5">
+						<img src="3.png" class="rounded mx-auto d-block" alt="no-limits" />
+						<h2 style="color: #001021" class="text-center mt-3">Bet</h2>
+
+					</div>
+					<div class="col mt-5">
+						<img src="4.png" class="rounded mx-auto d-block" alt="no-limits" />
+						<h2 style="color: #001021" class="text-center mt-3">Win</h2>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="container-fluid" id="promo">
+
+		<div class="row pt-5">
+			<div class="col mx-auto">
+
+				<h1 style="color: #e7e8e8; text-align: center">Check the last
+					Promotion:</h1>
+			</div>
+		</div>
+		<div class="row pt-5">
+			<div class="col-1"></div>
+			<div class="col-10 promobox">
+				<h1 style="color: #e7e8e8; text-align: center" class="my-5">
+					<span style="color: #df2935">+20%</span> for the first bet!
+				</h1>
+			</div>
+			<div class="col-1"></div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<form class="form-inline mt-5 ml-auto">
+
+					<button class="btn btn-lg btn-outline-success my-3 mx-auto"
+						type="submit">Check all</button>
+
+				</form>
+			</div>
+		</div>
+
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript"
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+	<script th:inline="javascript">
+		$(document).ready(function() {
+			function updateHomepage() {
+				$.ajax({
+					url : "http://localhost:5555/results/homePageResults",
+					dataType : "html",
+					cache : false,
+					success : function(data) {
+						$('#latestData').html(data);
+					}
+				});
+			}
+			updateHomepage();
+			setInterval(updateHomepage, 60000);
+		});
+	</script>
+
 </body>
 </html>

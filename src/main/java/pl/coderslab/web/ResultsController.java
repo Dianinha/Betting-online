@@ -1,6 +1,8 @@
 package pl.coderslab.web;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -97,7 +99,7 @@ public class ResultsController {
 	@ResponseBody
 	public String events() {
 		League league = leagueRepository.findOne((long) 137);
-		eventService.createEvents("aaa", "aaa", league);
+		eventService.createEvents("2018-02-10", "2018-02-10", league);
 		return "Hello events";
 	}
 
@@ -153,12 +155,19 @@ public class ResultsController {
 			String date = event.getDate().toString();
 			String time = event.getTime();
 			String in = "NOTHING";
+			time = time.trim();
 			int hour = LocalDateTime.now().getHour();
 			int min = LocalDateTime.now().getMinute();
-
 			int matchHour = Integer.parseInt(time.substring(0, time.indexOf(':')));
-			System.out.println(hour);
-			int matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
+			String why = (time.substring(((time.indexOf(':')) + 1), time.length()));
+			int matchMin = 0;
+			try {
+				matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
+			} catch (Exception e) {
+				if (why.equals("45")) {
+					matchMin = 45;
+				}
+			}
 
 			if (matchHour > hour) {
 				in = "NOT STARTED";
@@ -191,6 +200,86 @@ public class ResultsController {
 					+ "<a href=\"http://localhost:5555/bet/addBet?gameId=" + game.getId()
 					+ "&betOn=away\"><button type=\"button\">" + game.getRateAway() + "</button></a>" + "</td></tr>";
 
+		}
+		return myHtml;
+	}
+
+	@RequestMapping(value = "/homePageResults")
+	@ResponseBody
+	public String getResultsForHomePage() {
+		String myHtml = "";
+		List<Event> liveEvents = eventService.liveEvent();
+		Collections.sort(liveEvents, new Comparator<Event>() {
+
+			@Override
+			public int compare(Event o1, Event o2) {
+
+				return o1.getTime().compareTo(o2.getTime());
+			}
+		});
+		int size = 4;
+		if (size>liveEvents.size()) {
+			size = liveEvents.size();
+		}
+		for (int i = 0; i < size; i++) {
+			Event event = liveEvents.get(i);
+			String time = event.getTime();
+			String in = "NOTHING";
+			time = time.trim();
+			int hour = LocalDateTime.now().getHour();
+			int min = LocalDateTime.now().getMinute();
+			int matchHour = Integer.parseInt(time.substring(0, time.indexOf(':')));
+			String why = (time.substring(((time.indexOf(':')) + 1), time.length()));
+			int matchMin = 0;
+			try {
+				matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
+			} catch (Exception e) {
+				if (why.equals("45")) {
+					matchMin = 45;
+				}
+			}
+
+			if (matchHour > hour) {
+				in = time;
+			} else if (matchHour == hour) {
+				if (matchMin > min) {
+					in = time;
+				} else {
+					in = event.getStatus();
+				}
+			} else if (event.getStatus().equals("FT")) {
+				in = "FINISHED";
+				
+			} else {
+				in = event.getStatus();
+			}
+
+			String score = event.getHomeTeamScore() + ":" + event.getAwayTeamScore();
+
+			GameToBet game = gameService.findByEvent(event);
+
+			if(!in.equals("FINISHED")) {
+			myHtml = myHtml + "<div class=\"row\"><div class=\"col-1\"></div>\n"
+					+ "	 <div class=\"col-10 match mb-1\">\n" + "	 <div class=\"row\">\n"
+					+ "	 <div class=\"col-2\">\n" + "	 <p class=\"now my-auto py-2 font-weight-bold\">" + score
+					+ "</p>\n" + "	 </div>\n" + "	 <div class=\"col-4\">\n" + "	 <p class=\"now my-auto py-2\">"
+					+ event.getHomeTeamName() + "<span style=\"color: #001021\"> vs </span>" + event.getAwayTeamName()
+					+ " </p>\n" + "	 </div>\n" + "	 <div class=\"col-2\">\n"
+					+ "	 <p class=\"my-auto py-2\" style=\"color: #001021\">" + in + " </p>\n" + "	 </div>\n"
+					+ "	 <div class=\"col-4\">\n" + "	 <p class=\"my-auto py-2\">\n"
+					+ "	 <span style=\"color: #001021\"> Home: </span><span\n" + "	class=\"now font-weight-bold\">"
+					+ game.getRateHome() + " </span> <span\n" + "	 style=\"color: #001021\">Draw: </span><span\n"
+					+ "	 class=\"now font-weight-bold\">" + game.getRateDraw() + "</span><span\n"
+					+ "	 style=\"color: #001021\"> Away: </span><span\n" + "	 class=\"now font-weight-bold\">"
+					+ game.getRateAway() + " </span>\n" + "	 </p>\n" + "	 </div>\n" + "	 </div>\n"
+					+ "	 </div><div class=\"col-1\"></div>\n" + "			</div>";
+
+		}
+			else {
+				if (size+1<=liveEvents.size()) {
+					size=size+1;
+				}
+			}
 		}
 		return myHtml;
 	}

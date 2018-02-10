@@ -37,6 +37,7 @@ public class User {
 	private String username;
 
 	@Email(message="Please write down proper e-mail address, for example: simpleExample@gmail.com")
+	@NotBlank(message="Email address cannot be empty.")
 	@Column(unique=true)
 	private String email;
 

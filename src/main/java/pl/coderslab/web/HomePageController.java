@@ -9,10 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.coderslab.model.Address;
-import pl.coderslab.model.CreditCardInfo;
-import pl.coderslab.model.Role;
 import pl.coderslab.model.User;
 import pl.coderslab.repositories.RoleRepository;
 import pl.coderslab.service.AddressService;
@@ -45,18 +44,20 @@ public class HomePageController {
 	public String registerNewUser(Model model) {
 		model.addAttribute("user", new User());
 		// PLEASE DO NOT FORGET TO DELETE IT
-//		Role role = new Role();
-//		role.setName("ROLE_USER");
-//		roleRepository.save(role);
+		// Role role = new Role();
+		// role.setName("ROLE_USER");
+		// roleRepository.save(role);
 
 		return "/access/register";
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String reg(Model model, @Valid User user, BindingResult result, HttpSession session) {
+	public String registration(Model model, @Valid User user, BindingResult result, HttpSession session,
+			@RequestParam(value = "over18", required = false) String over18,
+			@RequestParam(value = "agreeToCon", required = false) String agreement) {
 		if (user.getPasswordConfirmed() != null) {
 			if (!user.getPasswordConfirmed().equals(user.getPassword())) {
-				model.addAttribute("message", "Passwords does not match");
+				model.addAttribute("message", "Passwords do not match");
 				return "/access/register";
 			}
 
@@ -65,6 +66,14 @@ public class HomePageController {
 			return "/access/register";
 		}
 		if (result.hasErrors()) {
+			return "/access/register";
+		}
+		if (over18==null) {
+			model.addAttribute("failureMessage", "You have to be at least 18 years old to register.");
+			return "/access/register";
+		}
+		if (agreement==null) {
+			model.addAttribute("failureMessage", "Please agree to our site conditions");
 			return "/access/register";
 		}
 		try {

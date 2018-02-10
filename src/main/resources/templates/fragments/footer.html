@@ -1,0 +1,41 @@
+<!DOCTYPE	html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="css/main.css" />
+
+</head>
+<body>
+	<div th:fragment="pagefooter">
+		<div class="container-fluid" style="background: #df2935">
+			<div class="row pt-5 ">
+				<div class="col">
+					<p>
+						<img th:src="@{/logo2.png}" alt="" />
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p style="color: #ffffff">Homepage | LogIn | Register | MyBets
+						| Society | MyAccount</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p style="color: #e86870">Created by Dianinha. Graphics by
+						font-family="Wiszowaty" id="Husband"</p>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

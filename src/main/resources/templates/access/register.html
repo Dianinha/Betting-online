@@ -3,73 +3,147 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>Register</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="css/main.css" />
+
 </head>
-<body>
-	<h1>Register and start the fun!</h1>
-	
-	<p	th:if="${failureMessage}"	th:text="${failureMessage}">Message if username is taken or email already is registered</p>
-	
-	<form th:action="@{/register}" th:object="${user}" method="post">
-		<div>
-			<p>
-				First name: <input type="text" th:field="*{name}"/></p>
-			<ul>
-				<li th:each="err : ${#fields.errors('name')}"
-					th:text="${err}" />
+
+<body style="background-color: #e7e8e8">
+
+	<nav class="navbar navbar-expand-lg navbar-light">
+		<a class="navbar-brand" th:href="@{/home}"> <img src="logo.png"
+			width="250" height="25" alt="" />
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+			<ul class="nav navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0 ml-auto"
+						th:action="@{/register}" method="get">
+
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit">✚
+							register</button>
+
+					</form>
+				</li>
+				<li class="nav-item"><a class="nav-link" th:href="@{/login}">log
+						in</a></li>
 			</ul>
 		</div>
-		<div>
-			<p>
-				Surname: <input type="text" th:field="*{surname}" /></p>
-				<ul>
-				<li th:each="err : ${#fields.errors('surname')}"
-					th:text="${err}" />
-			</ul>
+	</nav>
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Register and start the fun!</h1>
+
+				<div th:if="${failureMessage}" class="alert alert-danger my-3">
+					<p th:text="${failureMessage}" class="my-0">Message if username
+						is taken or email already is registered</p>
+				</div>
+
+				<div class="row mt-4 ">
+					<div class="col-6 tborder ml-4 py-4">
+						<form th:action="@{/register}" th:object="${user}" method="post">
+							<div class="form-group">
+								<label> First name: </label><input type="text"
+									th:field="*{name}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('name')}" th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Surname: </label><input type="text"
+									th:field="*{surname}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('surname')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Username: </label><input type="text"
+									th:field="*{username}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('username')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Password: </label><input type="password"
+									th:field="*{password}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('password')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Confirm password: </label><input type="password"
+									th:field="*{passwordConfirmed}" class="form-control" />
+								<ul class="list-group">
+									<li th:if="${message}" th:text="${message}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Email: </label><input type="text" th:field="*{email}"
+									class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('email')}" th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div>
+								<label th:text="'Subscribe to newsletter'">Newsletter</label> <input
+									type="checkbox" th:field="*{generalSubscription}" />
+							</div>
+							<div>
+								<label th:text="'I am over 18 years old.'">Newsletter</label> <input
+									type="checkbox" name="over18" value="yes"/>
+							</div>
+							<div>
+								<label th:text="'I agree to the rules bla bla bla'">Newsletter</label> <input
+									type="checkbox" name="agreeToCon" value="yes"/>
+							</div>
+							<div>
+								<input type="submit" value="Next"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+					</div>
+					<div class="col ml-4 mr-3" id="register-right"></div>
+				</div>
+			</div>
 		</div>
-		<div>
-			<p>
-				Username: <input type="text" th:field="*{username}"/>
-			</p>
-			<ul>
-				<li th:each="err : ${#fields.errors('username')}"
-					th:text="${err}" />
-			</ul>
-		</div>
-		<div>
-			<p>
-				Password: <input type="password" th:field="*{password}" />
-			</p>
-			<ul>
-				<li th:each="err : ${#fields.errors('password')}"
-					th:text="${err}" />
-			</ul>
-		</div>
-		<div>
-			<p>
-				Confirm password: <input type="password"
-					th:field="*{passwordConfirmed}" />
-			</p>
-			<ul>
-				<li th:if="${message}"	th:text="${message}"/>
-			</ul>
-		</div>
-		<div>
-			<p>
-				Email: <input type="text" th:field="*{email}" />
-			</p>
-			<ul>
-				<li th:each="err : ${#fields.errors('email')}"
-					th:text="${err}" />
-			</ul>
-		</div>
-		<div>
-			<label th:text="'I subscribe to a newsletter'">Newsletter</label> <input
-				type="checkbox" th:field="*{generalSubscription}" /> 
-		</div>
-		<div>
-			<input type="submit" value="Next" />
-		</div>
-	</form>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
 </body>
 </html>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.coderslab.model.CreditCardInfo;
 import pl.coderslab.model.Message;
+import pl.coderslab.model.Operation;
 import pl.coderslab.model.User;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.service.CreditCardService;
@@ -256,7 +257,7 @@ public class UserController {
 	public String changePasswordPost(@RequestParam("oldPassword") String oldPassword,
 			@RequestParam("newPassword") String newPassword,
 			@RequestParam("confirmNewPassword") String confirmNewPassword, Authentication auth, Model model) {
-		
+
 		User userFromDb = null;
 		try {
 			String name = auth.getName();
@@ -265,7 +266,7 @@ public class UserController {
 			System.out.println("Auth failed");
 			return "redirect:/login";
 		}
-		
+
 		if (!confirmNewPassword.equals(newPassword)) {
 			model.addAttribute("message", "Your passwords does not match");
 			return "/user/changePassword";
@@ -274,11 +275,25 @@ public class UserController {
 			model.addAttribute("message", "Your password is incorrect");
 			return "/user/changePassword";
 		}
-		
+
 		userService.changePassword(newPassword, userFromDb);
 
-
 		return "redirect:/login";
+	}
+
+	@RequestMapping(value = "/operationHistory", method = RequestMethod.GET)
+	public String operationHistory(Model model, Authentication authentication) {
+		User user = null;
+		try {
+			String name = authentication.getName();
+			user = userService.findByUsername(name);
+		} catch (Exception e) {
+			System.out.println("Auth failed");
+		}
+		Wallet wallet = walletService.findByUser(user);
+		List<Operation> usersOperations = operationService.findAllOperationByWallet(wallet);
+		model.addAttribute("usersOperations", usersOperations);
+		return "/user/operationHistory";
 	}
 
 }
