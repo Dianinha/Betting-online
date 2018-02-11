@@ -20,6 +20,7 @@ import pl.coderslab.model.CreditCardInfo;
 import pl.coderslab.model.Message;
 import pl.coderslab.model.Operation;
 import pl.coderslab.model.User;
+import pl.coderslab.model.UserSimple;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.service.CreditCardService;
 import pl.coderslab.service.MessageService;
@@ -218,18 +219,22 @@ public class UserController {
 		} catch (Exception e) {
 			System.out.println("Auth failed");
 		}
-		model.addAttribute("user", user);
+		model.addAttribute("user", new UserSimple(user));
 		return "/user/editData";
 	}
 
 	@RequestMapping(value = "/editData", method = RequestMethod.POST)
-	public String editUserDataPost(@ModelAttribute User user, Authentication authentication) {
+	public String editUserDataPost(@Valid UserSimple user, BindingResult result, Authentication authentication) {
 		User userFromDb = null;
 		try {
 			String name = authentication.getName();
 			userFromDb = userService.findByUsername(name);
 		} catch (Exception e) {
 			System.out.println("Auth failed");
+		}
+
+		if (result.hasErrors()) {
+			return "/user/editData";
 		}
 		userFromDb.setName(user.getName());
 		userFromDb.setSurname(user.getSurname());

@@ -87,9 +87,16 @@ public class StandingServiceImpl implements StandingService {
 					standingObject.setAwayGoalsLost(Integer.parseInt((String) standingJson.get("away_league_GA")));
 					standingObject.setAwayPoints(Integer.parseInt((String) standingJson.get("away_league_PTS")));
 					int year = LocalDate.now().getYear();
-					standingObject.setSeason(year + standingObject.getTeamName());
+					int nextyear = year + 1;
+					int previousyear = year - 1;
+					if (LocalDate.now().isAfter(LocalDate.of(year, 06, 26))) {
+						standingObject.setSeason(year + "/" + nextyear + " " + standingObject.getTeamName());
+					} else {
+						standingObject.setSeason(previousyear + "/" + year + " " + standingObject.getTeamName());
+					}
+
 					standings.add(standingObject);
-					
+
 				}
 			}
 			in.close();
@@ -103,7 +110,7 @@ public class StandingServiceImpl implements StandingService {
 			e.printStackTrace();
 			System.out.println("here3");
 		}
-		
+
 		return standings;
 
 	}
@@ -121,8 +128,12 @@ public class StandingServiceImpl implements StandingService {
 	public void saveStandings(List<Standing> standings) {
 
 		for (int i = 0; i < standings.size(); i++) {
-			Standing standingFromDb = standingRepo.findOne(standings.get(i).getId());
-			standingFromDb = merge(standingFromDb, standings.get(i));
+			if (standingRepo.findOne(standings.get(i).getId()) != null) {
+				Standing standingFromDb = standingRepo.findOne(standings.get(i).getId());
+				standingFromDb = merge(standingFromDb, standings.get(i));
+			} else {
+				standingRepo.save(standings.get(i));
+			}
 		}
 
 	}
@@ -141,7 +152,7 @@ public class StandingServiceImpl implements StandingService {
 		standing.setGoalsScored(newStanding.getGoalsScored());
 		standing.setGoalsLost(newStanding.getGoalsLost());
 		standing.setPoints(newStanding.getPoints());
-		
+
 		standing.setHomeLeaguePosition(newStanding.getHomeLeaguePosition());
 		standing.setHomeMatchesPlayed(newStanding.getHomeMatchesPlayed());
 		standing.setHomeMatchesWon(newStanding.getHomeMatchesWon());
@@ -150,7 +161,7 @@ public class StandingServiceImpl implements StandingService {
 		standing.setHomeGoalsScored(newStanding.getHomeGoalsScored());
 		standing.setHomeGoalsLost(newStanding.getHomeGoalsLost());
 		standing.setHomePoints(newStanding.getHomePoints());
-		
+
 		standing.setAwayLeaguePosition(newStanding.getAwayLeaguePosition());
 		standing.setAwayMatchesPlayed(newStanding.getAwayMatchesPlayed());
 		standing.setAwayMatchesWon(newStanding.getAwayMatchesWon());
@@ -159,7 +170,7 @@ public class StandingServiceImpl implements StandingService {
 		standing.setAwayGoalsScored(newStanding.getAwayGoalsScored());
 		standing.setAwayGoalsLost(newStanding.getAwayGoalsLost());
 		standing.setAwayPoints(newStanding.getAwayPoints());
-		
+
 		return standingRepo.save(standing);
 
 	}

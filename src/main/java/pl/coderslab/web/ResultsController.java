@@ -1,5 +1,6 @@
 package pl.coderslab.web;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,6 +71,13 @@ public class ResultsController {
 
 		return "Hello leagues";
 	}
+	
+	@RequestMapping(value = "/h2h")
+	@ResponseBody
+	public String h2h() {
+		gameService.updateGamesToBet();
+		return "Hello h2h";
+	}
 
 	@RequestMapping(value = "/createstandings")
 	@ResponseBody
@@ -98,8 +106,11 @@ public class ResultsController {
 	@RequestMapping(value = "/events")
 	@ResponseBody
 	public String events() {
-		League league = leagueRepository.findOne((long) 137);
-		eventService.createEvents("2018-02-10", "2018-02-10", league);
+		// eventService.createEvents("2018-02-11", "2018-02-11");
+		List<Event> events = eventService.findByDateBetween(LocalDate.now(), LocalDate.now());
+		for (Event event : events) {
+			System.out.println(event);
+		}
 		return "Hello events";
 	}
 
@@ -149,7 +160,8 @@ public class ResultsController {
 	@ResponseBody
 	public String updateStringResults() {
 		String myHtml = "";
-		List<Event> liveEvents = eventService.liveEvent();
+		LocalDate today = LocalDate.now();
+		List<Event> liveEvents = eventService.findByDateBetween(today, today);
 
 		for (Event event : liveEvents) {
 			String date = event.getDate().toString();
@@ -208,7 +220,8 @@ public class ResultsController {
 	@ResponseBody
 	public String getResultsForHomePage() {
 		String myHtml = "";
-		List<Event> liveEvents = eventService.liveEvent();
+		LocalDate today = LocalDate.now();
+		List<Event> liveEvents = eventService.findByDateBetween(today, today);
 		Collections.sort(liveEvents, new Comparator<Event>() {
 
 			@Override
@@ -218,7 +231,7 @@ public class ResultsController {
 			}
 		});
 		int size = 4;
-		if (size>liveEvents.size()) {
+		if (size > liveEvents.size()) {
 			size = liveEvents.size();
 		}
 		for (int i = 0; i < size; i++) {
@@ -249,7 +262,7 @@ public class ResultsController {
 				}
 			} else if (event.getStatus().equals("FT")) {
 				in = "FINISHED";
-				
+
 			} else {
 				in = event.getStatus();
 			}
@@ -258,26 +271,25 @@ public class ResultsController {
 
 			GameToBet game = gameService.findByEvent(event);
 
-			if(!in.equals("FINISHED")) {
-			myHtml = myHtml + "<div class=\"row\"><div class=\"col-1\"></div>\n"
-					+ "	 <div class=\"col-10 match mb-1\">\n" + "	 <div class=\"row\">\n"
-					+ "	 <div class=\"col-2\">\n" + "	 <p class=\"now my-auto py-2 font-weight-bold\">" + score
-					+ "</p>\n" + "	 </div>\n" + "	 <div class=\"col-4\">\n" + "	 <p class=\"now my-auto py-2\">"
-					+ event.getHomeTeamName() + "<span style=\"color: #001021\"> vs </span>" + event.getAwayTeamName()
-					+ " </p>\n" + "	 </div>\n" + "	 <div class=\"col-2\">\n"
-					+ "	 <p class=\"my-auto py-2\" style=\"color: #001021\">" + in + " </p>\n" + "	 </div>\n"
-					+ "	 <div class=\"col-4\">\n" + "	 <p class=\"my-auto py-2\">\n"
-					+ "	 <span style=\"color: #001021\"> Home: </span><span\n" + "	class=\"now font-weight-bold\">"
-					+ game.getRateHome() + " </span> <span\n" + "	 style=\"color: #001021\">Draw: </span><span\n"
-					+ "	 class=\"now font-weight-bold\">" + game.getRateDraw() + "</span><span\n"
-					+ "	 style=\"color: #001021\"> Away: </span><span\n" + "	 class=\"now font-weight-bold\">"
-					+ game.getRateAway() + " </span>\n" + "	 </p>\n" + "	 </div>\n" + "	 </div>\n"
-					+ "	 </div><div class=\"col-1\"></div>\n" + "			</div>";
+			if (!in.equals("FINISHED")) {
+				myHtml = myHtml + "<div class=\"row\"><div class=\"col-1\"></div>\n"
+						+ "	 <div class=\"col-10 match mb-1\">\n" + "	 <div class=\"row\">\n"
+						+ "	 <div class=\"col-2\">\n" + "	 <p class=\"now my-auto py-2 font-weight-bold\">" + score
+						+ "</p>\n" + "	 </div>\n" + "	 <div class=\"col-4\">\n" + "	 <p class=\"now my-auto py-2\">"
+						+ event.getHomeTeamName() + "<span style=\"color: #001021\"> vs </span>"
+						+ event.getAwayTeamName() + " </p>\n" + "	 </div>\n" + "	 <div class=\"col-2\">\n"
+						+ "	 <p class=\"my-auto py-2\" style=\"color: #001021\">" + in + " </p>\n" + "	 </div>\n"
+						+ "	 <div class=\"col-4\">\n" + "	 <p class=\"my-auto py-2\">\n"
+						+ "	 <span style=\"color: #001021\"> Home: </span><span\n" + "	class=\"now font-weight-bold\">"
+						+ game.getRateHome() + " </span> <span\n" + "	 style=\"color: #001021\">Draw: </span><span\n"
+						+ "	 class=\"now font-weight-bold\">" + game.getRateDraw() + "</span><span\n"
+						+ "	 style=\"color: #001021\"> Away: </span><span\n" + "	 class=\"now font-weight-bold\">"
+						+ game.getRateAway() + " </span>\n" + "	 </p>\n" + "	 </div>\n" + "	 </div>\n"
+						+ "	 </div><div class=\"col-1\"></div>\n" + "			</div>";
 
-		}
-			else {
-				if (size+1<=liveEvents.size()) {
-					size=size+1;
+			} else {
+				if (size + 1 <= liveEvents.size()) {
+					size = size + 1;
 				}
 			}
 		}

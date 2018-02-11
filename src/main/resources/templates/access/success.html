@@ -3,43 +3,112 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Index</title>
-<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript">
-	$(document).ready(function() {
-		console.log("asd");
-		window.setInterval(function() {
-			var iTimeRemaining = $("#spnSeconds").html();
-			iTimeRemaining = eval(iTimeRemaining);
-			if (iTimeRemaining == 0) {
-				window.location.href = "/login";
-			} else {
-				$("#spnSeconds").html(iTimeRemaining - 1);
-			}
-		}, 1000);
+<title>Logged In</title>
 
-	});
-</script>
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="css/main.css" />
+
+
 </head>
-<body>
-	<div sec:authorize="isAuthenticated()">
-		<p>
-			LoggedAs: <span sec:authentication="name"></span>
-		</p>
-		<p>
-			With roles: <span sec:authentication="authorities"></span>
-		</p>
-		<a th:href="@{/logout}">Log out</a>
+<body style="background-color: #e7e8e8">
+	<nav class="navbar navbar-expand-lg navbar-light">
+		<a class="navbar-brand" href="#"> <img src="logo.png" width="250"
+			height="25" alt="" />
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+			aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+			<ul class="nav navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0 ml-auto"
+						th:action="@{/register}" method="get">
+
+						<button class="btn btn-outline-success my-2 my-sm-0" type="submit">✚
+							register</button>
+
+					</form>
+				</li>
+				<li class="nav-item"><a class="nav-link" th:href="@{/login}">log
+						in</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row mt-5 pt-5 pl-4">
+			<div class="col ">
+				<div sec:authorize="isAuthenticated()">
+					<p>
+						You are logged as: <span sec:authentication="name"></span>
+					</p>
+					<a th:href="@{/logout}"><strong>Log out</strong></a>
+				</div>
+				<h1>
+					<span th:text="'Registered successfully'"> </span>
+				</h1>
+				<p>
+					<span th:text="'You will be redirected to the login page in '">
+					</span> <span id="spnSeconds" style="color: #df2935">5</span> <span
+						th:text="' seconds...'"> </span>
+				</p>
+				<p>
+					<a th:href="@{/login}" th:text="'
+		
+		Redirect me now!'"><strong>Redirect
+							me now!</strong></a>
+				</p>
+			</div>
+		</div>
 	</div>
-	<p> 
-	<span th:text="'Register successful'" > </span></p>
-	<p>
-	<span th:text="'You will be redirect to login page in '" >Hello txt </span>
-	<span id="spnSeconds">5</span> 
-	<span th:text="' seconds...'"> </span>
-	</p>
-	<p><a th:href="@{/login}"
-		th:text="'I do not want to wait. Redirect me now!'">I do not want
-		to wait!</a> </p>
+
+	<div class="container" id="success">
+		<div class="row pl-4 mb-4">
+			<div class="col"></div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+
+
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script th:inline="javascript">
+		$(document).ready(function() {
+			window.setInterval(function() {
+				var iTimeRemaining = $("#spnSeconds").html();
+				iTimeRemaining = eval(iTimeRemaining);
+				if (iTimeRemaining == 0) {
+					window.location.href = "/login";
+				} else {
+					$("#spnSeconds").html(iTimeRemaining - 1);
+				}
+			}, 1000);
+
+		});
+	</script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+	<script type="text/javascript"
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+
 </body>
 </html>
