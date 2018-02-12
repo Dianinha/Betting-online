@@ -3,30 +3,76 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>Credit Card Payment</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
 </head>
-<body>
-	<div>
-	You want to add: <span th:text="${session.fundsToAdd} + ' PLN'"></span>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 px-4">
+			<div class="col ">
+				<h1>
+					You want to add: <span th:text="${session.fundsToAdd} + ' PLN'"></span>
+				</h1>
+				<div th:if="${creditCards}">
+					<h2>Your saved credit cards:</h2>
+					<div class="tborder">
+						<ul class="list-group">
+							<li th:each="credit: ${creditCards}" class="list-group-item">
+								<span th:text="'Credit card that ends with: '"></span> <a
+								th:href="@{/user/payWith(id=${credit.id})}"><span
+									th:text="'****'+ ${credit.lastFourDigits}"
+									style="color: #df2935;"></span></a>
+							</li>
+						</ul>
+					</div>
+
+				</div>
+
+				<div th:unless="${creditCards}">
+					<div class="alert alert-warning" role="alert">You do not have
+						any credit cards saved.</div>
+
+				</div>
+				<p>
+					<a th:href="@{/user/addCreditCard}"><input type="submit"
+						value="Add new card" class="btn btn-outline-success mt-2 mt-sm-3 " /></a>
+				</p>
+				<p>
+					<a th:href="@{/user/payment}"><input type="submit"
+						value="Pay without saving information about credit card"
+						class="btn btn-outline-success my-2 my-sm-3 " /></a>
+				</p>
+				<a th:href="@{/user/funds}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
 	</div>
-	<div th:if="${creditCards}">
-		Your saved credit cards:
-		<ul>
-			<li th:each="credit: ${creditCards}"
-				th:text="'Credit card ends with: ****' + ${credit.lastFourDigits}"></li>
-		</ul>
+
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
 
 
-	</div>
-
-	<div th:unless="${creditCards}">You do not have any credit cards
-		saved.</div>
-	<p>
-		<a th:href="@{/user/addCreditCard}" th:text="'I want to add new card'"></a>
-	</p>
-	<p>
-		<a th:href="@{/user/payment}"
-			th:text="'I want to pay without saving my credit card info'"></a>
-	</p>
 </body>
 </html>

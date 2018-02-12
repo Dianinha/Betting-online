@@ -3,47 +3,89 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>Add Funds</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
-<body>
-	Add some funds:
-	<table>
-		<thead>
-			<tr>
-				<th>Cost</th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>10 pln</td>
-				<td><a th:href="@{/user/addFunds(val=10)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>20 pln</td>
-				<td><a th:href="@{/user/addFunds(val=20)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>50 pln</td>
-				<td><a th:href="@{/user/addFunds(val=50)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>100 pln</td>
-				<td><a th:href="@{/user/addFunds(val=100)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>200 pln</td>
-				<td><a th:href="@{/user/addFunds(val=200)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>500 pln</td>
-				<td><a th:href="@{/user/addFunds(val=500)}">Add funds</a></td>
-			</tr>
-			<tr>
-				<td>1000 pln</td>
-				<td><a th:href="@{/user/addFunds(val=1000)}">Add funds</a></td>
-			</tr>
-		</tbody>
-	</table>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+				<h1>Add Funds to your wallet:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Amount</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>10 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=10)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>20 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=20)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>50 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=50)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>100 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=100)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>200 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=200)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>500 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=500)}">Add
+									funds</a></td>
+						</tr>
+						<tr>
+							<td>1000 pln</td>
+							<td scope="row"><a th:href="@{/user/addFunds(val=1000)}">Add
+									funds</a></td>
+						</tr>
+					</tbody>
+				</table>
+				<a th:href="@{/user/wallet}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
 </body>
 </html>

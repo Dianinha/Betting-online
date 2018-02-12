@@ -20,7 +20,7 @@ public class SheduledTasks {
 	@Autowired
 	private GameToBetService gameService;
 
-	@Scheduled(cron = "0 0 13 1/1 * ?")
+	@Scheduled(cron = "30 17 17 1/1 * ?")
 	public void createEvents() {
 		LocalDate dateStart = LocalDate.now().plusDays(1);
 		String startDate = dateStart.toString();
@@ -36,6 +36,6 @@ public class SheduledTasks {
 	@Scheduled(cron = "0 0/1 * 1/1 * ?")
 	public void updateLiveEvents() {
 		eventService.updateliveEvents();
-		//gameService.updateGamesToBet();
-	}
+		gameService.updateLiveEventsGamesToBet();
+		}
 }

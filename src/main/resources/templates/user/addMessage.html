@@ -3,29 +3,78 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>Credit Cards</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
-<body>
-	<p>
-		<span th:text="'Send message to Your friends!'"> </span>
-	</p>
-	<form th:action="@{/user/sendMessage}" th:object="${message}"
-		method="post">
-		<div>Send it to:
-		<input type="text" name="username" />
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+				<h1>
+					<span th:text="'Send a message to Your friends!'"> </span>
+				</h1>
+				<div class="row mt-4 ">
+					<div class="col tborder ml-4 mr-1 py-4">
+						<form th:action="@{/user/sendMessage}" th:object="${message}"
+							method="post">
+							<div class="form-group">
+								<label>Send it to:</label> <input type="text" name="username"
+									class="form-control" />
+							</div>
+							<div class="form-group">
+								<label> Title: </label><input type="text" name="title"
+									class="form-control" />
+							</div>
+							<div class="form-group">
+								<label> Content: </label>
+								<textarea type="text" name="content" class="form-control"
+									rows="5"></textarea>
+
+							</div>
+							<div>
+								<input type="submit" value="Send message"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+					</div>
+					<div class="col ml-4 mr-3" id="addmessage"></div>
+
+
+
+				</div>
+				<div>
+					<a th:href="@{/user/messages}"> <input type="submit"
+						value="Back" class="btn btn-outline-success my-2 my-sm-3 btn-back" /></a>
+				</div>
+			</div>
 		</div>
-		<div>
-			<label> Title: <input type="text"
-				name="title" />
-			</label>
-		</div>
-		<div>
-			<label> Content: <input type="text" name="content" />
-			</label>
-		</div>
-		<div>
-			<input type="submit" value="Send message" />
-		</div>
-	</form>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
 </body>
 </html>

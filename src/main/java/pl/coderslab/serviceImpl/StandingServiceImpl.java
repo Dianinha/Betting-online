@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import pl.coderslab.model.League;
 import pl.coderslab.model.Standing;
+import pl.coderslab.repositories.APIRepository;
+import pl.coderslab.repositories.LeagueRepository;
 import pl.coderslab.repositories.StandingRepository;
 import pl.coderslab.service.StandingService;
 
@@ -27,11 +29,18 @@ public class StandingServiceImpl implements StandingService {
 
 	@Autowired
 	StandingRepository standingRepo;
+	
+	@Autowired
+	LeagueRepository leagueRepo;
+
+	@Autowired
+	APIRepository apiRepository;
 
 	@Override
 	public List<Standing> createStandings(League league) {
+		
 		String urlBegining = "https://apifootball.com/api/?action=get_standings&league_id=";
-		String urlEnding = "&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
+		String urlEnding = "&APIkey=" + apiRepository.findOne(1L).getKeyCode();
 
 		String finalUrl = urlBegining + league.getId() + urlEnding;
 		JSONParser parser = new JSONParser();
@@ -90,9 +99,11 @@ public class StandingServiceImpl implements StandingService {
 					int nextyear = year + 1;
 					int previousyear = year - 1;
 					if (LocalDate.now().isAfter(LocalDate.of(year, 06, 26))) {
-						standingObject.setSeason(year + "/" + nextyear + " " + standingObject.getTeamName());
+						standingObject.setSeason(
+								year + "/" + nextyear + " " + standingObject.getTeamName() + " " + league.getName());
 					} else {
-						standingObject.setSeason(previousyear + "/" + year + " " + standingObject.getTeamName());
+						standingObject.setSeason(previousyear + "/" + year + " " + standingObject.getTeamName() + " "
+								+ league.getName());
 					}
 
 					standings.add(standingObject);
@@ -115,14 +126,6 @@ public class StandingServiceImpl implements StandingService {
 
 	}
 
-	@Override
-	public void seeStandings(List<Standing> standings) {
-
-		for (Standing standing : standings) {
-			System.out.println(standing);
-		}
-		System.out.println(standingRepo);
-	}
 
 	@Override
 	public void saveStandings(List<Standing> standings) {
@@ -173,5 +176,14 @@ public class StandingServiceImpl implements StandingService {
 
 		return standingRepo.save(standing);
 
+	}
+
+	@Override
+	public void createStandingsOnceForDay() {
+		List<League> leagues = leagueRepo.findAll();
+		for (League league : leagues) {
+			List<Standing> standings = createStandings(league);
+			saveStandings(standings);
+		}
 	}
 }

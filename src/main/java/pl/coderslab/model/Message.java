@@ -1,7 +1,9 @@
 package pl.coderslab.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,6 +26,7 @@ public class Message {
 
 	private String title;
 
+	@Column(columnDefinition="TEXT")
 	private String content;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -33,6 +36,7 @@ public class Message {
 	@ManyToMany(fetch = FetchType.EAGER)
 	private List<User> recievers;
 
+	private LocalDateTime time;
 	public Message() {
 		super();
 	}
@@ -75,6 +79,16 @@ public class Message {
 
 	public void setRecievers(List<User> recievers) {
 		this.recievers = recievers;
+	}
+	
+	
+
+	public LocalDateTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalDateTime time) {
+		this.time = time;
 	}
 
 	@Override

@@ -15,4 +15,8 @@ public interface CreditCardService {
 	CreditCardInfo save(CreditCardInfo creditCard);
 	
 	CreditCardInfo create(CreditCardInfo creditCard, User user);
+	
+	CreditCardInfo findById(Long id);
+	
+	boolean deleteById(Long id);
 }

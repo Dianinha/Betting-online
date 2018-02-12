@@ -1,6 +1,9 @@
 package pl.coderslab.serviceImpl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,16 +25,34 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public Set<Message> findMessagesByReciever(User user) {
 		List<Message> listMessage = messageRepository.findAllByRecieversIs(user);
+		Collections.sort(listMessage, new Comparator<Message>() {
+
+			@Override
+			public int compare(Message o1, Message o2) {
+				return o1.getTime().compareTo(o2.getTime());
+			}
+		});
+		Collections.reverse(listMessage);
 		return new HashSet<>(listMessage);
 	}
 
 	@Override
 	public List<Message> findMessagesBySender(User user) {
-		return messageRepository.findAllBySender(user);
+		List<Message> listMessage = messageRepository.findAllBySender(user);
+		Collections.sort(listMessage, new Comparator<Message>() {
+
+			@Override
+			public int compare(Message o1, Message o2) {
+				return o1.getTime().compareTo(o2.getTime());
+			}
+		});
+		Collections.reverse(listMessage);
+		return listMessage;
 	}
 
 	@Override
 	public Message sendMessage(Message message) {
+		message.setTime(LocalDateTime.now());
 		return messageRepository.save(message);
 	}
 

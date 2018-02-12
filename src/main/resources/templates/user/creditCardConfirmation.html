@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Credit Card Confirmation</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
+</head>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 px-4">
+			<div class="col ">
+
+				<h2>
+					You want to add: <span th:text="${session.fundsToAdd} + ' PLN'"></span>
+					<span th:text="' with credit card that ends with: ****'"></span><span
+						th:text="${creditCard.lastFourDigits}"></span>
+				</h2>
+
+				<div th:if="${message}">
+					<div class="alert alert-warning" role="alert">
+						<span th:text="${message}"></span>
+					</div>
+
+				</div>
+
+				<div class="row mt-4 ">
+					<div class="col-4 tborder ml-4 mr-1 py-4">
+						<form th:action="@{/user/payWith}" method="post">
+							<div class="form-group">
+								<label>Please confirm CVV: </label><input type="number"
+									name="cvv" class="form-control" style="width: 100px" />
+							</div>
+							<input type="submit" value="Proceed to payment"
+								class="btn btn-outline-success my-2 my-sm-3" />
+						</form>
+						<a th:href="@{/user/funds}"><input type="submit" value="Back"
+							class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+					</div>
+					<div class="col ml-4 mr-3">
+						<h2>What is my CVV code?</h2>
+						<p>
+							<img src="../images/cvv.png" class="img-fluid"
+								alt="Responsive image" />
+						</p>
+						<p>
+							<strong>Visa®, Mastercard®, and Discover® cardholders:</strong>
+							Turn your card over and look at the signature box. You should see
+							either the entire 16-digit credit card number or just the last
+							four digits followed by a special 3-digit code. This 3-digit code
+							is your CVV number / Card Security Code.
+						</p>
+						<p>
+							<strong>American Express® cardholders:</strong> Look for the
+							4-digit code printed on the front of your card just above and to
+							the right of your main credit card number. This 4-digit code is
+							your Card Identification Number (CID). The CID is the four-digit
+							code printed just above the Account Number.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
+</body>
+</html>

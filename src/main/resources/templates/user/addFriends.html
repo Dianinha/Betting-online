@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Add friends</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
+</head>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+				<h1>
+					<span
+						th:text="'Find new friends the You can share bets and have fun with!'">
+					</span>
+				</h1>
+				<div class="row mt-4 ">
+					<div class="col tborder ml-4 mr-1 py-4">
+						<form th:action="@{/user/addFriends}" method="post">
+							<div class="form-group">
+								<label>Search for Your friends by usersame:</label> <input
+									type="text" name="username" class="form-control" />
+							</div>
+							<div>
+								<input type="submit" value="Search"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+
+						<form th:action="@{/user/addFriends}" method="post">
+							<div class="form-group">
+								<label> Search for Your friends by email: </label><input
+									type="text" name="email" class="form-control" />
+							</div>
+							<div>
+								<input type="submit" value="Search"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+
+						<div th:if="${searchResults}">
+							Search results:
+							<ul>
+								<li th:each="res: ${searchResults}"><span
+									th:text="${res.username}"></span> <span th:text="${res.name}"></span>
+									<a th:href="@{/user/sendInvite(username=${res.username})}"><input
+										type="submit" value="Send invite"
+										class="btn btn-outline-success my-2 my-sm-0" /></a></li>
+							</ul>
+						</div>
+
+					</div>
+					<div class="col ml-4 mr-3">
+						<div>
+							<div th:if="${friends}">
+								Your friends:
+								<ul>
+									<li th:each="friend: ${friends}"><span
+										th:text="${friend.username}"></span> <span
+										th:text="${friend.email}"></span> <a
+										th:href="@{/user/sendMessage}"><input type="submit"
+											value="Send message to"
+											class="btn btn-outline-success my-2 my-sm-0" /></a> <span
+										th:unless="${friend.username.equals('service')}"> <a
+											th:href="@{/user/deleteFriend(username=${friend.username})}"><input
+												type="submit" value="Delete friend"
+												class="btn btn-outline-success my-2 my-sm-0" /></a></span></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
+</body>
+</html>

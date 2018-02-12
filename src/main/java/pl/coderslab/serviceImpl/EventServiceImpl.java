@@ -23,6 +23,7 @@ import pl.coderslab.model.Event;
 import pl.coderslab.model.GoalScorer;
 import pl.coderslab.model.League;
 import pl.coderslab.model.Player;
+import pl.coderslab.repositories.APIRepository;
 import pl.coderslab.repositories.EventRepository;
 import pl.coderslab.repositories.GoalScorerRepository;
 import pl.coderslab.repositories.PlayerRepository;
@@ -32,9 +33,7 @@ import pl.coderslab.service.LeagueService;
 @Service
 public class EventServiceImpl implements EventService {
 
-	final String beginingUrl = "https://apifootball.com/api/?action=get_events&from=";
-	final String toUrl = "&to=";
-	final String APIUrl = "&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
+	
 
 	@Autowired
 	PlayerRepository playerRepo;
@@ -43,12 +42,18 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	EventRepository eventRepo;
 	@Autowired
+	APIRepository apiRepository;
+	@Autowired
 	LeagueService leagueService;
+	
+	final String beginingUrl = "https://apifootball.com/api/?action=get_events&from=";
+	final String toUrl = "&to=";
+	 String APIUrl = "&APIkey=";
 
 	@Override
 	public void createEvents(String from, String to) {
 		// Completing URL
-		String finalUrl = beginingUrl + from + toUrl + to + APIUrl;
+		String finalUrl = beginingUrl + from + toUrl + to + APIUrl+apiRepository.findOne(1L).getKeyCode();
 		// JSON parser creation:
 		JSONParser parser = new JSONParser();
 
@@ -170,7 +175,7 @@ public class EventServiceImpl implements EventService {
 		List<Event> liveEvents = new ArrayList<>();
 		LocalDate today = LocalDate.now();
 		String date = today.toString();
-		String url = beginingUrl + date + toUrl + date + APIUrl;
+		String url = beginingUrl + date + toUrl + date + APIUrl +apiRepository.findOne(1L).getKeyCode();
 		JSONParser parser = new JSONParser();
 		try {
 			BufferedReader in = getJSONReader(url);
@@ -330,7 +335,7 @@ public class EventServiceImpl implements EventService {
 
 		LocalDate today = LocalDate.now();
 		String date = today.toString();
-		String url = beginingUrl + date + toUrl + date + APIUrl;
+		String url = beginingUrl + date + toUrl + date + APIUrl+apiRepository.findOne(1L).getKeyCode();
 		JSONParser parser = new JSONParser();
 
 		try {

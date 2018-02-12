@@ -9,9 +9,10 @@ public interface StandingService {
 
 	 List<Standing> createStandings(League league);
 	
-	 void seeStandings(List<Standing> standings);
 	
 	 void saveStandings(List<Standing> standings);
 	 
 	 Standing findStanfingByTeamName(String teamName);
+	 
+	 void createStandingsOnceForDay();
 }

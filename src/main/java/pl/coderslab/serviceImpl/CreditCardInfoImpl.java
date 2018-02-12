@@ -43,4 +43,21 @@ public class CreditCardInfoImpl implements CreditCardService {
 		return creditCardRepo.save(creditCard);
 	}
 
+	@Override
+	public CreditCardInfo findById(Long id) {
+		return creditCardRepo.findOne(id);
+	}
+
+	@Override
+	public boolean deleteById(Long id) {
+		boolean result = false;
+		try {
+			creditCardRepo.delete(id);
+			result = true;
+		} catch (Exception e) {
+		}
+	
+		return result;
+	}
+
 }

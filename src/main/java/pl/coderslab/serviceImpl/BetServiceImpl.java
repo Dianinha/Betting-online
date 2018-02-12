@@ -8,7 +8,7 @@ import pl.coderslab.repositories.BetRepository;
 import pl.coderslab.service.BetService;
 
 @Service
-public class BerServiceImpl implements BetService {
+public class BetServiceImpl implements BetService {
 
 	@Autowired
 	BetRepository betRepository;

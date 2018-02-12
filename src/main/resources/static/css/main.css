@@ -5,7 +5,7 @@ html {
 }
 
 body {
-	
+		padding-top: 105px;
 		font-family: 'Open Sans', sans-serif;
 		color: #8b8d8fff;
 	}
@@ -54,6 +54,12 @@ body {
 	background-color: #8e1b22 !important;
 	border-color: #8e1b22 !important;
 	outline: none !important;
+}
+
+.btn-back {
+	color: #df2935;
+	background-color: #ffffff;
+	border-color: #df2935;
 }
 
 a {
@@ -192,5 +198,35 @@ ul {
     background-size: cover;
     -o-background-size: cover;
     height:100%;
+	min-height: 400px;
+}
+
+#addmessage {
+	background: url("../images/message.jpeg") no-repeat left bottom fixed !important; 
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    height:100%;
 	min-height: 500px;
+}
+.fixed-top-2 {
+    margin-top: 56px;
+	background-color: #df2935;
+	color: #ffffff;
+}
+
+.fixed-top-2 a {
+  color: #ffffff !important;
+}
+
+.fixed-top-2 a:hover {
+  color: #ffffff !important;
+}
+.dropdown-menu a {
+  color: #df2935 !important;
+}
+
+.dropdown-menu a:hover {
+  color: #df2935 !important;
 }

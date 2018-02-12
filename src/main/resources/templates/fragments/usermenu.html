@@ -1,0 +1,114 @@
+<!DOCTYPE	html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+</head>
+<nav
+	class="navbar navbar-expand-lg bg-faded navbar-light fixed-top fixed-top-2">
+	<button class="navbar-toggler navbar-toggler-right" type="button"
+		data-toggle="collapse" data-target="#navbar1">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="navbar-collapse collapse" id="navbar1">
+		<ul class="navbar-nav">
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuBets"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Bets </a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuBets">
+					<a class="dropdown-item" href="#">Individual</a> <a
+						class="dropdown-item" href="#">Group</a>
+				</div></li>
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Wallet </a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" th:href="@{/user/funds}">Add Funds</a> <a
+						class="dropdown-item" th:href="@{/user/creditCards}">Credit
+						Cards</a> <a class="dropdown-item" th:href="@{/user/operationHistory}">History</a>
+					<a class="dropdown-item" href="#">Special codes</a> <a
+						class="dropdown-item" href="#">Withdrawal</a>
+				</div></li>
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href=""
+				id="navbarDropdownMenuMessages" data-toggle="dropdown"
+				aria-haspopup="true" aria-expanded="false"> Messages </a>
+				<div class="dropdown-menu"
+					aria-labelledby="navbarDropdownMenuMessages">
+					<a class="dropdown-item" th:href="@{/user/messages}">Show
+						messages</a> <a class="dropdown-item" th:href="@{/user/sendMessage}">Send
+						new</a>
+				</div></li>
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href=""
+				id="navbarDropdownMenuAccount" data-toggle="dropdown"
+				aria-haspopup="true" aria-expanded="false"> Account </a>
+				<div class="dropdown-menu"
+					aria-labelledby="navbarDropdownMenuAccount">
+					<a class="dropdown-item" th:href="@{/user/editData}">Edit data</a>
+					<a class="dropdown-item" href="#">Edit address</a> <a
+						class="dropdown-item" th:href="@{/user/changePassword}">Change
+						password</a> <a class="dropdown-item" href="#">Categories observed</a>
+				</div></li>
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href=""
+				id="navbarDropdownMenuSocial" data-toggle="dropdown"
+				aria-haspopup="true" aria-expanded="false"> Social </a>
+				<div class="dropdown-menu"
+					aria-labelledby="navbarDropdownMenuSocial">
+					<a class="dropdown-item" th:href="@{/user/friendsList}">Friends list</a> <a
+						class="dropdown-item" th:href="@{/user/addFriends}">Invite
+						friends</a> <a class="dropdown-item" th:href="@{/user/invites}">Your
+						invites</a>
+				</div></li>
+		</ul>
+	</div>
+</nav>
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-light">
+
+	<a class="navbar-brand" th:href="@{/user}"> <img src="../logo.png"
+		width="250" height="25" alt="" /></a>
+	<button class="navbar-toggler navbar-toggler-right" type="button"
+		data-toggle="collapse" data-target="#navbar2">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="navbar-collapse collapse" id="navbar2">
+		<ul class="nav navbar-nav ml-auto">
+			<li class="nav-item my-auto mx-4">Your Wallet: <span
+				th:text="${session.currentFunds}+ ' PLN'"
+				style="color: #df2935; font-weight: bold;"></span></li>
+			<li class="nav-item my-auto mx-4">Username: <span
+				sec:authentication="name" style="color: #df2935; font-weight: bold;">
+			</span></li>
+			<li class="nav-item">
+				<form class="form-inline ml-auto my-auto mx-2" th:action="@{/user}"
+					method="get">
+
+					<button class="btn btn-outline-success my-auto" type="submit">Your
+						account</button>
+
+				</form>
+			</li>
+			<li class="nav-item">
+				<form th:action="@{/logout}" method="post"
+					class="form-inline ml-auto my-auto">
+					<input class="btn btn-outline-success my-2 my-sm-0 btn-back"
+						type="submit" value="Log out" />
+				</form>
+			</li>
+		</ul>
+	</div>
+</nav>
+</html>

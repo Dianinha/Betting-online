@@ -1,6 +1,5 @@
 package pl.coderslab.serviceImpl;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -20,13 +18,11 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pl.coderslab.model.Country;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
-import pl.coderslab.model.GoalScorer;
 import pl.coderslab.model.H2H;
-import pl.coderslab.model.League;
 import pl.coderslab.model.Standing;
+import pl.coderslab.repositories.APIRepository;
 import pl.coderslab.repositories.GameToBetRepository;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
@@ -43,40 +39,45 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	@Autowired
 	StandingService standingService;
+	
+	@Autowired
+	APIRepository apiRepository;
 
-	@Override
-	public void createGamesToBet() {
-		List<Event> futureEvents = eventService.findByDate(LocalDate.now());
-		for (Event event : futureEvents) {
-			GameToBet game = new GameToBet();
-
-			System.out.println(event.getStatus());
-			if (event.getStatus().equals("FT")) {
-				game.setActive(false);
-			} else {
-				game.setActive(true);
-			}
-			game.setId(event.getId());
-			game.setEvent(event);
-			Standing home = standingService.findStanfingByTeamName(event.getHomeTeamName());
-			Standing away = standingService.findStanfingByTeamName(event.getAwayTeamName());
-			System.out.println(home);
-			System.out.println(away);
-			game.setOddsToWinHome(0.5);
-
-			game.setOddsToWinAway(0.5);
-
-			game.setOddsToWinDraw(0.2);
-
-			game.setRateHome(new BigDecimal((1.00 - game.getOddsToWinHome()) + 0.80));
-			game.setRateDraw(new BigDecimal((1.00 - game.getOddsToWinDraw()) + 0.80));
-			game.setRateAway(new BigDecimal((1 - game.getOddsToWinAway()) + 0.80));
-
-			System.out.println(game);
-			gameRepository.save(game);
-		}
-
-	}
+	// @Override
+	// public void createGamesToBet() {
+	// List<Event> futureEvents = eventService.findByDate(LocalDate.now());
+	// for (Event event : futureEvents) {
+	// GameToBet game = new GameToBet();
+	//
+	// System.out.println(event.getStatus());
+	// if (event.getStatus().equals("FT")) {
+	// game.setActive(false);
+	// } else {
+	// game.setActive(true);
+	// }
+	// game.setId(event.getId());
+	// game.setEvent(event);
+	// Standing home =
+	// standingService.findStanfingByTeamName(event.getHomeTeamName());
+	// Standing away =
+	// standingService.findStanfingByTeamName(event.getAwayTeamName());
+	// System.out.println(home);
+	// System.out.println(away);
+	// game.setOddsToWinHome(0.5);
+	//
+	// game.setOddsToWinAway(0.5);
+	//
+	// game.setOddsToWinDraw(0.2);
+	//
+	// game.setRateHome(new BigDecimal((1.00 - game.getOddsToWinHome()) + 0.80));
+	// game.setRateDraw(new BigDecimal((1.00 - game.getOddsToWinDraw()) + 0.80));
+	// game.setRateAway(new BigDecimal((1 - game.getOddsToWinAway()) + 0.80));
+	//
+	// System.out.println(game);
+	// gameRepository.save(game);
+	// }
+	//
+	// }
 
 	@Override
 	public void createGamesToBetFromEvents(List<Event> events) {
@@ -91,21 +92,10 @@ public class GameToBetServiceImpl implements GameToBetService {
 			}
 			game.setId(event.getId());
 			game.setEvent(event);
-			Standing home = standingService.findStanfingByTeamName(event.getHomeTeamName());
-			Standing away = standingService.findStanfingByTeamName(event.getAwayTeamName());
-			game.setOddsToWinHome(0.5);
-
-			game.setOddsToWinAway(0.5);
-
-			game.setOddsToWinDraw(0.2);
-
-			game.setRateHome(new BigDecimal((1.00 - game.getOddsToWinHome()) + 0.80));
-			game.setRateDraw(new BigDecimal((1.00 - game.getOddsToWinDraw()) + 0.80));
-			game.setRateAway(new BigDecimal((1 - game.getOddsToWinAway()) + 0.80));
-
-			System.out.println(game);
 			gameRepository.save(game);
+
 		}
+		updateGamesToBet(futureEvents);
 
 	}
 
@@ -120,9 +110,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 	}
 
 	@Override
-	public void updateGamesToBet() {
+	public void updateGamesToBet(List<Event> liveEvents) {
 
-		List<Event> liveEvents = eventService.findByDateBetween(LocalDate.now(), LocalDate.now());
 		for (Event event : liveEvents) {
 			if (eventService.checkIfEventHasEnded(event)) {
 				GameToBet game = gameRepository.findByEvent(event);
@@ -145,22 +134,21 @@ public class GameToBetServiceImpl implements GameToBetService {
 		H2H headToHead = createH2H(homeTeamName, awayTeamName);
 		game.setOddsToWinDraw(calculateOddsToDraw(homeTeamName, awayTeamName, headToHead));
 		game.setOddsToWinHome(calculateOddsToWinHome(homeTeamName, awayTeamName, headToHead));
-		game.setOddsToWinAway(1-game.getOddsToWinDraw()-game.getOddsToWinHome());
+		game.setOddsToWinAway(1 - game.getOddsToWinDraw() - game.getOddsToWinHome());
 		game.setRateHome(generateRate(game.getOddsToWinHome()));
 		game.setRateAway(generateRate(game.getOddsToWinAway()));
 		game.setRateDraw(generateRate(game.getOddsToWinDraw()));
 		return game;
 	}
-	
+
 	private BigDecimal generateRate(double odd) {
-		double y = 1/odd*0.92;
-		if (y<1) {
+		double y = 1 / odd * 0.92;
+		if (y < 1) {
 			return new BigDecimal(1.00);
-		}
-		else {
+		} else {
 			return new BigDecimal(y);
 		}
-		
+
 	}
 
 	private double calculateOddsToDraw(String home, String away, H2H head) {
@@ -213,7 +201,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 	private H2H createH2H(String home, String away) {
 		H2H result = new H2H();
 		String url = "https://apifootball.com/api/?action=get_H2H&firstTeam=" + home.replace(' ', '+') + "&secondTeam="
-				+ away.replace(' ', '+') + "&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
+				+ away.replace(' ', '+') + "&APIkey="+ apiRepository.findOne((long)1).getKeyCode();
 		JSONParser parser = new JSONParser();
 		int numberOfDrawCounter = 0;
 		int numberOfDrawHomeCounter = 0;
@@ -317,5 +305,41 @@ public class GameToBetServiceImpl implements GameToBetService {
 		return result;
 
 	}
+
+	@Override
+	public void updateLiveEventsGamesToBet() {
+		List<Event> liveEvents = eventService.findByDate(LocalDate.now());
+		for (Event event : liveEvents) {
+			Integer minutesIn =0;
+			if (eventService.checkIfEventHasEnded(event)) {
+				GameToBet game = gameRepository.findByEvent(event);
+				game.setActive(false);
+				gameRepository.save(game);
+			} else {
+				GameToBet game = gameRepository.findByEvent(event);
+				String status = event.getStatus();
+				if (status.equals("HT")) {
+					
+				}
+				else if (status.startsWith("9")) {
+					game.setActive(false);
+				}
+				else {
+					try {
+						minutesIn = Integer.parseInt(status.substring(0, status.length()-1));
+						int homeScore = event.getHomeTeamScore();
+						int awayScore = event.getAwayTeamScore();
+						
+						//here something
+						
+					} catch (Exception e) {
+						System.out.println("Cannot parse: " + status);
+					}
+				}
+			}
+
+		}
+	}
+
 
 }

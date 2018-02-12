@@ -60,7 +60,7 @@ public class ResultsController {
 	@RequestMapping(value = "/gameToBet")
 	@ResponseBody
 	public String games() {
-		gameService.createGamesToBet();
+		// gameService.createGamesToBet();
 		return "Hello games";
 	}
 
@@ -71,11 +71,11 @@ public class ResultsController {
 
 		return "Hello leagues";
 	}
-	
+
 	@RequestMapping(value = "/h2h")
 	@ResponseBody
 	public String h2h() {
-		gameService.updateGamesToBet();
+		// gameService.updateGamesToBet();
 		return "Hello h2h";
 	}
 
@@ -94,12 +94,7 @@ public class ResultsController {
 	@RequestMapping(value = "/standings")
 	@ResponseBody
 	public String standings() {
-		// League league = leagueRepository.findOne((long) 137);
-		// List<Standing> stands = ssi.createStandings(league);
-		// ssi.saveStandings(stands);
-		League league = leagueRepository.findOne((long) 376);
-		List<Standing> stands = stands = ssi.createStandings(league);
-		ssi.saveStandings(stands);
+		ssi.createStandingsOnceForDay();
 		return "Hello standings";
 	}
 

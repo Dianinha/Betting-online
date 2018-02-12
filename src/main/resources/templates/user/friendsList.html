@@ -3,7 +3,7 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Change password</title>
+<title>Add friends</title>
 
 <link href="https://fonts.googleapis.com/css?family=Open+Sans"
 	rel="stylesheet" />
@@ -12,6 +12,8 @@
 	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
 	crossorigin="anonymous" />
 <link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
 <body sec:authorize="isAuthenticated()"
 	style="background-color: #e7e8e8">
@@ -20,43 +22,31 @@
 	<div class="container">
 		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
-				<h1>
-					<span th:text="'Change Your password'"> </span>
-				</h1>
-				<div th:if="${message}" th:text="${message}"
-					class="alert alert-danger mt-3">Message if something goes
-					wrong</div>
+				
 
-				<div class="row mt-4 ">
-					<div class="col-6 tborder ml-4 py-4">
-
-						<form th:action="@{/user/changePassword}" method="post">
-							<div class="form-group">
-								<label> Your old password: </label> <input type="password"
-									name="oldPassword" class="form-control" />
-
-							</div>
-							<div class="form-group">
-								<label> New password: </label> <input type="password"
-									name="newPassword" class="form-control" />
-
-							</div>
-							<div class="form-group">
-								<label> Confirm new password: </label><input type="password"
-									name="confirmNewPassword" class="form-control" />
-
-							</div>
-							<div>
-								<input type="submit" value="Change password"
-									class="btn btn-outline-success my-2 my-sm-0" />
-							</div>
-						</form>
 					</div>
-					<div class="col ml-4 mr-3" id="chgpassword"></div>
+					<div class="col ml-4 mr-3">
+						<div>
+							<div th:if="${friends}">
+								Your friends:
+								<ul>
+									<li th:each="friend: ${friends}"><span
+										th:text="${friend.username}"></span> <span
+										th:text="${friend.email}"></span> <a
+										th:href="@{/user/sendMessage}"><input type="submit"
+											value="Send message to"
+											class="btn btn-outline-success my-2 my-sm-0" /></a> <span
+										th:unless="${friend.username.equals('service')}"> <a
+											th:href="@{/user/deleteFriend(username=${friend.username})}"><input
+												type="submit" value="Delete friend"
+												class="btn btn-outline-success my-2 my-sm-0" /></a></span></li>
+								</ul>
+							</div>
+						</div>
+					</div>
 				</div>
+
 			</div>
-		</div>
-	</div>
 
 	<footer th:include="fragments/footer	::	pagefooter"></footer>
 

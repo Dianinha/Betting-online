@@ -1,9 +1,11 @@
 package pl.coderslab.serviceImpl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,11 +74,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User changePassword(String password, User user) {
-		
-		
 		User userToChangePassword = userRepository.findOne(user.getId());
 		user.setPassword(passwordEncoder.encode(password));
-		
 		
 		return userRepository.save(userToChangePassword);
 	}
@@ -85,6 +84,27 @@ public class UserServiceImpl implements UserService {
 	public boolean checkPassword(String password, User user) {
 		
 		return passwordEncoder.matches(password, user.getPassword());
+	}
+
+	@Override
+	public List<User> findByEmailStartsWith(String email) {
+		return userRepository.findByEmailStatsWith(email);
+	}
+
+	@Override
+	public List<User> findByUSernameStartsWith(String username) {
+		return userRepository.findByUsernameStatsWith(username);
+	}
+
+	@Override
+	public User getAuthenticatedUser(Authentication auth) {
+		User user = null;
+		
+		try {
+			user = userRepository.findByUsername(auth.getName());
+		} catch (Exception e) {
+		}
+		return user;
 	}
 
 }

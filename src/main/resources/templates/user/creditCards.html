@@ -3,23 +3,67 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>Credit Cards</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
-<body>
-	<p>
-		<span th:text="'Your saved credit cards:'"> </span>
-	<ul>
-		<li th:each="creditCard: ${creditCards}">
-		<span th:text="'Credit card ends with: ****' + ${creditCard.lastFourDigits}"></span>
-			<a th:href="@{/user/deleteCreditCard(cardId=${creditCard.id})}"
-			th:text="'Delete this credit card info'"><button type="button">
-				</button> </a>
-		</li>
-	</ul>
-	</p>
-	<p>
-	<a th:href="@{/user/addCreditCard}" th:text="'Add new card'"></a>
-	</p>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+				<h1>
+					<span th:text="'Your saved credit cards:'"> </span>
+				</h1>
+
+
+				<table class="table table-striped">
+					<tr th:each="creditCard: ${creditCards}">
+						<td><span
+							th:text="'Credit card ends with: ****' + ${creditCard.lastFourDigits}"></span></td>
+						<td><a
+							th:href="@{/user/deleteCreditCard(cardId=${creditCard.id})}"><button
+									type="button"
+									class="btn btn-outline-success my-2 my-sm-0 btn-back">Delete
+									this credit card info</button> </a></td>
+					</tr>
+				</table>
+
+				<p>
+					<a th:href="@{/user/addCreditCard}"><button type="button"
+							class="btn btn-outline-success my-2 my-sm-0">Add new
+							card</button></a>
+				</p>
+				<a th:href="@{/user/wallet}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+
+
+			</div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
 
 
 </body>

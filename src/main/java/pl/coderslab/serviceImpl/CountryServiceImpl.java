@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.coderslab.model.Country;
+import pl.coderslab.repositories.APIRepository;
 import pl.coderslab.repositories.CountryRepository;
 import pl.coderslab.service.CountryService;
 
@@ -24,10 +25,13 @@ public class CountryServiceImpl implements CountryService{
 	@Autowired
 	private CountryRepository countryRepository;
 	
+	@Autowired
+	private APIRepository apiRepository;
+	
 	@Override
 	public Country createCountry() {
 		 JSONParser parser = new JSONParser();
-		String url = "https://apifootball.com/api/?action=get_countries&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
+		String url = "https://apifootball.com/api/?action=get_countries&APIkey="+apiRepository.findOne((long) 1).getKeyCode();
 		try {
 			URL getDataFrom = new URL(url);
 			URLConnection urlConn = getDataFrom.openConnection();

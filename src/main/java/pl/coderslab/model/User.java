@@ -32,26 +32,26 @@ public class User {
 	@Column(name = "user_id")
 	private long id;
 
-	@Size(min = 3, max = 26, message="Username should be at least 3 characters long. Maximum size is 26.")
-	@Column(unique=true)
+	@Size(min = 3, max = 26, message = "Username should be at least 3 characters long. Maximum size is 26.")
+	@Column(unique = true)
 	private String username;
 
-	@Email(message="Please write down proper e-mail address, for example: simpleExample@gmail.com")
-	@NotBlank(message="Email address cannot be empty.")
-	@Column(unique=true)
+	@Email(message = "Please write down proper e-mail address, for example: simpleExample@gmail.com")
+	@NotBlank(message = "Email address cannot be empty.")
+	@Column(unique = true)
 	private String email;
 
-	@NotBlank(message="Password cannot be empty")
+	@NotBlank(message = "Password cannot be empty")
 	private String password;
 
 	@Transient
 	@org.springframework.data.annotation.Transient
 	private transient String passwordConfirmed;
 
-	@NotBlank(message="Name cannot be empty")
+	@NotBlank(message = "Name cannot be empty")
 	private String name;
 
-	@NotBlank(message="Surname cannot be empty")
+	@NotBlank(message = "Surname cannot be empty")
 	private String surname;
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -78,13 +78,17 @@ public class User {
 	@ManyToMany
 	@JoinTable(name = "user_category", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories;
-	
+
 	@OneToMany(mappedBy = "sender")
 	private List<Message> sendMessages;
-	
+
 	@ManyToMany
 	@JoinTable(name = "user_recievedMessages", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "message_id"))
 	private List<Message> recievedMessages;
+
+	@ManyToMany
+	@JoinTable(name = "user_friends", joinColumns = @JoinColumn(name = "friendOwner_id"), inverseJoinColumns = @JoinColumn(name = "userFriend_id"))
+	private Set<User> friends;
 
 	// Constructor
 	public User() {
@@ -172,7 +176,6 @@ public class User {
 		this.userBets = userBets;
 	}
 
-
 	public Set<Event> getUserObservedGames() {
 		return userObservedGames;
 	}
@@ -204,8 +207,6 @@ public class User {
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
 	}
-	
-	
 
 	public List<Message> getSendMessages() {
 		return sendMessages;
@@ -222,7 +223,15 @@ public class User {
 	public void setRecievedMessages(List<Message> recievedMessages) {
 		this.recievedMessages = recievedMessages;
 	}
+
 	
+	public Set<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(Set<User> friends) {
+		this.friends = friends;
+	}
 
 	// hashCode and equals
 	@Override

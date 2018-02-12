@@ -10,9 +10,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Transient;
 
 @Entity
@@ -29,22 +36,32 @@ public class CreditCardInfo {
 	@JoinColumn
 	private Wallet wallet;
 
-	@Digits(fraction = 1, integer = 16)
+	@Digits(fraction = 0, integer = 16, message = "Credit card number must contain 16 digits.")
+	@DecimalMin(value = "1000000000000000", inclusive = true, message = "Credit card number must contain 16 digits.")
+	@NotNull(message = "Credit card number cannot be empty.")
 	private BigDecimal creditCardNumber;
 
-	@Transient
 	private String lastFourDigits;
 
-	private int cvv;
+	@Min(value = 001, message = "CVV must contains 3 digits. See information on the right panel")
+	@Max(value = 999, message = "CVV must contains 3 digits. See information on the right panel")
+	@NotNull(message = "CVV cannot be empty.")
+	private Integer cvv;
 
-	private int expirationMonth;
+	@Min(value = 1, message = "Please pick value from 1-12")
+	@Max(value = 12, message = "Please pick value from 1-12")
+	@NotNull(message = "Month cannot be empty.")
+	private Integer expirationMonth;
 
-	private int expirationYear;
+	@Min(value = 18, message = "Please pick valid credit card")
+	@Max(value = 99, message = "Please put just 2 last digits")
+	@NotNull(message = "Year cannot be empty.")
+	private Integer expirationYear;
 
-	@NotBlank
+	@NotBlank(message = "Name cannot be empty.")
 	private String ownerName;
 
-	@NotBlank
+	@NotBlank(message = "Surname cannot be empty.")
 	private String ownerSurname;
 
 	// Visa or Mastercard
@@ -56,6 +73,7 @@ public class CreditCardInfo {
 	}
 
 	// getters and setters
+
 	public long getId() {
 		return id;
 	}
@@ -78,43 +96,42 @@ public class CreditCardInfo {
 
 	public void setCreditCardNumber(BigDecimal creditCardNumber) {
 		this.creditCardNumber = creditCardNumber;
-		this.setLastFourDigits();
+		setLastFourDigits();
 	}
 
 	public String getLastFourDigits() {
 		return lastFourDigits;
 	}
+	public void setLastFourDigits() {
+		String card = creditCardNumber.toString();
+		this.lastFourDigits = card.substring(card.length()-4, card.length());
+	}
 
 	public void setLastFourDigits(String lastFourDigits) {
 		this.lastFourDigits = lastFourDigits;
 	}
-	
-	public void setLastFourDigits() {
-		String card = getCreditCardNumber().toString();
-		this.lastFourDigits = card.substring((card.length()-4), card.length());
-	}
 
-	public int getCvv() {
+	public Integer getCvv() {
 		return cvv;
 	}
 
-	public void setCvv(int cvv) {
+	public void setCvv(Integer cvv) {
 		this.cvv = cvv;
 	}
 
-	public int getExpirationMonth() {
+	public Integer getExpirationMonth() {
 		return expirationMonth;
 	}
 
-	public void setExpirationMonth(int expirationMonth) {
+	public void setExpirationMonth(Integer expirationMonth) {
 		this.expirationMonth = expirationMonth;
 	}
 
-	public int getExpirationYear() {
+	public Integer getExpirationYear() {
 		return expirationYear;
 	}
 
-	public void setExpirationYear(int expirationYear) {
+	public void setExpirationYear(Integer expirationYear) {
 		this.expirationYear = expirationYear;
 	}
 
@@ -142,68 +159,7 @@ public class CreditCardInfo {
 		this.type = type;
 	}
 
-	// hashCode and equals
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((creditCardNumber == null) ? 0 : creditCardNumber.hashCode());
-		result = prime * result + cvv;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((lastFourDigits == null) ? 0 : lastFourDigits.hashCode());
-		result = prime * result + ((ownerName == null) ? 0 : ownerName.hashCode());
-		result = prime * result + ((ownerSurname == null) ? 0 : ownerSurname.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CreditCardInfo other = (CreditCardInfo) obj;
-		if (creditCardNumber == null) {
-			if (other.creditCardNumber != null)
-				return false;
-		} else if (!creditCardNumber.equals(other.creditCardNumber))
-			return false;
-		if (cvv != other.cvv)
-			return false;
-		if (id != other.id)
-			return false;
-		if (lastFourDigits == null) {
-			if (other.lastFourDigits != null)
-				return false;
-		} else if (!lastFourDigits.equals(other.lastFourDigits))
-			return false;
-		if (ownerName == null) {
-			if (other.ownerName != null)
-				return false;
-		} else if (!ownerName.equals(other.ownerName))
-			return false;
-		if (ownerSurname == null) {
-			if (other.ownerSurname != null)
-				return false;
-		} else if (!ownerSurname.equals(other.ownerSurname))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		if (wallet == null) {
-			if (other.wallet != null)
-				return false;
-		} else if (!wallet.equals(other.wallet))
-			return false;
-		return true;
-	}
-
+	
 	// simplified to string
 	@Override
 	public String toString() {

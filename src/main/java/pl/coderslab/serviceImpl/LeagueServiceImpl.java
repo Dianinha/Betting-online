@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import pl.coderslab.model.Country;
 import pl.coderslab.model.League;
+import pl.coderslab.repositories.APIRepository;
 import pl.coderslab.repositories.CountryRepository;
 import pl.coderslab.repositories.LeagueRepository;
 import pl.coderslab.service.LeagueService;
@@ -23,8 +24,11 @@ import pl.coderslab.service.LeagueService;
 @Service
 public class LeagueServiceImpl implements LeagueService {
 
-	private static final String url = "https://apifootball.com/api/?action=get_leagues&APIkey=69e25fed4be4381276cb4d5f30e7b2a66a53c71a3f62dcac640e2c1d69f8d1c1";
-	
+	private static final String url = "https://apifootball.com/api/?action=get_leagues&APIkey=";
+
+	@Autowired
+	APIRepository apiRepository;
+
 	@Autowired
 	private LeagueRepository leagueRepository;
 	@Autowired
@@ -34,7 +38,7 @@ public class LeagueServiceImpl implements LeagueService {
 	public void createLeagues() {
 		JSONParser parser = new JSONParser();
 		try {
-			URL getDataFrom = new URL(url);
+			URL getDataFrom = new URL(url + apiRepository.findOne(1L).getKeyCode());
 			URLConnection urlConn = getDataFrom.openConnection();
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 			String inputLine;

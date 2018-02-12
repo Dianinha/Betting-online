@@ -5,14 +5,21 @@
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
 <title>Insert title here</title>
 </head>
-<body>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
 	MENU:
 	<ul>
-		<li><a th:href="@{/user/funds}" th:text="'Add funds to Your wallet'"></a> </li>
-		<li><a th:href="@{/user/creditCards}" th:text="'Manage Your credit card info'"></a></li>
-		<li><a th:href="@{/user/operationHistory}" th:text="'See history of Your operations'"></a>Wallet history</li>
-		<li><a th:href="@{/user/codes}" th:text="'Do You have a code? Use it!'"></a>Special codes</li>
-		<li><a th:href="@{/user/withdrawn}" th:text="'Withdrawn money'"></a>Withdrawn money</li>
+		<li><a th:href="@{/user/funds}"
+			th:text="'Add funds to Your wallet'"></a></li>
+		<li><a th:href="@{/user/creditCards}"
+			th:text="'Manage Your credit card info'"></a></li>
+		<li><a th:href="@{/user/operationHistory}"
+			th:text="'See history of Your operations'"></a>Wallet history</li>
+		<li><a th:href="@{/user/codes}"
+			th:text="'Do You have a code? Use it!'"></a>Special codes</li>
+		<li><a th:href="@{/user/withdrawn}" th:text="'Withdrawn money'"></a>Withdrawn
+			money</li>
 	</ul>
 
 	<p>

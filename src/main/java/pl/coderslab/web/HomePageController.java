@@ -1,5 +1,8 @@
 package pl.coderslab.web;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -77,6 +80,9 @@ public class HomePageController {
 			return "/access/register";
 		}
 		try {
+			Set<User> friends = new HashSet<>();
+			friends.add(userService.findByUsername("service"));
+			user.setFriends(friends);
 			User savedUser = userService.createUser(user);
 			session.setAttribute("user", savedUser);
 			return "redirect:/registerAddress";
