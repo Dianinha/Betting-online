@@ -30,8 +30,14 @@
 						<form th:action="@{/user/sendMessage}" th:object="${message}"
 							method="post">
 							<div class="form-group">
-								<label>Send it to:</label> <input type="text" name="username"
-									class="form-control" />
+								<label>Send it to:</label>
+								<!-- <input type="text" name="username"
+									class="form-control" /> 
+									 -->
+								<select name="username">
+									<option th:each="friend : ${friends}" th:value="${friend.username}"
+										th:text="${friend.username}">xx</option>
+										</select>
 							</div>
 							<div class="form-group">
 								<label> Title: </label><input type="text" name="title"

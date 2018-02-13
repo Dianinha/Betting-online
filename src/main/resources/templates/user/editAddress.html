@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Register Adress</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="css/main.css" />
+
+</head>
+
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Edit Your address information:</h1>
+
+				<div class="row mt-4 ">
+					<div class="col-6 tborder ml-4 py-4">
+
+						<form th:action="@{/user/editAddress}" th:object="${address}"
+							method="post">
+							<div class="form-group">
+								<label> Street name: </label><input type="text"
+									th:field="*{streetName}" th:value="*{streetName}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('streetName')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Street number: </label><input type="number"
+									th:field="*{streetNumber}" th:value="*{streetNumber}" class="form-control" />
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('streetNumber')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Optional - additional street number data (for
+									example letter): </label><input type="text"
+									th:field="*{additionalLetterToNumber}"  th:value="*{additionalLetterToNumber}"  class="form-control" />
+
+							</div>
+							<div class="form-group">
+								<label> Flat number: </label><input type="number"
+									th:field="*{flatNumber}"  th:value="*{flatNumber}" class="form-control" />
+
+							</div>
+							<div class="form-group">
+								<label> Zip code: </label><input type="text"
+									th:field="*{zipCode}"  th:value="*{zipCode}" class="form-control" />
+
+							</div>
+							<div class="form-group">
+								<label> City: </label><input type="text" th:field="*{city}"
+									 th:value="*{city}" class="form-control" />
+
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('city')}" th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div class="form-group">
+								<label> Country: </label><input type="text"
+									th:field="*{country}" th:value="*{country}" class="form-control" />
+
+								<ul class="list-group">
+									<li th:each="err : ${#fields.errors('country')}"
+										th:text="${err}"
+										class="list-group-item list-group-item-danger" />
+								</ul>
+							</div>
+							<div>
+								<input type="submit" value="Next"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+					</div>
+					<div class="col ml-4 mr-3" id="register-right"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+</body>
+</html>

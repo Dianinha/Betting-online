@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import pl.coderslab.model.Address;
 import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.CreditCardInfo;
 import pl.coderslab.model.Event;
@@ -32,6 +33,7 @@ import pl.coderslab.model.User;
 import pl.coderslab.model.UserSimple;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.repositories.MultipleBetRepository;
+import pl.coderslab.service.AddressService;
 import pl.coderslab.service.BetService;
 import pl.coderslab.service.CreditCardService;
 import pl.coderslab.service.EventService;
@@ -75,6 +77,9 @@ public class UserController {
 
 	@Autowired
 	private MultipleBetRepository multiBetRepository;
+
+	@Autowired
+	AddressService addressService;
 
 	@RequestMapping(path = "/menu")
 	public String menu() {
@@ -208,7 +213,7 @@ public class UserController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "redirect:/user/wallet";
+		return "redirect:/user";
 	}
 
 	@RequestMapping(value = "/creditCards", method = RequestMethod.GET)
@@ -245,7 +250,9 @@ public class UserController {
 
 	@RequestMapping(value = "/sendMessage", method = RequestMethod.GET)
 	public String sendNewMessage(Model model, HttpSession session, Authentication authentication) {
+		User user = userService.getAuthenticatedUser(authentication);
 		model.addAttribute("message", new Message());
+		model.addAttribute("friends", user.getFriends());
 		return "/user/addMessage";
 	}
 
@@ -319,7 +326,7 @@ public class UserController {
 
 		userService.saveUser(userFromDb);
 
-		return "redirect:/user/menu";
+		return "redirect:/user";
 	}
 
 	@RequestMapping(value = "/changePassword", method = RequestMethod.GET)
@@ -549,23 +556,46 @@ public class UserController {
 	@RequestMapping(value = "/myBets", method = RequestMethod.GET)
 	public String userBets(Model model, Authentication authentication, HttpSession session) {
 		User user = userService.getAuthenticatedUser(authentication);
-		List<SingleBet> currentBets =  betService.findBetsByUserAndStatus(BetStatus.PLACED, user);
+		List<SingleBet> currentBets = betService.findBetsByUserAndStatus(BetStatus.PLACED, user);
 		if (!currentBets.isEmpty()) {
 			model.addAttribute("bets", currentBets);
 		}
 		List<SingleBet> pastBets = betService.findBetsByUserAndStatus(BetStatus.FINALIZED, user);
 		if (!pastBets.isEmpty()) {
-			model.addAttribute("oldbets", pastBets );
+			model.addAttribute("oldbets", pastBets);
 		}
 		List<MultipleBet> multiBetsPlaced = multiBetRepository.findByUser(BetStatus.PLACED, user);
 		if (!multiBetsPlaced.isEmpty()) {
-			model.addAttribute("multiBets", multiBetsPlaced );
+			model.addAttribute("multiBets", multiBetsPlaced);
 		}
 		List<MultipleBet> pastMultiBets = multiBetRepository.findByUser(BetStatus.FINALIZED, user);
 		if (!pastMultiBets.isEmpty()) {
-			model.addAttribute("oldMultiBets", pastMultiBets );
+			model.addAttribute("oldMultiBets", pastMultiBets);
 		}
 		return "bet/userBets";
+	}
+
+	@RequestMapping(value = "/editAddress", method = RequestMethod.GET)
+	public String editUserAddress(Model model, Authentication authentication) {
+		User user = userService.getAuthenticatedUser(authentication);
+		Address address = addressService.findByUser(user);
+		model.addAttribute("address", address);
+		return "/user/editAddress";
+	}
+
+	@RequestMapping(value = "/editAddress", method = RequestMethod.POST)
+	public String editUserAddressPost(@Valid Address address, BindingResult result, Authentication authentication) {
+		User user = userService.getAuthenticatedUser(authentication);
+
+		if (result.hasErrors()) {
+			return "/user/editAddress";
+		}
+		Address oldAddress = addressService.findByUser(user);
+		address.setId(oldAddress.getId());
+		address.setUser(user);
+		addressService.save(address);
+
+		return "redirect:/user";
 	}
 
 }

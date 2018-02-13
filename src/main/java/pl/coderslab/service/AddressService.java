@@ -6,6 +6,8 @@ import pl.coderslab.model.User;
 public interface AddressService {
 
 	Address create(Address address, User user);
-	
-	Address save (Address address);
+
+	Address save(Address address);
+
+	Address findByUser(User user);
 }

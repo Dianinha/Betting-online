@@ -46,10 +46,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User createUser(User user) {
+		System.out.println(user);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		Set<Role> userRoles= new HashSet<>();
 		userRoles.add(roleRepository.findByName("ROLE_USER"));
 		user.setRoles(userRoles);
+		Set<User> friends = new HashSet<>();
+		friends.add(userRepository.findByUsername("service"));
+		user.setFriends(friends);
 		User savedUser = userRepository.save(user);
 		Wallet wallet = walletService.createWallet(savedUser);
 		savedUser.setWallet(wallet);

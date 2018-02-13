@@ -22,7 +22,12 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address save(Address address) {
-		return null;
+		return addressRepository.save(address);
+	}
+
+	@Override
+	public Address findByUser(User user) {
+		return addressRepository.findByUser(user);
 	}
 
 }

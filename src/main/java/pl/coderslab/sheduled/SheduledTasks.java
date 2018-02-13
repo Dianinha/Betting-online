@@ -8,9 +8,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import pl.coderslab.model.Event;
+import pl.coderslab.model.Standing;
 import pl.coderslab.service.BetService;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
+import pl.coderslab.service.StandingService;
 
 @Component
 public class SheduledTasks {
@@ -23,8 +25,11 @@ public class SheduledTasks {
 	
 	@Autowired
 	private BetService betService;
+	
+	@Autowired
+	private StandingService standingService;
 
-	@Scheduled(cron = "20 15 10 1/1 * ?")
+	@Scheduled(cron = "30 11 11 1/1 * ?")
 	public void createEvents() {
 		LocalDate dateStart = LocalDate.now();
 		String startDate = dateStart.toString();
@@ -32,6 +37,7 @@ public class SheduledTasks {
 		String stopDate = dateStop.toString();
 		eventService.createEvents(startDate, stopDate);
 		List<Event> createdEvents = eventService.findByDateBetween(dateStart, dateStop);
+		standingService.createStandingsOnceForDay();
 		gameService.createGamesToBetFromEvents(createdEvents);
 		System.out.println("Events and games are created!!!!!!!!!!!!!!!!!!!!!!!!");
 

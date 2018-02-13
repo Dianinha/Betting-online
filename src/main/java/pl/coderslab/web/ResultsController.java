@@ -57,13 +57,7 @@ public class ResultsController {
 		return "Hello countries";
 	}
 
-	@RequestMapping(value = "/gameToBet")
-	@ResponseBody
-	public String games() {
-		// gameService.createGamesToBet();
-		return "Hello games";
-	}
-
+	
 	@RequestMapping(value = "/leagues")
 	@ResponseBody
 	public String legaues() {
@@ -72,24 +66,7 @@ public class ResultsController {
 		return "Hello leagues";
 	}
 
-	@RequestMapping(value = "/h2h")
-	@ResponseBody
-	public String h2h() {
-		// gameService.updateGamesToBet();
-		return "Hello h2h";
-	}
-
-	@RequestMapping(value = "/createstandings")
-	@ResponseBody
-	public String createstandings() {
-		League league = leagueRepository.findOne((long) 137);
-		List<Standing> stands = ssi.createStandings(league);
-		ssi.saveStandings(stands);
-		league = leagueRepository.findOne((long) 376);
-		stands = ssi.createStandings(league);
-		ssi.saveStandings(stands);
-		return "Hello standings";
-	}
+	
 
 	@RequestMapping(value = "/standings")
 	@ResponseBody
@@ -116,18 +93,7 @@ public class ResultsController {
 		return "/live/eventlive";
 	}
 
-//	@RequestMapping(value = "/updateResults")
-//	@ResponseBody
-//	public String updateResults() {
-//		List<Event> liveEvents = eventService.liveEvent();
-//		JSONArray list = new JSONArray();
-//		for (Event event : liveEvents) {
-//			JSONObject obj = new JSONObject();
-//			obj.put(event.getId(), event);
-//			list.add(obj);
-//		}
-//		return list.toJSONString();
-//	}
+
 
 //	@RequestMapping(value = "/updateJsonResults")
 //	@ResponseBody
@@ -341,7 +307,6 @@ public class ResultsController {
 			String score = event.getHomeTeamScore() + ":" + event.getAwayTeamScore();
 
 			GameToBet game = gameService.findByEvent(event);
-
 			if (!in.equals("FINISHED")) {
 				myHtml = myHtml + "<tr><td>" + event.getCategory().getName()
 						+ "</td><td><span style=\"color: #df2935\">" + event.getLegaue().getName()
@@ -352,32 +317,12 @@ public class ResultsController {
 						+ "<a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">" + event.getGame().getRateHome()
 						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
 						+ event.getGame().getRateDraw()
-						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
 						+ event.getGame().getRateAway() + "</a></td></tr>";
 
 			}
 
-			// <tr th:each="liveNowEv : ${liveNow}">
-			// <td th:if="${liveNowEv.category.name}"><span
-			// th:text="${liveNowEv.category.name}"></span></td>
-			// <td th:text="${liveNowEv.legaue.name}"></td>
-			// <td><span style="color: #df2935"
-			// th:text="${liveNowEv.homeTeamName}"></span> vs <span
-			// style="color: #df2935" th:text="${liveNowEv.awayTeamName}"></span></td>
-			// <td th:text="${liveNowEv.homeTeamScore} + ':' +
-			// ${liveNowEv.awayTeamScore}">0:0</td>
-			// <td th:text="${liveNowEv.time}">18:00</td>
-			// <td style="background-color: #df2935"><a
-			// style="color: #ffffff !important; font-weight: bold;"
-			// th:text="${liveNowEv.game.rateHome}">2.20</a></td>
-			// <td style="background-color: #001021"
-			// th:text="${liveNowEv.game.rateDraw}"><a
-			// style="color: #ffffff !important; font-weight: bold">3.20</a></td>
-			// <td style="background-color: #df2935"
-			// th:text="${liveNowEv.game.rateAway}"><a
-			// style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
-			// </tr>
-			//bet/add?gameId=252790&betOn=home
+			
 		}
 		return myHtml;
 	}

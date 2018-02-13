@@ -43,45 +43,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	@Autowired
 	APIRepository apiRepository;
-	
+
 	@Autowired
 	EventRepository eventRepository;
-
-	// @Override
-	// public void createGamesToBet() {
-	// List<Event> futureEvents = eventService.findByDate(LocalDate.now());
-	// for (Event event : futureEvents) {
-	// GameToBet game = new GameToBet();
-	//
-	// System.out.println(event.getStatus());
-	// if (event.getStatus().equals("FT")) {
-	// game.setActive(false);
-	// } else {
-	// game.setActive(true);
-	// }
-	// game.setId(event.getId());
-	// game.setEvent(event);
-	// Standing home =
-	// standingService.findStanfingByTeamName(event.getHomeTeamName());
-	// Standing away =
-	// standingService.findStanfingByTeamName(event.getAwayTeamName());
-	// System.out.println(home);
-	// System.out.println(away);
-	// game.setOddsToWinHome(0.5);
-	//
-	// game.setOddsToWinAway(0.5);
-	//
-	// game.setOddsToWinDraw(0.2);
-	//
-	// game.setRateHome(new BigDecimal((1.00 - game.getOddsToWinHome()) + 0.80));
-	// game.setRateDraw(new BigDecimal((1.00 - game.getOddsToWinDraw()) + 0.80));
-	// game.setRateAway(new BigDecimal((1 - game.getOddsToWinAway()) + 0.80));
-	//
-	// System.out.println(game);
-	// gameRepository.save(game);
-	// }
-	//
-	// }
 
 	@Override
 	public void createGamesToBetFromEvents(List<Event> events) {
@@ -96,6 +60,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 				game.setRateHome(new BigDecimal(1.0));
 				game.setRateDraw(new BigDecimal(1.0));
 				gameRepository.save(game);
+				event.setGame(game);
+				eventRepository.save(event);
 			} else {
 				GameToBet game = new GameToBet();
 				System.out.println(event.getStatus());
@@ -137,6 +103,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 				gameRepository.save(game);
 			} else {
 				if (event.getLegaue().getCountry() == null) {
+
+					// liga mistrzów tutaj
 				} else {
 					GameToBet game = gameRepository.findByEvent(event);
 					if (event.getLegaue().getCountry() != null || event.getLegaue().getName().contains("GROUP")) {
@@ -342,17 +310,75 @@ public class GameToBetServiceImpl implements GameToBetService {
 			} else {
 				GameToBet game = gameRepository.findByEvent(event);
 				String status = event.getStatus();
-				if (status.equals("HT")) {
-
-				} else if (status.startsWith("9")) {
-					game.setActive(false);
+				if (status.equals("HT") || status.equals("")) {
 				} else {
 					try {
-						minutesIn = Integer.parseInt(status.substring(0, status.length() - 1));
+						status = status.replace("'", "");
+						if (status.contains("+")) {
+							String statusMin = status.substring(0, status.indexOf('+'));
+							minutesIn = Integer.parseInt(statusMin);
+						} else {
+							minutesIn = Integer.parseInt(status.substring(0, status.length() - 1));
+						}
 						int homeScore = event.getHomeTeamScore();
 						int awayScore = event.getAwayTeamScore();
+						double mySecretX = 0;
+						int scoreDifference = homeScore - awayScore;
+						double oddsHome = event.getGame().getOddsToWinHome();
+						double oddsAway = event.getGame().getOddsToWinAway();
+						double oddsDraw = event.getGame().getOddsToWinDraw();
 
-						// here something
+						if (minutesIn > 80) {
+							game.setActive(false);
+						} else {
+							double homeProbabilityFromTime = 0.00;
+							double drawProbabilityFromTime = 0.00;
+							if (scoreDifference >= 3) {
+								mySecretX= 0.2;
+								homeProbabilityFromTime = 0.989;
+								drawProbabilityFromTime = 0.01;
+
+							} else if (scoreDifference == 2) {
+								mySecretX=0.6;
+								homeProbabilityFromTime = 0.95;
+								drawProbabilityFromTime = 0.04;
+								mySecretX=0.85;
+							} else if (scoreDifference == 1) {
+
+								homeProbabilityFromTime = 0.7;
+								drawProbabilityFromTime = 0.26;
+
+							} else if (scoreDifference == 0) {
+								mySecretX=1.0;
+								homeProbabilityFromTime = 0.3 * (game.getOddsToWinHome()
+										/ (game.getOddsToWinHome() + game.getOddsToWinAway()));
+								drawProbabilityFromTime = 0.7;
+
+							} else if (scoreDifference == -1) {
+								mySecretX=0.85;
+								homeProbabilityFromTime = 0.04;
+								drawProbabilityFromTime = 0.26;
+
+							} else if (scoreDifference == -2) {
+								mySecretX=0.6;
+								homeProbabilityFromTime = 0.01;
+								drawProbabilityFromTime = 0.04;
+							} else if (scoreDifference < -3) {
+								mySecretX=0.2;
+								homeProbabilityFromTime = 0.001;
+								drawProbabilityFromTime = 0.01;
+							}
+
+							int minutesToBetEnd = 80 - minutesIn;
+							double percentOfGameThatIsLeft = minutesToBetEnd / 80;
+							double oddsForHome = mySecretX*(game.getOddsToWinHome() * percentOfGameThatIsLeft) + (2.0-mySecretX)*((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
+							double oddsForDraw =  mySecretX* game.getOddsToWinDraw() * percentOfGameThatIsLeft + (2.0-mySecretX)*((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
+							double oddsForAway = 1-oddsForHome-oddsForDraw;
+							game.setRateHome(generateRate(oddsForHome));
+							game.setRateDraw(generateRate(oddsForDraw));
+							game.setRateAway(generateRate(oddsForAway));
+							gameRepository.save(game);
+						}
 
 					} catch (Exception e) {
 						System.out.println("Cannot parse: " + status);

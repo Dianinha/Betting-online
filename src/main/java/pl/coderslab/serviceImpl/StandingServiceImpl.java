@@ -176,17 +176,18 @@ public class StandingServiceImpl implements StandingService {
 	public void createStandingsOnceForDay() {
 		List<League> leagues = leagueRepo.findAll();
 		for (League league : leagues) {
-			if (league.getCountry()!=null&&league.getName().contains("Group")) {
+			if (league.getCountry()!=null||league.getName().contains("Group")) {
 
 				List<Standing> standings = createStandings(league);
-				for (Standing standing : standings) {
-					try {
-						standingRepo.save(standing);
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-						System.out.println(standing);
-					}
-				}
+				saveStandings(standings);
+//				for (Standing standing : standings) {
+//					try {
+//						//standingRepo.save(standing);
+//					} catch (Exception e) {
+//						System.out.println(e.getMessage());
+//						System.out.println(standing);
+//					}
+//				}
 			}
 		}
 	}
