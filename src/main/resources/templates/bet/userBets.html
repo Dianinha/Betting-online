@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Your active single bets:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Game</th>
+							<th scope="col">Your bet</th>
+							<th scope="col">Possible win</th>
+						</tr>
+					</thead>
+					<tbody th:if="${bets}">
+
+						<tr th:each="bet: ${bets}">
+							<td
+								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"></td>
+							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
+							<td th:with="result=${bet.rate * bet.amount}"><span
+								th:text="${result}"></span></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${bets}">
+						<tr>
+							<td>You have no current unresolved bets.</td>
+						</tr>
+					</tbody>
+				</table>
+				<a th:href="@{/user/menu}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Your active multiple bets:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Game</th>
+							<th scope="col">Your bet</th>
+							<th scope="col">Possible joined win</th>
+						</tr>
+					</thead>
+					<tbody th:if="${multiBets}">
+
+						<tr th:each="bets: ${multiBets}">
+							<tr th:each="singleBet: ${bets.bets}">
+							<td
+								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"></td>
+							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+						</tr>
+						<td></td>
+						<td></td>
+						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
+							th:text="${result}"></span></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${multiBets}">
+						<tr>
+							<td>You have no current unresolved multiple bets.</td>
+						</tr>
+					</tbody>
+				</table>
+				<a th:href="@{/user/menu}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+		<div class="row my-5 py-5 pl-4">
+								<div class="col ">
+
+				<h1>Your past bets:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Game</th>
+							<th scope="col">Your bet</th>
+							<th scope="col">Possible win</th>
+							<th scope="col">Bet result</th>
+						</tr>
+					</thead>
+					<tbody th:if="${oldbets}">
+
+						<tr th:each="bet: ${oldbets}">
+							<td
+													th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"></td>
+							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
+							<td th:with="result=${bet.rate * bet.amount}"><span
+													th:text="${result}"></span></td>
+							<td th:text="${bet.betResult}"></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${oldbets}">
+						<tr>
+							<td>You have no past bets.</td>
+						</tr>
+					</tbody>
+				</table>
+				<a th:href="@{/user/menu}"><input type="submit" value="Back"
+										class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+
+	<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Your past multiple bets:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Game</th>
+							<th scope="col">Your bet</th>
+							<th scope="col">Possible joined win</th>
+						</tr>
+					</thead>
+					<tbody th:if="${oldMultiBets}">
+
+						<tr th:each="bets: ${oldMultiBets}">
+							<tr th:each="singleBet: ${bets.bets}">
+							<td
+								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"></td>
+							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+						</tr>
+						<td></td>
+						<td></td>
+						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
+							th:text="${result}"></span></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${oldMultiBets}">
+						<tr>
+							<td>You have no past multiple bets.</td>
+						</tr>
+					</tbody>
+				</table>
+				<a th:href="@{/user/menu}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+						</div>
+
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
+</body>
+</html>

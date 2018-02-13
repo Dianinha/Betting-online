@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>Insert title here</title>
+</head>
+<body> 
+	<span
+		th:text="${message}">
+	</span> 
+	
+	
+	<form th:action="@{/user}" method="get">
+
+		<div>
+			<input type="submit" value="Go back" />
+		</div>
+	</form>
+
+</body>
+</html>

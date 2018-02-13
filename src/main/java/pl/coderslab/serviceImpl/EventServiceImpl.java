@@ -18,12 +18,14 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pl.coderslab.model.Category;
 import pl.coderslab.model.Country;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GoalScorer;
 import pl.coderslab.model.League;
 import pl.coderslab.model.Player;
 import pl.coderslab.repositories.APIRepository;
+import pl.coderslab.repositories.CategoryRepository;
 import pl.coderslab.repositories.EventRepository;
 import pl.coderslab.repositories.GoalScorerRepository;
 import pl.coderslab.repositories.PlayerRepository;
@@ -32,8 +34,6 @@ import pl.coderslab.service.LeagueService;
 
 @Service
 public class EventServiceImpl implements EventService {
-
-	
 
 	@Autowired
 	PlayerRepository playerRepo;
@@ -44,16 +44,18 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	APIRepository apiRepository;
 	@Autowired
+	CategoryRepository categoryRepository;
+	@Autowired
 	LeagueService leagueService;
-	
+
 	final String beginingUrl = "https://apifootball.com/api/?action=get_events&from=";
 	final String toUrl = "&to=";
-	 String APIUrl = "&APIkey=";
+	String APIUrl = "&APIkey=";
 
 	@Override
 	public void createEvents(String from, String to) {
 		// Completing URL
-		String finalUrl = beginingUrl + from + toUrl + to + APIUrl+apiRepository.findOne(1L).getKeyCode();
+		String finalUrl = beginingUrl + from + toUrl + to + APIUrl + apiRepository.findOne(1L).getKeyCode();
 		// JSON parser creation:
 		JSONParser parser = new JSONParser();
 
@@ -85,8 +87,12 @@ public class EventServiceImpl implements EventService {
 					event.setLegaue(eventsLeague);
 
 					// Country
-					Country country = eventsLeague.getCountry();
-					event.setCountry(country);
+					if (eventsLeague.getCountry() != null) {
+						Country country = eventsLeague.getCountry();
+						event.setCountry(country);
+					}
+					
+					event.setCategory(categoryRepository.findByName("Football"));
 
 					// Formatting date from String
 					String dateInString = (String) eventJson.get("match_date");
@@ -170,92 +176,95 @@ public class EventServiceImpl implements EventService {
 
 	}
 
-	@Override
-	public List<Event> liveEvent() {
-		List<Event> liveEvents = new ArrayList<>();
-		LocalDate today = LocalDate.now();
-		String date = today.toString();
-		String url = beginingUrl + date + toUrl + date + APIUrl +apiRepository.findOne(1L).getKeyCode();
-		JSONParser parser = new JSONParser();
-		try {
-			BufferedReader in = getJSONReader(url);
-			String inputLine;
-
-			while ((inputLine = in.readLine()) != null) {
-				JSONArray jsonEvent = (JSONArray) parser.parse(inputLine);
-
-				for (Object jsonEvenObject : jsonEvent) {
-
-					JSONObject eventJson = (JSONObject) jsonEvenObject;
-					String matchId = (String) eventJson.get("match_id");
-					Long id = Long.parseLong(matchId);
-					Event event = eventRepo.findOne(id);
-					long leaugueid = Long.parseLong((String) eventJson.get("league_id"));
-					League league = leagueService.findById(leaugueid);
-					event.setLegaue(league);
-					event.setCountry(league.getCountry());
-					event.setStatus((String) eventJson.get("match_status"));
-					event.setTime((String) eventJson.get("match_time"));
-					event.setHomeTeamName((String) eventJson.get("match_hometeam_name"));
-
-					try {
-						if (eventJson.get("match_hometeam_score").equals("")) {
-							event.setHomeTeamScore(0);
-						} else {
-							event.setHomeTeamScore(Integer.parseInt((String) eventJson.get("match_hometeam_score")));
-						}
-					} catch (Exception e) {
-					}
-
-					event.setAwayTeamName((String) eventJson.get("match_awayteam_name"));
-
-					try {
-						if (eventJson.get("match_awayteam_score").equals("")) {
-							event.setAwayTeamScore(0);
-						} else {
-							event.setAwayTeamScore(Integer.parseInt((String) eventJson.get("match_awayteam_score")));
-						}
-
-					} catch (Exception e) {
-					}
-
-					try {
-						event.setHomeTeamScoreHalfTime(
-								Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
-					} catch (Exception e) {
-					}
-					try {
-						event.setAwayTeamScoreHalfTime(
-								Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
-					} catch (Exception e) {
-					}
-
-					event.setMatchLive((String) eventJson.get("match_live"));
-
-					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
-					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, id);
-
-					eventRepo.save(event);
-					saveGoalScorers(goalScorers, id);
-
-					liveEvents.add(event);
-
-				}
-			}
-			in.close();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			System.out.println("here1");
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("here2");
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("here3");
-		}
-
-		return liveEvents;
-	}
+//	@Override
+//	public List<Event> liveEvent() {
+//		List<Event> liveEvents = new ArrayList<>();
+//		LocalDate today = LocalDate.now();
+//		String date = today.toString();
+//		String url = beginingUrl + date + toUrl + date + APIUrl + apiRepository.findOne(1L).getKeyCode();
+//		JSONParser parser = new JSONParser();
+//		try {
+//			BufferedReader in = getJSONReader(url);
+//			String inputLine;
+//
+//			while ((inputLine = in.readLine()) != null) {
+//				JSONArray jsonEvent = (JSONArray) parser.parse(inputLine);
+//
+//				for (Object jsonEvenObject : jsonEvent) {
+//
+//					JSONObject eventJson = (JSONObject) jsonEvenObject;
+//					String matchId = (String) eventJson.get("match_id");
+//					Long id = Long.parseLong(matchId);
+//					Event event = eventRepo.findOne(id);
+//					long leaugueid = Long.parseLong((String) eventJson.get("league_id"));
+//					League league = leagueService.findById(leaugueid);
+//					event.setLegaue(league);
+//					if (league.getCountry() != null) {
+//						event.setCountry(league.getCountry());
+//					}
+//
+//					event.setStatus((String) eventJson.get("match_status"));
+//					event.setTime((String) eventJson.get("match_time"));
+//					event.setHomeTeamName((String) eventJson.get("match_hometeam_name"));
+//
+//					try {
+//						if (eventJson.get("match_hometeam_score").equals("")) {
+//							event.setHomeTeamScore(0);
+//						} else {
+//							event.setHomeTeamScore(Integer.parseInt((String) eventJson.get("match_hometeam_score")));
+//						}
+//					} catch (Exception e) {
+//					}
+//
+//					event.setAwayTeamName((String) eventJson.get("match_awayteam_name"));
+//
+//					try {
+//						if (eventJson.get("match_awayteam_score").equals("")) {
+//							event.setAwayTeamScore(0);
+//						} else {
+//							event.setAwayTeamScore(Integer.parseInt((String) eventJson.get("match_awayteam_score")));
+//						}
+//
+//					} catch (Exception e) {
+//					}
+//
+//					try {
+//						event.setHomeTeamScoreHalfTime(
+//								Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
+//					} catch (Exception e) {
+//					}
+//					try {
+//						event.setAwayTeamScoreHalfTime(
+//								Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
+//					} catch (Exception e) {
+//					}
+//
+//					event.setMatchLive((String) eventJson.get("match_live"));
+//
+//					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
+//					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, id);
+//
+//					eventRepo.save(event);
+//					saveGoalScorers(goalScorers, id);
+//
+//					liveEvents.add(event);
+//
+//				}
+//			}
+//			in.close();
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			System.out.println("here1");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			System.out.println("here2");
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//			System.out.println("here3");
+//		}
+//
+//		return liveEvents;
+//	}
 
 	@Override
 	public List<Event> findByDate(LocalDate date) {
@@ -335,7 +344,7 @@ public class EventServiceImpl implements EventService {
 
 		LocalDate today = LocalDate.now();
 		String date = today.toString();
-		String url = beginingUrl + date + toUrl + date + APIUrl+apiRepository.findOne(1L).getKeyCode();
+		String url = beginingUrl + date + toUrl + date + APIUrl + apiRepository.findOne(1L).getKeyCode();
 		JSONParser parser = new JSONParser();
 
 		try {
@@ -353,9 +362,12 @@ public class EventServiceImpl implements EventService {
 					Long id = Long.parseLong(eventId);
 
 					Event event = eventRepo.findOne(id);
-
-					event.setStatus((String) eventJson.get("match_status"));
-
+					try {
+						event.setStatus((String) eventJson.get("match_status"));
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+					event.setCategory(categoryRepository.findByName("Football"));
 					event.setTime((String) eventJson.get("match_time"));
 
 					try {
@@ -411,7 +423,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public boolean checkIfEventHasEnded(Event event) {
-		return (event.getStatus().equals("FT"))?true:false;
+		return (event.getStatus().equals("FT")) ? true : false;
 	}
 
 }

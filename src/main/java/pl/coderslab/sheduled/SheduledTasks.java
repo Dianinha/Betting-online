@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import pl.coderslab.model.Event;
+import pl.coderslab.service.BetService;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
 
@@ -19,12 +20,15 @@ public class SheduledTasks {
 
 	@Autowired
 	private GameToBetService gameService;
+	
+	@Autowired
+	private BetService betService;
 
-	@Scheduled(cron = "30 17 17 1/1 * ?")
+	@Scheduled(cron = "20 15 10 1/1 * ?")
 	public void createEvents() {
-		LocalDate dateStart = LocalDate.now().plusDays(1);
+		LocalDate dateStart = LocalDate.now();
 		String startDate = dateStart.toString();
-		LocalDate dateStop = LocalDate.now().plusDays(2);
+		LocalDate dateStop = LocalDate.now();
 		String stopDate = dateStop.toString();
 		eventService.createEvents(startDate, stopDate);
 		List<Event> createdEvents = eventService.findByDateBetween(dateStart, dateStop);
@@ -37,5 +41,11 @@ public class SheduledTasks {
 	public void updateLiveEvents() {
 		eventService.updateliveEvents();
 		gameService.updateLiveEventsGamesToBet();
+		}
+	
+	@Scheduled(cron = "0 0/5 * 1/1 * ?")
+	public void checkBets() {
+		betService.checkBetsForTodayGames();
+		System.out.println("bets updated");
 		}
 }

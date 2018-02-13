@@ -18,5 +18,7 @@ public interface GameToBetService {
 	void updateGamesToBet(List<Event> liveEvents);
 	
 	void updateLiveEventsGamesToBet();
+	
+	List<GameToBet> findByListOfEvents(List<Event> events);
 
 }

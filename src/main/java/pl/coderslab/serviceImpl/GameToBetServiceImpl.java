@@ -1,6 +1,5 @@
 package pl.coderslab.serviceImpl;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,8 +20,10 @@ import org.springframework.stereotype.Service;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
 import pl.coderslab.model.H2H;
+import pl.coderslab.model.League;
 import pl.coderslab.model.Standing;
 import pl.coderslab.repositories.APIRepository;
+import pl.coderslab.repositories.EventRepository;
 import pl.coderslab.repositories.GameToBetRepository;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
@@ -39,9 +40,12 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	@Autowired
 	StandingService standingService;
-	
+
 	@Autowired
 	APIRepository apiRepository;
+	
+	@Autowired
+	EventRepository eventRepository;
 
 	// @Override
 	// public void createGamesToBet() {
@@ -83,17 +87,30 @@ public class GameToBetServiceImpl implements GameToBetService {
 	public void createGamesToBetFromEvents(List<Event> events) {
 		List<Event> futureEvents = events;
 		for (Event event : futureEvents) {
-			GameToBet game = new GameToBet();
-			System.out.println(event.getStatus());
-			if (event.getStatus().equals("FT")) {
+			if (event.getLegaue().getCountry() == null) {
+				GameToBet game = new GameToBet();
 				game.setActive(false);
+				game.setId(event.getId());
+				game.setEvent(event);
+				game.setRateAway(new BigDecimal(1.0));
+				game.setRateHome(new BigDecimal(1.0));
+				game.setRateDraw(new BigDecimal(1.0));
+				gameRepository.save(game);
 			} else {
-				game.setActive(true);
-			}
-			game.setId(event.getId());
-			game.setEvent(event);
-			gameRepository.save(game);
+				GameToBet game = new GameToBet();
+				System.out.println(event.getStatus());
+				if (event.getStatus().equals("FT")) {
+					game.setActive(false);
+				} else {
+					game.setActive(true);
+				}
+				game.setId(event.getId());
+				game.setEvent(event);
+				gameRepository.save(game);
+				event.setGame(game);
+				eventRepository.save(event);
 
+			}
 		}
 		updateGamesToBet(futureEvents);
 
@@ -114,12 +131,19 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 		for (Event event : liveEvents) {
 			if (eventService.checkIfEventHasEnded(event)) {
+
 				GameToBet game = gameRepository.findByEvent(event);
 				game.setActive(false);
 				gameRepository.save(game);
 			} else {
-				GameToBet game = gameRepository.findByEvent(event);
-				gameRepository.save(recalculateOdds(game, event));
+				if (event.getLegaue().getCountry() == null) {
+				} else {
+					GameToBet game = gameRepository.findByEvent(event);
+					if (event.getLegaue().getCountry() != null || event.getLegaue().getName().contains("GROUP")) {
+
+						gameRepository.save(recalculateOdds(game, event));
+					}
+				}
 			}
 
 		}
@@ -129,11 +153,11 @@ public class GameToBetServiceImpl implements GameToBetService {
 	private GameToBet recalculateOdds(GameToBet game, Event event) {
 		String homeTeamName = event.getHomeTeamName();
 		String awayTeamName = event.getAwayTeamName();
-		Standing homeStanding = standingService.findStanfingByTeamName(homeTeamName);
-		Standing awayStanding = standingService.findStanfingByTeamName(awayTeamName);
+		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(homeTeamName, event.getLegaue());
+		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(awayTeamName, event.getLegaue());
 		H2H headToHead = createH2H(homeTeamName, awayTeamName);
-		game.setOddsToWinDraw(calculateOddsToDraw(homeTeamName, awayTeamName, headToHead));
-		game.setOddsToWinHome(calculateOddsToWinHome(homeTeamName, awayTeamName, headToHead));
+		game.setOddsToWinDraw(calculateOddsToDraw(homeTeamName, awayTeamName, headToHead, event.getLegaue()));
+		game.setOddsToWinHome(calculateOddsToWinHome(homeTeamName, awayTeamName, headToHead, event.getLegaue()));
 		game.setOddsToWinAway(1 - game.getOddsToWinDraw() - game.getOddsToWinHome());
 		game.setRateHome(generateRate(game.getOddsToWinHome()));
 		game.setRateAway(generateRate(game.getOddsToWinAway()));
@@ -151,9 +175,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	}
 
-	private double calculateOddsToDraw(String home, String away, H2H head) {
-		Standing homeStanding = standingService.findStanfingByTeamName(home);
-		Standing awayStanding = standingService.findStanfingByTeamName(away);
+	private double calculateOddsToDraw(String home, String away, H2H head, League league) {
+		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
+		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
 		double odds = 0.25;
 		if (homeStanding.getMatchesPlayed() < 7) {
 			odds = 0.3 * head.getNumberOfDrawHome() / head.getLastHomeGamesNumber()
@@ -173,9 +197,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 		return odds;
 	}
 
-	private double calculateOddsToWinHome(String home, String away, H2H head) {
-		Standing homeStanding = standingService.findStanfingByTeamName(home);
-		Standing awayStanding = standingService.findStanfingByTeamName(away);
+	private double calculateOddsToWinHome(String home, String away, H2H head, League league) {
+		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
+		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
 		System.out.println(homeStanding);
 		System.out.println(awayStanding);
 		double odds = 0.25;
@@ -201,7 +225,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 	private H2H createH2H(String home, String away) {
 		H2H result = new H2H();
 		String url = "https://apifootball.com/api/?action=get_H2H&firstTeam=" + home.replace(' ', '+') + "&secondTeam="
-				+ away.replace(' ', '+') + "&APIkey="+ apiRepository.findOne((long)1).getKeyCode();
+				+ away.replace(' ', '+') + "&APIkey=" + apiRepository.findOne((long) 1).getKeyCode();
 		JSONParser parser = new JSONParser();
 		int numberOfDrawCounter = 0;
 		int numberOfDrawHomeCounter = 0;
@@ -310,7 +334,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 	public void updateLiveEventsGamesToBet() {
 		List<Event> liveEvents = eventService.findByDate(LocalDate.now());
 		for (Event event : liveEvents) {
-			Integer minutesIn =0;
+			Integer minutesIn = 0;
 			if (eventService.checkIfEventHasEnded(event)) {
 				GameToBet game = gameRepository.findByEvent(event);
 				game.setActive(false);
@@ -319,19 +343,17 @@ public class GameToBetServiceImpl implements GameToBetService {
 				GameToBet game = gameRepository.findByEvent(event);
 				String status = event.getStatus();
 				if (status.equals("HT")) {
-					
-				}
-				else if (status.startsWith("9")) {
+
+				} else if (status.startsWith("9")) {
 					game.setActive(false);
-				}
-				else {
+				} else {
 					try {
-						minutesIn = Integer.parseInt(status.substring(0, status.length()-1));
+						minutesIn = Integer.parseInt(status.substring(0, status.length() - 1));
 						int homeScore = event.getHomeTeamScore();
 						int awayScore = event.getAwayTeamScore();
-						
-						//here something
-						
+
+						// here something
+
 					} catch (Exception e) {
 						System.out.println("Cannot parse: " + status);
 					}
@@ -341,5 +363,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 		}
 	}
 
+	@Override
+	public List<GameToBet> findByListOfEvents(List<Event> events) {
+		return gameRepository.findByEventIn(events);
+	}
 
 }

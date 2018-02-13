@@ -9,7 +9,7 @@ public interface EventService {
 
 	void createEvents(String from, String to);
 
-	List<Event> liveEvent();
+	//List<Event> liveEvent();
 	
 	void updateliveEvents();
 

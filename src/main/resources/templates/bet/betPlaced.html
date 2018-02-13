@@ -6,8 +6,30 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<p>
-		<span th:text="'bet is placed'"> </span>
-	</p>
+	<span
+		th:text="'Bet is placed in Your cart. Do You want to add more bets? '">
+	</span> Your bets:
+	<ul>
+		<li th:each="bet: ${session.currentBetCart}"><span
+			th:text="${bet.betOn}"></span> <span th:text="${bet.amount} + ' PLN'"></span>
+			<span th:text="${bet.rate}"></span></li>
+	</ul>
+	Possible win:
+	<span th:text="${session.possibleWin}"></span>
+
+	<form th:action="@{/bet/finalizeBets}" method="post">
+
+		<div>
+			<input type="submit" value="Finalize" />
+		</div>
+	</form>
+
+	<form th:action="@{/user}" method="get">
+
+		<div>
+			<input type="submit" value="Go back" />
+		</div>
+	</form>
+
 </body>
 </html>

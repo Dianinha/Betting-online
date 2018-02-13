@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Event {
@@ -31,6 +33,10 @@ public class Event {
 
 	private String homeTeamName;
 
+	@OneToOne
+	@JoinColumn
+	private GameToBet game;
+
 	private int homeTeamScore;
 
 	private String awayTeamName;
@@ -42,6 +48,10 @@ public class Event {
 	private int awayTeamScoreHalfTime;
 
 	private String matchLive;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn
+	private Category category;
 
 	@OneToMany(mappedBy = "event")
 	private List<GoalScorer> goalScorrers;
@@ -72,6 +82,7 @@ public class Event {
 	public League getLegaue() {
 		return legaue;
 	}
+	
 
 	public void setLegaue(League legaue) {
 		this.legaue = legaue;
@@ -83,6 +94,22 @@ public class Event {
 
 	public void setDate(LocalDate date) {
 		this.date = date;
+	}
+
+	public GameToBet getGame() {
+		return game;
+	}
+
+	public void setGame(GameToBet game) {
+		this.game = game;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 
 	public String getStatus() {
@@ -176,10 +203,11 @@ public class Event {
 	@Override
 	public String toString() {
 		return "Event [id=" + id + ", country=" + country + ", legaue=" + legaue + ", date=" + date + ", status="
-				+ status + ", time=" + time + ", homeTeamName=" + homeTeamName + ", homeTeamScore=" + homeTeamScore
-				+ ", awayTeamName=" + awayTeamName + ", awayTeamScore=" + awayTeamScore + ", homeTeamScoreHalfTime="
-				+ homeTeamScoreHalfTime + ", awayTeamScoreHalfTime=" + awayTeamScoreHalfTime + ", matchLive="
-				+ matchLive + "]";
+				+ status + ", time=" + time + ", homeTeamName=" + homeTeamName + ", game=" + game + ", homeTeamScore="
+				+ homeTeamScore + ", awayTeamName=" + awayTeamName + ", awayTeamScore=" + awayTeamScore
+				+ ", homeTeamScoreHalfTime=" + homeTeamScoreHalfTime + ", awayTeamScoreHalfTime="
+				+ awayTeamScoreHalfTime + ", matchLive=" + matchLive + ", category=" + category + ", goalScorrers="
+				+ goalScorrers + "]";
 	}
 
 }

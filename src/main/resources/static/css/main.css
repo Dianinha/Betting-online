@@ -129,7 +129,7 @@ ul {
 .tborder{
 	background-color: #e7e8e8;
 	border-color: #8b8d8f;
-	border-width: 1px;
+	border-width: 1px !important;
 	border-style: solid;
 }
 
@@ -229,4 +229,32 @@ ul {
 
 .dropdown-menu a:hover {
   color: #df2935 !important;
+}
+
+.usertbl {
+	font-size: 10px;
+	line-height: 1;
+}
+
+.usertbl th {
+	color: #001021;
+}
+
+.usertbl td {
+	vertical-align: middle!important;
+}
+
+.betstbl {
+	height: 300px;
+	overflow: auto;
+}
+
+.list-group-item-red {
+	    color: #ffffff;
+		background-color: #df2935;
+}
+
+.list-group-item-blue {
+	    color: #ffffff;
+		background-color: #001021;
 }

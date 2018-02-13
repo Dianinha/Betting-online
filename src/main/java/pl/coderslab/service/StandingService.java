@@ -12,7 +12,7 @@ public interface StandingService {
 	
 	 void saveStandings(List<Standing> standings);
 	 
-	 Standing findStanfingByTeamName(String teamName);
+	 Standing findStangingByTeamNameAndLeague(String teamName, League league);
 	 
 	 void createStandingsOnceForDay();
 }

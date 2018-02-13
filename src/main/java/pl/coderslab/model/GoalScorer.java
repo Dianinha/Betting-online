@@ -84,7 +84,9 @@ public class GoalScorer {
 	@Override
 	public String toString() {
 		return "GoalScorer [id=" + id + ", time=" + time + ", homeScorer=" + homeScorer + ", awayScorer=" + awayScorer
-				+ ", score=" + score + ", event=" + event + "]";
+				+ ", score=" + score + ""
+						//+ ", event=" + event + "]"
+						;
 	}
 
 	

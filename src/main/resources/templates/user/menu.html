@@ -3,20 +3,275 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>User Menu</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
-<body>
-	MENU:
-	<ul>
-		<li><a th:href="@{/user/wallet}" th:text="'Your wallet'">I do
-				not want to wait!</a></li>
-		<li>Your bets</li>
-		<li><a th:href="@{/user/messages}" th:text="'Your messages'">I
-				do not want to wait!</a></li>
-		<li>Categories You observe</li>
-		<li><a th:href="@{/user/editData}" th:text="'Edit Your data'"></a></li>
-		<li><a th:href="@{/user/changePassword}" th:text="'Change Your password'"></a></li>
-		<li></li>
-	</ul>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+
+
+	<div class="container">
+		<div class="row my-5 py-5 px-3">
+			<div class="col ">
+				<div class="row">
+					<div class="col tborder mx-3 py-4"
+						style="background-color: #ffffff; height: 110px;">
+						<a> <img src="../images/choices.png" />Add new bet
+						</a>
+					</div>
+					<div class="col tborder mx-3 py-4"
+						style="background-color: #ffffff; height: 110px;">
+						<a> <img src="../images/money.png" class="mr-3" />Add funds
+						</a>
+					</div>
+					<div class="col tborder mx-3 py-4"
+						style="background-color: #ffffff; height: 110px;">
+						<a> <img src="../images/paper-plane.png" class="mr-2" />Send
+							message
+						</a>
+					</div>
+					<div class="col tborder mx-3 py-4"
+						style="background-color: #ffffff; height: 110px;">
+						<a> <img src="../images/add-user.png " class="mr-2" />Invite
+							friends
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row my-5 py-5 px-3">
+			<div class="col ">
+				<h1>
+					DianinhaBets: <span th:text="${session.currentFunds} + ' PLN'"></span>
+				</h1>
+
+				<div class="row mt-4 ">
+					<div class="col tborder mx-1 py-4"
+						style="background-color: #ffffff">
+
+						<h3>Your active bets:</h3>
+						<div class="betstbl">
+							<table class="table table-striped usertbl">
+								<thead>
+									<tr>
+										<th scope="col">Sport</th>
+										<th scope="col">Competition</th>
+										<th scope="col">Teams</th>
+										<th scope="col">Score</th>
+										<th scope="col">Time</th>
+										<th scope="col">Bet</th>
+										<th scope="col">To win</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Football</td>
+										<td>Süper Lig</td>
+										<td><span style="color: #df2935">Galatasaray</span> vs <span
+											style="color: #df2935">Antalyaspor</span></td>
+										<td>0:0</td>
+										<td>18:00</td>
+										<td>1</td>
+										<td><span style="color: #df2935; font-weight: bold">700zł</span></td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col tborder mx-1 py-4"
+						style="background-color: #ffffff">
+
+						<h3>Popular bets:</h3>
+						<div class="betstbl">
+							<table class="table table-striped usertbl">
+								<thead>
+									<tr>
+										<th scope="col">Sport</th>
+										<th scope="col">Competition</th>
+										<th scope="col">Teams</th>
+										<th scope="col">Score</th>
+										<th scope="col">Time</th>
+										<th scope="col">Home</th>
+										<th scope="col">Draw</th>
+										<th scope="col">Away</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Football</td>
+										<td>Süper Lig</td>
+										<td><span style="color: #df2935">Galatasaray</span> vs <span
+											style="color: #df2935">Antalyaspor</span></td>
+										<td>0:0</td>
+										<td>18:00</td>
+										<td style="background-color: #df2935"><a
+											style="color: #ffffff !important; font-weight: bold;">2.20</a></td>
+										<td style="background-color: #001021"><a
+											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
+										<td style="background-color: #df2935"><a
+											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-4 ">
+
+					<div class="col tborder mx-1 py-4"
+						style="background-color: #ffffff">
+
+						<h3>Observed:</h3>
+						<div class="betstbl">
+							<table class="table table-striped usertbl">
+								<thead>
+									<tr>
+										<th scope="col">Sport</th>
+										<th scope="col">Competition</th>
+										<th scope="col">Teams</th>
+										<th scope="col">Score</th>
+										<th scope="col">Time</th>
+										<th scope="col">Home</th>
+										<th scope="col">Draw</th>
+										<th scope="col">Away</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Football</td>
+										<td>Süper Lig</td>
+										<td><span style="color: #df2935">Galatasaray</span> vs <span
+											style="color: #df2935">Antalyaspor</span></td>
+										<td>0:0</td>
+										<td>18:00</td>
+										<td style="background-color: #df2935"><a
+											style="color: #ffffff !important; font-weight: bold;">2.20</a></td>
+										<td style="background-color: #001021"><a
+											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
+										<td style="background-color: #df2935"><a
+											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="col tborder mx-1 py-4"
+						style="background-color: #ffffff">
+
+						<h3>Live just now:</h3>
+						<div class="betstbl">
+							<table class="table table-striped usertbl">
+								<thead>
+									<tr>
+										<th scope="col">Sport</th>
+										<th scope="col">Competition</th>
+										<th scope="col">Teams</th>
+										<th scope="col">Score</th>
+										<th scope="col">Time</th>
+										<th scope="col">Home</th>
+										<th scope="col">Draw</th>
+										<th scope="col">Away</th>
+									</tr>
+								</thead>
+								<tbody id="userLiveResults">
+									<!-- <tr th:each="liveNowEv : ${liveNow}">
+										<td th:if="${liveNowEv.category.name}"><span
+											th:text="${liveNowEv.category.name}"></span></td>
+										<td th:text="${liveNowEv.legaue.name}"></td>
+										<td><span style="color: #df2935"
+											th:text="${liveNowEv.homeTeamName}"></span> vs <span
+											style="color: #df2935" th:text="${liveNowEv.awayTeamName}"></span></td>
+										<td th:text="${liveNowEv.homeTeamScore} + ':' + ${liveNowEv.awayTeamScore}">0:0</td>
+										<td th:text="${liveNowEv.time}">18:00</td>
+										<td style="background-color: #df2935"><a
+											style="color: #ffffff !important; font-weight: bold;"
+											th:text="${liveNowEv.game.rateHome}">2.20</a></td>
+										<td style="background-color: #001021"
+											th:text="${liveNowEv.game.rateDraw}"><a
+											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
+										<td style="background-color: #df2935"
+											th:text="${liveNowEv.game.rateAway}"><a
+											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
+									</tr> -->
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="container">
+				<div class="row my-4 py-4 px-1">
+					<div class="col ">
+						<h1>Promotions</h1>
+						<div class="row mt-4 ">
+							<div class="col tborder mx-1 py-4">
+								<h2>Active Promotions:</h2>
+								<ul class="list-group">
+									<li class="list-group-item list-group-item-red">Gain 10£
+										for register</li>
+									<li class="list-group-item list-group-item-blue">+20% for
+										the first bet!</li>
+									<li class="list-group-item list-group-item-red">+10% for
+										betting on ValentinesDay</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+		<script type="text/javascript"
+		src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+
+	<script th:inline="javascript">
+		$(document).ready(function() {
+			function updateUserpage() {
+				$.ajax({
+					url : "http://localhost:5555/results/userLiveResults",
+					dataType : "html",
+					cache : false,
+					success : function(data) {
+						$('#userLiveResults').html(data);
+					}
+				});
+			}
+			updateUserpage();
+			setInterval(updateUserpage, 1000);
+		});
+		</script>
 </body>
 </html>

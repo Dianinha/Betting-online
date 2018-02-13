@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import pl.coderslab.model.Bet;
+import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.Operation;
 import pl.coderslab.model.OperationType;
 import pl.coderslab.model.Wallet;
@@ -39,7 +39,7 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public Operation createPlaceBetOperation(Wallet wallet, BigDecimal amount, Bet bet) {
+	public Operation createPlaceBetOperation(Wallet wallet, BigDecimal amount, SingleBet bet) {
 		Operation operation = new Operation();
 		operation.setWallet(wallet);
 		operation.setAmount(amount);
@@ -61,7 +61,7 @@ public class OperationServiceImpl implements OperationService {
 	}
 
 	@Override
-	public Operation createPrizeOperation(Wallet wallet, Bet bet) {
+	public Operation createPrizeOperation(Wallet wallet, SingleBet bet) {
 		Operation operation = new Operation();
 		operation.setWallet(wallet);
 		BigDecimal amount = bet.getAmount().multiply(bet.getRate());
@@ -83,6 +83,21 @@ public class OperationServiceImpl implements OperationService {
 			}
 		});
 		return operations;
+	}
+
+	@Override
+	public Operation createPlaceMultipleBetOperation(Wallet wallet, BigDecimal amount, List<SingleBet> bets) {
+		Operation operation = new Operation();
+		operation.setWallet(wallet);
+		operation.setAmount(amount);
+		operation.setOperationType(OperationType.PLACE_BET);
+		operation.setTimeOfOperation(LocalDateTime.now());
+		BigDecimal joinedRate = new BigDecimal(1);
+		for (SingleBet singleBet : bets) {
+		joinedRate = joinedRate.multiply(singleBet.getRate());	
+		}
+		operation.setOperationInfo("Multiple Bet placed. Amount: " + amount + " bet rate: " + joinedRate);
+		return operationRepository.save(operation);
 	}
 
 }

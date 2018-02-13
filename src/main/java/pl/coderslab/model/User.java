@@ -63,7 +63,7 @@ public class User {
 	private Wallet wallet;
 
 	@OneToMany(mappedBy = "user")
-	private List<Bet> userBets;
+	private List<SingleBet> userBets;
 
 	@ManyToMany
 	@JoinTable(name = "user_event", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
@@ -168,11 +168,11 @@ public class User {
 		this.wallet = wallet;
 	}
 
-	public List<Bet> getUserBets() {
+	public List<SingleBet> getUserBets() {
 		return userBets;
 	}
 
-	public void setUserBets(List<Bet> userBets) {
+	public void setUserBets(List<SingleBet> userBets) {
 		this.userBets = userBets;
 	}
 

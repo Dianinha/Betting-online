@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "bets")
-public class Bet {
+public class SingleBet {
 
 	// attributes
 	@Id
@@ -29,13 +29,23 @@ public class Bet {
 	@JoinColumn
 	private GameToBet game;
 
+	private String betOn;
+
 	private BigDecimal amount;
 
 	// how much user wins for 1 pln
 	private BigDecimal rate;
 
+	private BetStatus status;
+	
+	private boolean isItGroupBet;
+	
+	private boolean isItMultiBet;
+	
+	private String betResult;
+
 	// Constructor
-	public Bet() {
+	public SingleBet() {
 		super();
 	}
 
@@ -80,6 +90,47 @@ public class Bet {
 		this.rate = rate;
 	}
 
+	public boolean isItGroupBet() {
+		return isItGroupBet;
+	}
+
+	public void setItGroupBet(boolean isItGroupBet) {
+		this.isItGroupBet = isItGroupBet;
+	}
+	
+
+	public String getBetResult() {
+		return betResult;
+	}
+
+	public void setBetResult(String betResult) {
+		this.betResult = betResult;
+	}
+
+	public boolean isItMultiBet() {
+		return isItMultiBet;
+	}
+
+	public void setItMultiBet(boolean isItMultiBet) {
+		this.isItMultiBet = isItMultiBet;
+	}
+
+	public String getBetOn() {
+		return betOn;
+	}
+
+	public void setBetOn(String betOn) {
+		this.betOn = betOn;
+	}
+
+	public BetStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(BetStatus status) {
+		this.status = status;
+	}
+
 	// hashCode and equals
 	@Override
 	public int hashCode() {
@@ -100,7 +151,7 @@ public class Bet {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Bet other = (Bet) obj;
+		SingleBet other = (SingleBet) obj;
 		if (amount == null) {
 			if (other.amount != null)
 				return false;

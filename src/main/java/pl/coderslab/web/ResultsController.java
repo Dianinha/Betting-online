@@ -111,45 +111,45 @@ public class ResultsController {
 
 	@RequestMapping(value = "/tryLive")
 	public String tryLive(Model model, HttpSession session) {
-		List<Event> liveEvents = eventService.liveEvent();
+		List<Event> liveEvents = eventService.findByDate(LocalDate.now());
 		model.addAttribute("liveEvents", liveEvents);
 		return "/live/eventlive";
 	}
 
-	@RequestMapping(value = "/updateResults")
-	@ResponseBody
-	public String updateResults() {
-		List<Event> liveEvents = eventService.liveEvent();
-		JSONArray list = new JSONArray();
-		for (Event event : liveEvents) {
-			JSONObject obj = new JSONObject();
-			obj.put(event.getId(), event);
-			list.add(obj);
-		}
-		return list.toJSONString();
-	}
+//	@RequestMapping(value = "/updateResults")
+//	@ResponseBody
+//	public String updateResults() {
+//		List<Event> liveEvents = eventService.liveEvent();
+//		JSONArray list = new JSONArray();
+//		for (Event event : liveEvents) {
+//			JSONObject obj = new JSONObject();
+//			obj.put(event.getId(), event);
+//			list.add(obj);
+//		}
+//		return list.toJSONString();
+//	}
 
-	@RequestMapping(value = "/updateJsonResults")
-	@ResponseBody
-	public JSONArray updateJsonResults() {
-		List<Event> liveEvents = eventService.liveEvent();
-		JSONArray list = new JSONArray();
-		for (Event event : liveEvents) {
-			JSONObject obj = new JSONObject();
-			obj.put("date", event.getDate().toString());
-			obj.put("time", event.getTime());
-			League league = event.getLegaue();
-			obj.put("leagueName", league.getName());
-			obj.put("homeTeamName", event.getHomeTeamName());
-			obj.put("awayTeamName", event.getAwayTeamName());
-			obj.put("homeTeamScore", event.getHomeTeamScore());
-			obj.put("awayTeamScore", event.getAwayTeamScore());
-			obj.put("homeTeamScoreHalfTime", event.getHomeTeamScoreHalfTime());
-			obj.put("awayTeamScoreHalfTime", event.getAwayTeamScoreHalfTime());
-			list.add(obj);
-		}
-		return list;
-	}
+//	@RequestMapping(value = "/updateJsonResults")
+//	@ResponseBody
+//	public JSONArray updateJsonResults() {
+//		List<Event> liveEvents = eventService.liveEvent();
+//		JSONArray list = new JSONArray();
+//		for (Event event : liveEvents) {
+//			JSONObject obj = new JSONObject();
+//			obj.put("date", event.getDate().toString());
+//			obj.put("time", event.getTime());
+//			League league = event.getLegaue();
+//			obj.put("leagueName", league.getName());
+//			obj.put("homeTeamName", event.getHomeTeamName());
+//			obj.put("awayTeamName", event.getAwayTeamName());
+//			obj.put("homeTeamScore", event.getHomeTeamScore());
+//			obj.put("awayTeamScore", event.getAwayTeamScore());
+//			obj.put("homeTeamScoreHalfTime", event.getHomeTeamScoreHalfTime());
+//			obj.put("awayTeamScoreHalfTime", event.getAwayTeamScoreHalfTime());
+//			list.add(obj);
+//		}
+//		return list;
+//	}
 
 	@RequestMapping(value = "/updateHtmlResults")
 	@ResponseBody
@@ -291,4 +291,94 @@ public class ResultsController {
 		return myHtml;
 	}
 
+	@RequestMapping(value = "/userLiveResults")
+	@ResponseBody
+	public String getResultsForUserPage() {
+		String myHtml = "";
+		LocalDate today = LocalDate.now();
+		List<Event> liveEvents = eventService.findByDateBetween(today, today);
+		Collections.sort(liveEvents, new Comparator<Event>() {
+
+			@Override
+			public int compare(Event o1, Event o2) {
+
+				return o1.getTime().compareTo(o2.getTime());
+			}
+		});
+		for (int i = 0; i < liveEvents.size(); i++) {
+			Event event = liveEvents.get(i);
+			String time = event.getTime();
+			String in = "NOTHING";
+			time = time.trim();
+			int hour = LocalDateTime.now().getHour();
+			int min = LocalDateTime.now().getMinute();
+			int matchHour = Integer.parseInt(time.substring(0, time.indexOf(':')));
+			String why = (time.substring(((time.indexOf(':')) + 1), time.length()));
+			int matchMin = 0;
+			try {
+				matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
+			} catch (Exception e) {
+				if (why.equals("45")) {
+					matchMin = 45;
+				}
+			}
+
+			if (matchHour > hour) {
+				in = time;
+			} else if (matchHour == hour) {
+				if (matchMin > min) {
+					in = time;
+				} else {
+					in = event.getStatus();
+				}
+			} else if (event.getStatus().equals("FT")) {
+				in = "FINISHED";
+
+			} else {
+				in = event.getStatus();
+			}
+
+			String score = event.getHomeTeamScore() + ":" + event.getAwayTeamScore();
+
+			GameToBet game = gameService.findByEvent(event);
+
+			if (!in.equals("FINISHED")) {
+				myHtml = myHtml + "<tr><td>" + event.getCategory().getName()
+						+ "</td><td><span style=\"color: #df2935\">" + event.getLegaue().getName()
+						+ "</span></td><td><span style=\"color: #df2935\">" + event.getHomeTeamName()
+						+ "</span> vs. <span style=\"color: #df2935\">" + event.getAwayTeamName() + "</span></td><td>"
+						+ event.getHomeTeamScore() + ":" + event.getAwayTeamScore() + "</td><td>" + in
+						+ "</td><td style=\"background-color: #df2935\">"
+						+ "<a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">" + event.getGame().getRateHome()
+						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ event.getGame().getRateDraw()
+						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ event.getGame().getRateAway() + "</a></td></tr>";
+
+			}
+
+			// <tr th:each="liveNowEv : ${liveNow}">
+			// <td th:if="${liveNowEv.category.name}"><span
+			// th:text="${liveNowEv.category.name}"></span></td>
+			// <td th:text="${liveNowEv.legaue.name}"></td>
+			// <td><span style="color: #df2935"
+			// th:text="${liveNowEv.homeTeamName}"></span> vs <span
+			// style="color: #df2935" th:text="${liveNowEv.awayTeamName}"></span></td>
+			// <td th:text="${liveNowEv.homeTeamScore} + ':' +
+			// ${liveNowEv.awayTeamScore}">0:0</td>
+			// <td th:text="${liveNowEv.time}">18:00</td>
+			// <td style="background-color: #df2935"><a
+			// style="color: #ffffff !important; font-weight: bold;"
+			// th:text="${liveNowEv.game.rateHome}">2.20</a></td>
+			// <td style="background-color: #001021"
+			// th:text="${liveNowEv.game.rateDraw}"><a
+			// style="color: #ffffff !important; font-weight: bold">3.20</a></td>
+			// <td style="background-color: #df2935"
+			// th:text="${liveNowEv.game.rateAway}"><a
+			// style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
+			// </tr>
+			//bet/add?gameId=252790&betOn=home
+		}
+		return myHtml;
+	}
 }

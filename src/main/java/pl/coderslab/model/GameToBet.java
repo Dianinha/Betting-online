@@ -20,7 +20,7 @@ public class GameToBet {
 	private Event event;
 
 	@OneToMany(mappedBy = "game")
-	private List<Bet> bet;
+	private List<SingleBet> bet;
 
 	private double oddsToWinHome;
 
@@ -64,11 +64,11 @@ public class GameToBet {
 		this.event = event;
 	}
 
-	public List<Bet> getBet() {
+	public List<SingleBet> getBet() {
 		return bet;
 	}
 
-	public void setBet(List<Bet> bet) {
+	public void setBet(List<SingleBet> bet) {
 		this.bet = bet;
 	}
 
@@ -122,7 +122,8 @@ public class GameToBet {
 
 	@Override
 	public String toString() {
-		return "GameToBet [id=" + id + ", oddsToWinHome=" + oddsToWinHome + ", oddsToWinDraw=" + oddsToWinDraw
+		return "GameToBet [id=" + id + 
+				", oddsToWinHome=" + getOddsToWinHome() + ", oddsToWinDraw=" + oddsToWinDraw
 				+ ", oddsToWinAway=" + oddsToWinAway + ", rateHome=" + rateHome + ", rateDraw=" + rateDraw
 				+ ", rateAway=" + rateAway + ", active=" + active + "]";
 	}

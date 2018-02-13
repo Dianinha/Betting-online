@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import pl.coderslab.handlers.LoginHandler;
 import pl.coderslab.serviceImpl.SpringDataUserDetailsService;
 
 @Configuration
@@ -32,13 +33,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SpringDataUserDetailsService customUserDetailsService() {
 		return new SpringDataUserDetailsService();
 	}
+	
+	@Bean
+	public LoginHandler handler(){
+		return new LoginHandler();
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				.anyRequest().permitAll().and().formLogin().successForwardUrl("/user/").loginPage("/login").and().logout()
+				.anyRequest().permitAll().and().formLogin().successHandler(handler()).loginPage("/login").and().logout()
 				.logoutSuccessUrl("/login").permitAll();
 
 	}
+	
+	
 
 }

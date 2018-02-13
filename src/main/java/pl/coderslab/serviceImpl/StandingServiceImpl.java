@@ -29,7 +29,7 @@ public class StandingServiceImpl implements StandingService {
 
 	@Autowired
 	StandingRepository standingRepo;
-	
+
 	@Autowired
 	LeagueRepository leagueRepo;
 
@@ -38,7 +38,7 @@ public class StandingServiceImpl implements StandingService {
 
 	@Override
 	public List<Standing> createStandings(League league) {
-		
+
 		String urlBegining = "https://apifootball.com/api/?action=get_standings&league_id=";
 		String urlEnding = "&APIkey=" + apiRepository.findOne(1L).getKeyCode();
 
@@ -126,7 +126,6 @@ public class StandingServiceImpl implements StandingService {
 
 	}
 
-
 	@Override
 	public void saveStandings(List<Standing> standings) {
 
@@ -139,11 +138,6 @@ public class StandingServiceImpl implements StandingService {
 			}
 		}
 
-	}
-
-	@Override
-	public Standing findStanfingByTeamName(String teamName) {
-		return standingRepo.findByTeamName(teamName);
 	}
 
 	private Standing merge(Standing standing, Standing newStanding) {
@@ -182,8 +176,23 @@ public class StandingServiceImpl implements StandingService {
 	public void createStandingsOnceForDay() {
 		List<League> leagues = leagueRepo.findAll();
 		for (League league : leagues) {
-			List<Standing> standings = createStandings(league);
-			saveStandings(standings);
+			if (league.getCountry()!=null&&league.getName().contains("Group")) {
+
+				List<Standing> standings = createStandings(league);
+				for (Standing standing : standings) {
+					try {
+						standingRepo.save(standing);
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						System.out.println(standing);
+					}
+				}
+			}
 		}
+	}
+
+	@Override
+	public Standing findStangingByTeamNameAndLeague(String teamName, League league) {
+		return standingRepo.findByTeamNameAndLeague(teamName, league);
 	}
 }
