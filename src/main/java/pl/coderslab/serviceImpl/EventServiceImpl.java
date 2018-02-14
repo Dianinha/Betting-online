@@ -82,15 +82,19 @@ public class EventServiceImpl implements EventService {
 
 					// League
 					Long leagueId = Long.parseLong((String) eventJson.get("league_id"));
-					League eventsLeague = leagueService.findById(leagueId);
-					event.setLegaue(eventsLeague);
+					try {
+						League eventsLeague = leagueService.findById(leagueId);
+						event.setLegaue(eventsLeague);
+						if (eventsLeague.getCountry() != null) {
+							Country country = eventsLeague.getCountry();
+							event.setCountry(country);
+						}
+
+					} catch (Exception e) {
+					}
 
 					// Country
-					if (eventsLeague.getCountry() != null) {
-						Country country = eventsLeague.getCountry();
-						event.setCountry(country);
-					}
-					
+
 					event.setCategory(categoryRepository.findByName("Football"));
 
 					// Formatting date from String
@@ -152,10 +156,11 @@ public class EventServiceImpl implements EventService {
 					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, eventId);
 
 					// save event
-					event = eventRepo.save(event);
-
-					// Save goals
-					saveGoalScorers(goalScorers, eventId);
+					if (event.getLegaue() != null) {
+						event = eventRepo.save(event);
+						// Save goals
+						saveGoalScorers(goalScorers, eventId);
+					}
 
 				}
 			}
@@ -174,8 +179,6 @@ public class EventServiceImpl implements EventService {
 		}
 
 	}
-
-
 
 	@Override
 	public List<Event> findByDate(LocalDate date) {
@@ -271,49 +274,53 @@ public class EventServiceImpl implements EventService {
 
 					String eventId = (String) eventJson.get("match_id");
 					Long id = Long.parseLong(eventId);
+					if (eventRepo.findOne(id) != null) {
 
-					Event event = eventRepo.findOne(id);
-					try {
-						event.setStatus((String) eventJson.get("match_status"));
-					} catch (Exception e) {
-					}
-					event.setCategory(categoryRepository.findByName("Football"));
-					event.setTime((String) eventJson.get("match_time"));
-
-					try {
-						if (eventJson.get("match_hometeam_score").equals("")) {
-							event.setHomeTeamScore(0);
-						} else {
-							event.setHomeTeamScore(Integer.parseInt((String) eventJson.get("match_hometeam_score")));
+						Event event = eventRepo.findOne(id);
+						try {
+							event.setStatus((String) eventJson.get("match_status"));
+						} catch (Exception e) {
 						}
-					} catch (Exception e) {
-					}
+						event.setCategory(categoryRepository.findByName("Football"));
+						event.setTime((String) eventJson.get("match_time"));
 
-					try {
-						if (eventJson.get("match_awayteam_score").equals("")) {
-							event.setAwayTeamScore(0);
-						} else {
-							event.setAwayTeamScore(Integer.parseInt((String) eventJson.get("match_awayteam_score")));
+						try {
+							if (eventJson.get("match_hometeam_score").equals("")) {
+								event.setHomeTeamScore(0);
+							} else {
+								event.setHomeTeamScore(
+										Integer.parseInt((String) eventJson.get("match_hometeam_score")));
+							}
+						} catch (Exception e) {
 						}
 
-					} catch (Exception e) {
-					}
+						try {
+							if (eventJson.get("match_awayteam_score").equals("")) {
+								event.setAwayTeamScore(0);
+							} else {
+								event.setAwayTeamScore(
+										Integer.parseInt((String) eventJson.get("match_awayteam_score")));
+							}
 
-					try {
-						event.setHomeTeamScoreHalfTime(
-								Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
-					} catch (Exception e) {
-					}
-					try {
-						event.setAwayTeamScoreHalfTime(
-								Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
-					} catch (Exception e) {
-					}
-					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
-					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, id);
-					eventRepo.save(event);
-					saveGoalScorers(goalScorers, id);
+						} catch (Exception e) {
+						}
 
+						try {
+							event.setHomeTeamScoreHalfTime(
+									Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
+						} catch (Exception e) {
+						}
+						try {
+							event.setAwayTeamScoreHalfTime(
+									Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
+						} catch (Exception e) {
+						}
+						JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
+						List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, id);
+						eventRepo.save(event);
+						saveGoalScorers(goalScorers, id);
+
+					}
 				}
 
 			}

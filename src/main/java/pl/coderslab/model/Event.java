@@ -48,6 +48,7 @@ public class Event {
 	private int awayTeamScoreHalfTime;
 
 	private String matchLive;
+	
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
@@ -56,8 +57,7 @@ public class Event {
 	@OneToMany(mappedBy = "event")
 	private List<GoalScorer> goalScorrers;
 
-	@OneToMany(mappedBy = "event")
-	private List<Statistics> stats;
+
 
 	public Event() {
 		super();
@@ -192,13 +192,7 @@ public class Event {
 		this.goalScorrers = goalScorrers;
 	}
 
-	public List<Statistics> getStats() {
-		return stats;
-	}
 
-	public void setStats(List<Statistics> stats) {
-		this.stats = stats;
-	}
 
 	@Override
 	public String toString() {

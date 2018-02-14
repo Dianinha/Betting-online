@@ -17,5 +17,11 @@ public interface BetService {
 	List<SingleBet> findBetsByUserAndStatus(BetStatus status, User user);
 	
 	public void checkBetsForTodayGames();
+	
+	SingleBet findById(long id);
+	
+	void changeBetToGroupBet(SingleBet bet);
+
+	void checkMultiBetsForTodayGames();
 
 }

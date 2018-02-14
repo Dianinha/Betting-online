@@ -9,11 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Request {
+public class GroupBetRequest {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="request_id")
+	@Column(name = "request_id")
 	protected long id;
 
 	@ManyToOne
@@ -26,8 +26,23 @@ public class Request {
 
 	protected boolean status;
 
-	public Request() {
+	@Column
+	private String betCode;
+
+	@ManyToOne
+	@JoinColumn
+	private GroupBet groupBet;
+
+	public GroupBetRequest() {
 		super();
+	}
+
+	public String getBetCode() {
+		return betCode;
+	}
+
+	public void setBetCode(String betCode) {
+		this.betCode = betCode;
 	}
 
 	public long getId() {
@@ -62,9 +77,12 @@ public class Request {
 		this.status = status;
 	}
 
-	@Override
-	public String toString() {
-		return "Request [id=" + id + ", sender=" + sender + ", reciever=" + reciever + ", status=" + status + "]";
+	public GroupBet getGroupBet() {
+		return groupBet;
+	}
+
+	public void setGroupBet(GroupBet groupBet) {
+		this.groupBet = groupBet;
 	}
 
 }

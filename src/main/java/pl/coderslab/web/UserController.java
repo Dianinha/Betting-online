@@ -24,6 +24,7 @@ import pl.coderslab.model.Address;
 import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.CreditCardInfo;
 import pl.coderslab.model.Event;
+import pl.coderslab.model.GroupBet;
 import pl.coderslab.model.Message;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.Operation;
@@ -32,6 +33,7 @@ import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.User;
 import pl.coderslab.model.UserSimple;
 import pl.coderslab.model.Wallet;
+import pl.coderslab.repositories.GroupBetRepository;
 import pl.coderslab.repositories.MultipleBetRepository;
 import pl.coderslab.service.AddressService;
 import pl.coderslab.service.BetService;
@@ -80,6 +82,9 @@ public class UserController {
 
 	@Autowired
 	AddressService addressService;
+
+	@Autowired
+	GroupBetRepository groupBetRepository;
 
 	@RequestMapping(path = "/menu")
 	public String menu() {
@@ -133,7 +138,7 @@ public class UserController {
 		User user = userService.getAuthenticatedUser(authentication);
 		model.addAttribute("wallet", walletService.findByUser(user));
 
-		return "/user/wallet";
+		return "/user/menu";
 	}
 
 	@RequestMapping(value = "/addCreditCard", method = RequestMethod.GET)
@@ -414,7 +419,7 @@ public class UserController {
 			e.printStackTrace();
 		}
 
-		return "redirect:/user/wallet";
+		return "redirect:/user";
 	}
 
 	@RequestMapping(value = "/deleteCreditCard", method = RequestMethod.GET)
@@ -429,7 +434,7 @@ public class UserController {
 		}
 		boolean flag = creditService.deleteById(id);
 		if (flag) {
-			return "redirect:/user/wallet";
+			return "redirect:/user";
 		} else {
 			return "redirect:user/creditCards";
 		}
@@ -596,6 +601,33 @@ public class UserController {
 		addressService.save(address);
 
 		return "redirect:/user";
+	}
+
+	@RequestMapping(value = "/groupBets", method = RequestMethod.GET)
+	public String GroupBets(Model model, HttpSession session, Authentication auth) {
+		User user = userService.getAuthenticatedUser(auth);
+		List<GroupBet> userBets = groupBetRepository.findByUsersIn(user);
+		
+		List<GroupBet> currentBets = new ArrayList<>();
+		List<GroupBet> pastBets = new ArrayList<>();
+		
+		for (GroupBet groupBet : userBets) {
+			if (groupBet.getStatus().equals(BetStatus.PLACED)) {
+				currentBets.add(groupBet);
+			}
+			else if (groupBet.getStatus().equals(BetStatus.FINALIZED)) {
+				pastBets.add(groupBet);
+			}
+			
+		}
+ 		if (!currentBets.isEmpty()) {
+			model.addAttribute("bets", currentBets);
+		}
+		if (!pastBets.isEmpty()) {
+			model.addAttribute("oldbets", pastBets);
+		}
+		return "/bet/userGroupBets";
+
 	}
 
 }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
+<title>User bets</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
+</head>
+<body sec:authorize="isAuthenticated()"
+	style="background-color: #e7e8e8">
+	<nav th:replace="fragments/usermenu"></nav>
+	<div class="container">
+		<div class="row my-5 py-5 pl-4">
+			<div class="col ">
+
+				<h1>Your active group bets:</h1>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th scope="col">Game</th>
+							<th scope="col">Your bet</th>
+							<th scope="col">Possible joined win</th>
+							<th scope="col">Group bet code</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody th:if="${bets}">
+
+						<tr th:each="bets: ${bets}">
+						<tr th:each="singleBet: ${bets.bet}">
+							<td
+								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"
+								style="color: #df2935"></td>
+							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+						</tr>
+						<td></td>
+						<td></td>
+						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
+							th:text="${result}" style="color: #df2935"></span></td>
+						<td th:text="${bets.betCode}"></td>
+						<td><a th:href="@{/bet/inviteToGroupBet(id=${bets.id})}"><input
+								type="submit" value="Invite friends to group bet!!"
+								class="btn btn-outline-success my-2 my-sm-0 " /></a></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${bets}">
+						<td><div class="alert alert-warning" role="alert">You
+								have no current unresolved group bets.</div></td>
+						<td></td>
+						<td></td>
+					</tbody>
+				</table>
+				<a th:href="@{/user/menu}"><input type="submit" value="Back"
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+			</div>
+		</div>
+
+
+		<h1>Your past group bets:</h1>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Game</th>
+					<th scope="col">Your bet</th>
+					<th scope="col">Possible joined win</th>
+					<th scope="col">Result</th>
+				</tr>
+			</thead>
+			<tbody th:if="${oldBets}">
+
+				<tr th:each="bets: ${oldBets}">
+
+					<tr th:each="singleBet: ${bets.bets}">
+							<td
+						th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"
+						style="color: #df2935"></td>
+							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+						</tr>
+						<td></td>
+						<td></td>
+						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
+					th:text="${result}"></span></td>
+					<td th:text="${bets.result}"></td>
+						</tr>
+					</tbody>
+					<tbody th:unless="${oldBets}">
+						<tr>
+							<td><div class="alert alert-warning" role="alert">You
+									have no past group bets.</div></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+	<a th:href="@{/user/menu}"><input type="submit" value="Back"
+						class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a></div>
+
+		
+				
+				
+
+	<footer th:include="fragments/footer	::	pagefooter"></footer>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"
+		integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4"
+		crossorigin="anonymous"></script>
+
+
+</body>
+</html>

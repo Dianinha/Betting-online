@@ -39,6 +39,8 @@ public class GroupBet {
 	public GroupBet() {
 		super();
 	}
+	
+	private BetStatus status;
 
 	public long getId() {
 		return id;
@@ -80,6 +82,14 @@ public class GroupBet {
 		this.joinedRating = joinedRating;
 	}
 
+	public BetStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(BetStatus status) {
+		this.status = status;
+	}
+
 	public BigDecimal getJoinedAmount() {
 		return joinedAmount;
 	}
@@ -88,11 +98,6 @@ public class GroupBet {
 		this.joinedAmount = joinedAmount;
 	}
 
-	@Override
-	public String toString() {
-		return "GroupBet [id=" + id + ", bet=" + bet + ", users=" + users + ", betCode=" + betCode + ", joinedRating="
-				+ joinedRating + ", joinedAmount=" + joinedAmount + "]";
-	}
 	
 	
 	

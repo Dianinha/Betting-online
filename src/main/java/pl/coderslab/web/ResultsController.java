@@ -88,8 +88,6 @@ public class ResultsController {
 
 	@RequestMapping(value = "/tryLive")
 	public String tryLive(Model model, HttpSession session) {
-		List<Event> liveEvents = eventService.findByDate(LocalDate.now());
-		model.addAttribute("liveEvents", liveEvents);
 		return "/live/eventlive";
 	}
 
@@ -121,10 +119,12 @@ public class ResultsController {
 	@ResponseBody
 	public String updateStringResults() {
 		String myHtml = "";
-		LocalDate today = LocalDate.now();
+		LocalDate today = LocalDate.now().plusDays(3);
+		System.out.println(today);
 		List<Event> liveEvents = eventService.findByDateBetween(today, today);
-
+		System.out.println(liveEvents.size());
 		for (Event event : liveEvents) {
+			System.out.println(event);
 			String date = event.getDate().toString();
 			String time = event.getTime();
 			String in = "NOTHING";

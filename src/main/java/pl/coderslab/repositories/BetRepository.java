@@ -20,5 +20,13 @@ public interface BetRepository extends JpaRepository<SingleBet, Long> {
 	List<SingleBet> findByGame(GameToBet game);
 	
 	List<SingleBet> findByGameAndStatus(GameToBet game, BetStatus status);
+
+	@Query("select b from SingleBet b where b.game=?1 and b.status = ?2 and b.isItGroupBet=false and b.isItMultiBet=false")
+	List<SingleBet> findSinglesByGameAndStatus(GameToBet game, BetStatus status);
 	
+	@Query("select b from SingleBet b where b.game=?1 and b.status = ?2 and b.isItGroupBet=false and b.isItMultiBet=false")
+	List<SingleBet> findMultisByGameAndStatus(GameToBet game, BetStatus status);
+	
+	@Query("select b from SingleBet b where b.game=?1 and b.status = ?2 and b.isItGroupBet=false and b.isItMultiBet=false")
+	List<SingleBet> findGroupByGameAndStatus(GameToBet game, BetStatus status);
 }

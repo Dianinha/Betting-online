@@ -27,7 +27,9 @@
 					Bets </a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuBets">
 					<a class="dropdown-item" th:href="@{/user/myBets}">Individual</a> <a
-						class="dropdown-item" href="#">Group</a>
+						class="dropdown-item" th:href="@{/user/groupBets}">Group</a>
+						<a
+						class="dropdown-item" th:href="@{/bet/invites}">Group bet invites</a>
 				</div></li>
 			<li class="nav-item dropdown"><a
 				class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink"
@@ -79,7 +81,7 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-light">
 
 	<a class="navbar-brand" th:href="@{/user}"> <img src="../logo.png"
-		width="250" height="25" alt="" /></a>
+		width="184" height="25" alt="" /></a>
 	<button class="navbar-toggler navbar-toggler-right" type="button"
 		data-toggle="collapse" data-target="#navbar2">
 		<span class="navbar-toggler-icon"></span>

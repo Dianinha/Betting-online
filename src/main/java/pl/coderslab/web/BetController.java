@@ -16,13 +16,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.GameToBet;
+import pl.coderslab.model.GroupBet;
+import pl.coderslab.model.GroupBetRequest;
+import pl.coderslab.model.Message;
 import pl.coderslab.model.MultipleBet;
+import pl.coderslab.model.Request;
 import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.User;
 import pl.coderslab.model.Wallet;
+import pl.coderslab.repositories.GroupBetRepository;
+import pl.coderslab.repositories.GroupBetRequestRepository;
 import pl.coderslab.repositories.MultipleBetRepository;
 import pl.coderslab.service.BetService;
 import pl.coderslab.service.GameToBetService;
+import pl.coderslab.service.MessageService;
 import pl.coderslab.service.OperationService;
 import pl.coderslab.service.UserService;
 import pl.coderslab.service.WalletService;
@@ -45,77 +52,20 @@ public class BetController {
 
 	@Autowired
 	OperationService operationService;
-	
+
 	@Autowired
 	MultipleBetRepository multiBetRepository;
 
-	@RequestMapping(value = "/addBet", method = RequestMethod.GET)
-	public String addBet(@RequestParam("gameId") long gameId, @RequestParam("betOn") String betOn, Model model,
-			HttpSession session) {
-		GameToBet game = gameService.findById(gameId);
-		if (!game.isActive()) {
-			return "redirect:/results/tryLive";
-		}
-		BigDecimal rate = null;
-		String teamName = "";
-		if (betOn.equals("home")) {
-			rate = game.getRateHome();
-			teamName = game.getEvent().getHomeTeamName();
-		} else if (betOn.equals("draw")) {
-			rate = game.getRateDraw();
-			teamName = "DRAW";
+	@Autowired
+	GroupBetRepository groupBetRepository;
 
-		} else if (betOn.equals("away")) {
-			rate = game.getRateAway();
-			teamName = game.getEvent().getAwayTeamName();
-		} else {
-			return "redirect:/results/tryLive";
-		}
-		model.addAttribute("rate", rate);
-		model.addAttribute("team", teamName);
-		session.setAttribute("lastGameBettingOn", game);
-		session.setAttribute("lastRate", rate);
+	@Autowired
+	MessageService messageService;
 
-		return "/bet/addBet";
+	@Autowired
+	GroupBetRequestRepository groupBetRequestRepository;
 
-	}
-
-	@RequestMapping(value = "/addBet", method = RequestMethod.POST)
-	public String addBetPost(Model model, HttpSession session, Authentication auth,
-			@RequestParam("amount") double amount) {
-
-		GameToBet game = (GameToBet) session.getAttribute("lastGameBettingOn");
-		SingleBet bet = new SingleBet();
-		User user = null;
-
-		try {
-			user = userService.findByUsername(auth.getName());
-		} catch (Exception e) {
-			System.out.println("No user found");
-			return "redirect:/login";
-		}
-
-		Wallet wallet = walletService.findByUser(user);
-		BigDecimal amountOfBet = new BigDecimal(amount);
-
-		if (walletService.hasWalletSufficientFunds(wallet, amountOfBet)) {
-			walletService.substractFunds(wallet, amountOfBet);
-		} else {
-			return "redirect:/user/wallet";
-		}
-
-		bet.setUser(user);
-		bet.setAmount(amountOfBet);
-		bet.setGame(game);
-
-		BigDecimal rate = (BigDecimal) session.getAttribute("lastRate");
-		bet.setRate(rate);
-		betService.placeBet(bet);
-		operationService.createPlaceBetOperation(wallet, amountOfBet, bet);
-		return "/bet/betPlaced";
-
-	}
-
+	
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String add(@RequestParam("gameId") long gameId, @RequestParam("betOn") String betOn, Model model,
 			HttpSession session) {
@@ -145,7 +95,6 @@ public class BetController {
 		session.setAttribute("lastGameBettingOn", game.getId());
 		session.setAttribute("lastRate", rate);
 		session.setAttribute("betOn", betOnParam);
-		System.out.println("Attributes setted?");
 
 		return "/bet/addBet";
 
@@ -240,6 +189,7 @@ public class BetController {
 					long gameid = bet.getGame().getId();
 					GameToBet game = gameService.findById(gameid);
 					if (!game.isActive()) {
+						session.setAttribute("currentBetCart", null);
 						model.addAttribute("message",
 								"One of games You are betting on is no longer active. Please pick different bet.");
 						return "/bet/finalized";
@@ -250,11 +200,13 @@ public class BetController {
 						bet.setItGroupBet(false);
 						userBets.add(bet);
 					} else {
+						session.setAttribute("currentBetCart", null);
 						model.addAttribute("message",
 								"Game You are betting on changed rate. Please pick different bet.");
 						return "/bet/finalized";
 					}
 				} catch (Exception e) {
+					session.setAttribute("currentBetCart", null);
 					model.addAttribute("message", "Something went wrong. Please place bet again.");
 					return "/bet/finalized";
 				}
@@ -270,10 +222,11 @@ public class BetController {
 			}
 			BigDecimal joinedMultiplyer = new BigDecimal(1);
 			for (SingleBet singleBet : userBets) {
-				joinedMultiplyer= joinedMultiplyer.multiply(singleBet.getRate());
+				joinedMultiplyer = joinedMultiplyer.multiply(singleBet.getRate());
 				betService.placeBet(singleBet);
 			}
 			MultipleBet multiBet = new MultipleBet();
+			multiBet.setItAGroupBet(false);
 			multiBet.setBets(userBets);
 			multiBet.setUser(user);
 			multiBet.setJoinedAmount(userBets.get(0).getAmount());
@@ -293,6 +246,7 @@ public class BetController {
 					session.setAttribute("lastGameBettingOn", null);
 					session.setAttribute("lastRate", null);
 					session.setAttribute("betOn", null);
+					session.setAttribute("currentBetCart", null);
 					model.addAttribute("message",
 							"Game You are betting on is no longer active. Please pick different bet.");
 					return "/bet/finalized";
@@ -313,6 +267,7 @@ public class BetController {
 					}
 
 				} else {
+					session.setAttribute("currentBetCart", null);
 					session.setAttribute("lastGameBettingOn", null);
 					session.setAttribute("lastRate", null);
 					session.setAttribute("betOn", null);
@@ -320,6 +275,7 @@ public class BetController {
 					return "/bet/finalized";
 				}
 			} catch (Exception e) {
+				session.setAttribute("currentBetCart", null);
 				session.setAttribute("lastGameBettingOn", null);
 				session.setAttribute("lastRate", null);
 				session.setAttribute("betOn", null);
@@ -330,18 +286,164 @@ public class BetController {
 		}
 
 		else {
+			session.setAttribute("currentBetCart", null);
 			session.setAttribute("lastGameBettingOn", null);
 			session.setAttribute("lastRate", null);
 			session.setAttribute("betOn", null);
 			model.addAttribute("message", "Something went wrong. Please place bet again.");
 			return "/bet/finalized";
 		}
-
+		session.setAttribute("currentBetCart", null);
 		session.setAttribute("lastGameBettingOn", null);
 		session.setAttribute("lastRate", null);
 		session.setAttribute("betOn", null);
 		return "/bet/finalized";
 
 	}
+
+	@RequestMapping(value = "/convertToGroupBet", method = RequestMethod.GET)
+	public String convertToGroupBet(Model model, HttpSession session, Authentication auth, @RequestParam("id") long id,
+			@RequestParam("type") String type) {
+		List<SingleBet> bets = new ArrayList<>();
+		GroupBet groupBet = new GroupBet();
+		if (type.equals("single")) {
+			
+			SingleBet bet = betService.findById(id);
+			GameToBet game = bet.getGame();
+			if (!game.isActive()) {
+				model.addAttribute("message", "Game is not longer active. You cannot change it to group bet");
+				return "user/myBets";
+			}
+			bets.add(bet);
+			groupBet.setJoinedAmount(bet.getAmount());
+			groupBet.setJoinedRating(bet.getRate());
+			betService.changeBetToGroupBet(bet);
+		} else if (type.equals("multi")) {
+			MultipleBet multiBet = multiBetRepository.findOne(id);
+			bets = multiBet.getBets();
+			boolean areAllBetsActive = true;
+			for (SingleBet singleBet : bets) {
+				if (!singleBet.getGame().isActive()) {
+					areAllBetsActive= false;
+				}
+			}
+			if (!areAllBetsActive) {
+				model.addAttribute("message", "One of the games is not longer active. You cannot change it to group bet");
+				return "user/myBets";
+			}
+			multiBet.setItAGroupBet(true);
+			groupBet.setJoinedAmount(multiBet.getJoinedAmount());
+			groupBet.setJoinedRating(multiBet.getJoinedRating());
+			multiBetRepository.delete(multiBet);
+			for (SingleBet singleBet : bets) {
+				betService.changeBetToGroupBet(singleBet);
+			}
+
+		}
+		groupBet.setBet(bets);
+		groupBet.setStatus(BetStatus.PLACED);
+		groupBet.setBetCode(groupBet.toString().replace("pl.coderslab.model.", ""));
+		List<User> betUsers = new ArrayList<>();
+		betUsers.add(userService.getAuthenticatedUser(auth));
+		groupBet.setUsers(betUsers);
+		groupBetRepository.save(groupBet);
+		return "redirect:/user/groupBets";
+	}
+
+	@RequestMapping(value = "/inviteToGroupBet", method = RequestMethod.GET)
+	public String inviteToGroupBet(Model model, HttpSession session, Authentication auth, @RequestParam("id") long id) {
+
+		User user = userService.getAuthenticatedUser(auth);
+		model.addAttribute("friends", user.getFriends());
+		session.setAttribute("gbId", id);
+		return "/user/inviteTogroupBet";
+	}
+
+	@RequestMapping(value = "/inviteToGroupBet", method = RequestMethod.POST)
+	public String inviteToGroupBetPost(Model model, HttpSession session, Authentication auth,
+			@RequestParam("selectedFriends") String[] recieversArr) {
+
+		User user = userService.getAuthenticatedUser(auth);
+		long groubBetId = (long) session.getAttribute("gbId");
+
+		Message message = new Message();
+		message.setSender(user);
+		List<User> recievers = new ArrayList<>();
+		for (int i = 0; i < recieversArr.length; i++) {
+			recievers.add(userService.findByUsername(recieversArr[i]));
+			System.out.println(recieversArr[i]);
+		}
+		message.setRecievers(recievers);
+		message.setTitle("You have group bet request from: " + user.getUsername());
+		message.setContent("User " + user.getUsername() + " wants You to join in group betting!");
+		messageService.sendMessage(message);
+
+		GroupBet groupBet = groupBetRepository.findOne(groubBetId);
+
+		for (User user2 : recievers) {
+			GroupBetRequest request = new GroupBetRequest();
+			request.setStatus(true);
+			request.setSender(user);
+			request.setReciever(user2);
+			request.setBetCode(groupBet.getBetCode());
+			request.setGroupBet(groupBet);
+			groupBetRequestRepository.save(request);
+		}
+		return "redirect:/user/groupBets";
+	}
+
+	@RequestMapping(value = "/invites", method = RequestMethod.GET)
+	public String invites(Model model, Authentication authentication) {
+		User user = userService.getAuthenticatedUser(authentication);
+		if (!groupBetRequestRepository.findByUser(user).isEmpty()) {
+			model.addAttribute("invites", groupBetRequestRepository.findByUser(user));
+		}
+
+		return "bet/invites";
+	}
+
+	@RequestMapping(value = "/acceptInvite", method = RequestMethod.GET)
+	public String acceptInvite(Model model, @RequestParam("invite") long id, Authentication auth) {
+		User user = userService.getAuthenticatedUser(auth);
+		GroupBetRequest request = groupBetRequestRepository.findOne(id);
+		GroupBet groupBet = request.getGroupBet();
+		if (groupBet.getUsers().size() > 19) {
+			request.setStatus(false);
+			groupBetRequestRepository.save(request);
+			model.addAttribute("message",
+					"Maximum number of people already placed bet on this Group Bet. You cannot join :(");
+		} else {
+			
+			Wallet wallet = walletService.findByUser(user);
+			if (walletService.hasWalletSufficientFunds(wallet, groupBet.getJoinedAmount())) {
+				walletService.substractFunds(wallet, groupBet.getJoinedAmount());
+				
+				groupBet.getUsers().add(user);
+				double numOfPeople = groupBet.getUsers().size() / 20 + 1.0;
+				groupBet.setJoinedAmount(groupBet.getJoinedAmount().multiply(BigDecimal.valueOf(numOfPeople)));
+				groupBetRepository.save(groupBet);
+				request.setStatus(false);
+				groupBetRequestRepository.save(request);
+				model.addAttribute("message",
+						"You have joined the group bet");
+				operationService.createPlaceMultipleBetOperation(wallet, groupBet.getJoinedAmount(), groupBet.getBet());
+			}
+			else {
+				model.addAttribute("message",
+						"You do not have sufficient funds to join this group bet.");
+			}
+			
+		}
+
+		return "bet/invites";
+	}
+	
+	 @RequestMapping(value = "/discardInvite", method = RequestMethod.GET)
+	 public String discardGroupBetInvite(Model model, @RequestParam("invite") long id) {
+		 GroupBetRequest request = groupBetRequestRepository.findOne(id);
+		 request.setStatus(false);
+		 groupBetRequestRepository.save(request);
+		 return "redirect:/bet/invites";
+	 }
 
 }

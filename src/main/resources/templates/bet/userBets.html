@@ -3,7 +3,17 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Insert title here</title>
+<title>User bets</title>
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans"
+	rel="stylesheet" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+	integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy"
+	crossorigin="anonymous" />
+<link rel="stylesheet" href="../css/main.css" />
+
+
 </head>
 <body sec:authorize="isAuthenticated()"
 	style="background-color: #e7e8e8">
@@ -19,21 +29,29 @@
 							<th scope="col">Game</th>
 							<th scope="col">Your bet</th>
 							<th scope="col">Possible win</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody th:if="${bets}">
 
 						<tr th:each="bet: ${bets}">
 							<td
-								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"></td>
+								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}" style="color: #df2935"></td>
 							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
 							<td th:with="result=${bet.rate * bet.amount}"><span
 								th:text="${result}"></span></td>
+								<td>
+								<a th:href="@{/bet/convertToGroupBet(id=${bet.id}, type=single)}"><input type="submit" value="Make it a group bet!"
+					class="btn btn-outline-success my-2 my-sm-0 " /></a>
+								</td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${bets}">
 						<tr>
-							<td>You have no current unresolved bets.</td>
+							<td><div class="alert alert-warning" role="alert">You
+									have no current unresolved bets.</div></td>
+							<td></td>
+							<td></td>
 						</tr>
 					</tbody>
 				</table>
@@ -51,26 +69,33 @@
 							<th scope="col">Game</th>
 							<th scope="col">Your bet</th>
 							<th scope="col">Possible joined win</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody th:if="${multiBets}">
 
 						<tr th:each="bets: ${multiBets}">
-							<tr th:each="singleBet: ${bets.bets}">
+						<tr th:each="singleBet: ${bets.bets}">
 							<td
-								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"></td>
+								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"
+								style="color: #df2935"></td>
 							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
 						</tr>
 						<td></td>
 						<td></td>
 						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
-							th:text="${result}"></span></td>
+							th:text="${result}" style="color: #df2935"></span></td>
+							<td>
+								<a th:href="@{/bet/convertToGroupBet(id=${bets.id},type=multi)}"><input type="submit" value="Make it a group bet!"
+					class="btn btn-outline-success my-2 my-sm-0 " /></a>
+								</td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${multiBets}">
-						<tr>
-							<td>You have no current unresolved multiple bets.</td>
-						</tr>
+						<td><div class="alert alert-warning" role="alert">You
+								have no current unresolved multiple bets.</div></td>
+						<td></td>
+						<td></td>
 					</tbody>
 				</table>
 				<a th:href="@{/user/menu}"><input type="submit" value="Back"
@@ -78,7 +103,7 @@
 			</div>
 		</div>
 		<div class="row my-5 py-5 pl-4">
-								<div class="col ">
+			<div class="col ">
 
 				<h1>Your past bets:</h1>
 				<table class="table table-striped">
@@ -94,25 +119,30 @@
 
 						<tr th:each="bet: ${oldbets}">
 							<td
-													th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"></td>
+								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"
+								style="color: #df2935"></td>
 							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
 							<td th:with="result=${bet.rate * bet.amount}"><span
-													th:text="${result}"></span></td>
-							<td th:text="${bet.betResult}"></td>
+								th:text="${result}"></span></td>
+							<td th:text="${bet.betResult}" style="color: #df2935"></td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${oldbets}">
 						<tr>
-							<td>You have no past bets.</td>
+							<td><div class="alert alert-warning" role="alert">You
+									have no past bets.</div></td>
+							<td></td>
+							<td></td>
+							<td></td>
 						</tr>
 					</tbody>
 				</table>
 				<a th:href="@{/user/menu}"><input type="submit" value="Back"
-										class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
+					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
 			</div>
 		</div>
 
-	<div class="row my-5 py-5 pl-4">
+		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
 
 				<h1>Your past multiple bets:</h1>
@@ -122,25 +152,33 @@
 							<th scope="col">Game</th>
 							<th scope="col">Your bet</th>
 							<th scope="col">Possible joined win</th>
+							<th scope="col">Bet result</th>
 						</tr>
 					</thead>
 					<tbody th:if="${oldMultiBets}">
 
 						<tr th:each="bets: ${oldMultiBets}">
-							<tr th:each="singleBet: ${bets.bets}">
+						<tr th:each="singleBet: ${bets.bets}">
 							<td
-								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"></td>
+								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"
+								style="color: #df2935"></td>
 							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+							<td></td>
+							<td th:text="${singleBet.betResult}"></td>
 						</tr>
 						<td></td>
 						<td></td>
 						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
 							th:text="${result}"></span></td>
+							<td th:text="${bets.result}"></td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${oldMultiBets}">
 						<tr>
-							<td>You have no past multiple bets.</td>
+							<td><div class="alert alert-warning" role="alert">You
+									have no past multiple bets.</div></td>
+							<td></td>
+							<td></td>
 						</tr>
 					</tbody>
 				</table>
@@ -148,7 +186,7 @@
 					class="btn btn-outline-success my-2 my-sm-0 btn-back" /></a>
 			</div>
 		</div>
-						</div>
+	</div>
 
 	<footer th:include="fragments/footer	::	pagefooter"></footer>
 

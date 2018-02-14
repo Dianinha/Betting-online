@@ -26,20 +26,21 @@
 				<div class="col ml-4 mr-3">
 					<div>
 						<div th:if="${invites}">
-							Your invites:
-							<ul>
-								<li th:each="invite: ${invites}"><span
+							<h2>Your invites:</h2>
+							<ul class="list-group">
+								<li th:each="invite: ${invites}" class="list-group-item"><span
 									th:text="${invite.sender.username}"></span> <a
-									th:href="@{/user/acceptInvite(invite=${invite.id})}"><input type="submit"
-										value="Accept invite"
-										class="btn btn-outline-success my-2 my-sm-0" /></a>  <a
-										th:href="@{/user/discardInvite(invite=${invite.id})}"><input
-											type="submit" value="Discard invite"
-											class="btn btn-outline-success my-2 my-sm-0" /></a></li>
+									th:href="@{/user/acceptInvite(invite=${invite.id})}"><input
+										type="submit" value="Accept invite"
+										class="btn btn-outline-success my-2 my-sm-0 mx-3" /></a> <a
+									th:href="@{/user/discardInvite(invite=${invite.id})}"><input
+										type="submit" value="Discard invite"
+										class="btn btn-outline-success my-2 my-sm-0" /></a></li>
 							</ul>
 						</div>
 						<div th:unless="${invites}">
-						You have no invites :(
+							<div class="alert alert-warning" role="alert">You have no
+								invites :(</div>
 						</div>
 					</div>
 				</div>

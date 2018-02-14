@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,7 +21,7 @@ public class MultipleBet {
 	@Column(name = "bet_id")
 	private long id;
 
-	@OneToMany
+	@OneToMany(fetch=FetchType.EAGER)
 	@JoinTable(name = "multipleBet_bet", joinColumns = @JoinColumn(name = "groupBet_id"), inverseJoinColumns = @JoinColumn(name = "bet_id"))
 	private List<SingleBet> bets;
 
@@ -31,11 +32,12 @@ public class MultipleBet {
 	private BigDecimal joinedRating;
 
 	private BigDecimal joinedAmount;
-	
+
 	private BetStatus status;
-	
+
 	private String result;
-	
+
+	private boolean isItAGroupBet;
 
 	public MultipleBet() {
 		super();
@@ -55,6 +57,14 @@ public class MultipleBet {
 
 	public void setBets(List<SingleBet> bet) {
 		this.bets = bet;
+	}
+
+	public boolean isItAGroupBet() {
+		return isItAGroupBet;
+	}
+
+	public void setItAGroupBet(boolean isItAGroupBet) {
+		this.isItAGroupBet = isItAGroupBet;
 	}
 
 	public User getUsers() {
@@ -81,7 +91,6 @@ public class MultipleBet {
 		this.joinedAmount = joinedAmount;
 	}
 
-	
 	public BetStatus getStatus() {
 		return status;
 	}

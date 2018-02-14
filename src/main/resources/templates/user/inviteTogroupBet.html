@@ -3,7 +3,7 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Bet placed</title>
+<title>Credit Cards</title>
 
 <link href="https://fonts.googleapis.com/css?family=Open+Sans"
 	rel="stylesheet" />
@@ -22,39 +22,31 @@
 	<div class="container">
 		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
-				<div class="alert alert-success" role="alert">
-					<span th:text="'Bet is placed in Your cart.  '"> </span>
+				<h1>
+					<span th:text="'Invite Your friends to join in Your group bet!'">
+					</span>
+				</h1>
+				<div class="row mt-4 ">
+					<div class="col tborder ml-4 mr-1 py-4">
+						<form th:action="@{/bet/inviteToGroupBet}" method="post">
+							<div class="form-group">
+								<label>Send it to:</label>
+							</div>
+
+							<input th:each="friend : ${friends}"
+								th:value="${friend.username}" th:text="${friend.username}"
+								type="checkbox" name="selectedFriends" />
+							<div>
+								<input type="submit" value="Send invites!"
+									class="btn btn-outline-success my-2 my-sm-0" />
+							</div>
+						</form>
+					</div>
 				</div>
-				<h2>
-					Do You want to add more bets? <br />Your bets:
-				</h2>
-				<ul class="list-group my-4">
-					<li th:each="bet: ${session.currentBetCart}"
-						class="list-group-item"><span th:text="'Your bet is on: ' + ${bet.betOn} + ' Game: '+ ${bet.game.event.homeTeamName}+' vs. '+${bet.game.event.awayTeamName}"
-						style="color: #df2935"></span> <span
-						th:text="${bet.amount} + ' PLN'"></span> <span
-						th:text="${bet.rate}"></span></li>
-				</ul>
-				<p style="color: #df2935">
-					<span th:text="'Possible win amount: '+${session.possibleWin}"></span>
-				</p>
-
-				<form th:action="@{/bet/finalizeBets}" method="post">
-
-					<div>
-						<input type="submit" value="Finalize"
-							class="btn btn-outline-success my-2 " />
-					</div>
-				</form>
-
-				<form th:action="@{/user}" method="get">
-
-					<div>
-						<input type="submit" value="Go back"
-							class="btn btn-outline-success my-2 btn-back" />
-					</div>
-				</form>
-
+				<div>
+					<a th:href="@{/user/groupBets}"> <input type="submit"
+						value="Back" class="btn btn-outline-success my-2 my-sm-3 btn-back" /></a>
+				</div>
 			</div>
 		</div>
 	</div>

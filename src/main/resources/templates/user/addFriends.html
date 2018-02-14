@@ -23,12 +23,12 @@
 		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
 				<h1>
-					<span
-						th:text="'Find new friends the You can share bets and have fun with!'">
+					<span th:text="'Find new friends, share bets and have fun!'">
 					</span>
 				</h1>
 				<div class="row mt-4 ">
 					<div class="col tborder ml-4 mr-1 py-4">
+						<h2>Search friends:</h2>
 						<form th:action="@{/user/addFriends}" method="post">
 							<div class="form-group">
 								<label>Search for Your friends by usersame:</label> <input
@@ -41,7 +41,7 @@
 						</form>
 
 						<form th:action="@{/user/addFriends}" method="post">
-							<div class="form-group">
+							<div class="form-group mt-3">
 								<label> Search for Your friends by email: </label><input
 									type="text" name="email" class="form-control" />
 							</div>
@@ -51,34 +51,52 @@
 							</div>
 						</form>
 
-						<div th:if="${searchResults}">
-							Search results:
-							<ul>
-								<li th:each="res: ${searchResults}"><span
-									th:text="${res.username}"></span> <span th:text="${res.name}"></span>
-									<a th:href="@{/user/sendInvite(username=${res.username})}"><input
+						<div th:if="${searchResults}" class="mt-4">
+							<h2>Search results:</h2>
+							<ul class="list-group">
+								<li th:each="res: ${searchResults}" class="list-group-item"><span
+									th:text="${res.username}"></span> <span style="color: #df2935"
+									th:text="${res.name}" class="mx-3"></span> <a
+									th:href="@{/user/sendInvite(username=${res.username})}"><input
 										type="submit" value="Send invite"
 										class="btn btn-outline-success my-2 my-sm-0" /></a></li>
 							</ul>
 						</div>
 
 					</div>
-					<div class="col ml-4 mr-3">
+					<div class="col ml-4 mr-3 py-4">
 						<div>
 							<div th:if="${friends}">
-								Your friends:
-								<ul>
-									<li th:each="friend: ${friends}"><span
-										th:text="${friend.username}"></span> <span
-										th:text="${friend.email}"></span> <a
-										th:href="@{/user/sendMessage}"><input type="submit"
-											value="Send message to"
-											class="btn btn-outline-success my-2 my-sm-0" /></a> <span
-										th:unless="${friend.username.equals('service')}"> <a
-											th:href="@{/user/deleteFriend(username=${friend.username})}"><input
-												type="submit" value="Delete friend"
-												class="btn btn-outline-success my-2 my-sm-0" /></a></span></li>
-								</ul>
+
+								<h2>Your friends:</h2>
+								<table class="table table-striped">
+									<thead>
+										<tr>
+											<th scope="col">Username</th>
+											<th scope="col">E-mail</th>
+											<th scope="col">Send message</th>
+											<th scope="col">Delete friend</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="friend: ${friends}">
+											<td><span th:text="${friend.username}"
+												style="color: #001021"></span></td>
+
+											<td><span th:text="${friend.email}"
+												style="color: #df2935"></span></td>
+											<td><a th:href="@{/user/sendMessage}"><input
+													type="submit" value="Send message to"
+													class="btn btn-outline-success" /></a></td>
+
+											<td><span
+												th:unless="${friend.username.equals('service')}"> <a
+													th:href="@{/user/deleteFriend(username=${friend.username})}"><input
+														type="submit" value="Delete friend"
+														class="btn btn-outline-success btn-back " /></a></span></td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>

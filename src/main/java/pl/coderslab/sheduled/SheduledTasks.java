@@ -29,29 +29,31 @@ public class SheduledTasks {
 	@Autowired
 	private StandingService standingService;
 
-	@Scheduled(cron = "30 11 11 1/1 * ?")
+	@Scheduled(cron = "33 56 14 1/1 * ?")
 	public void createEvents() {
-		LocalDate dateStart = LocalDate.now();
+		LocalDate dateStart = LocalDate.now().plusDays(1);
 		String startDate = dateStart.toString();
-		LocalDate dateStop = LocalDate.now();
+		LocalDate dateStop = LocalDate.now().plusDays(4);
 		String stopDate = dateStop.toString();
 		eventService.createEvents(startDate, stopDate);
 		List<Event> createdEvents = eventService.findByDateBetween(dateStart, dateStop);
-		standingService.createStandingsOnceForDay();
+		//standingService.createStandingsOnceForDay();
 		gameService.createGamesToBetFromEvents(createdEvents);
 		System.out.println("Events and games are created!!!!!!!!!!!!!!!!!!!!!!!!");
 
 	}
 
-	@Scheduled(cron = "0 0/1 * 1/1 * ?")
+	@Scheduled(fixedRate = 30000)
 	public void updateLiveEvents() {
 		eventService.updateliveEvents();
 		gameService.updateLiveEventsGamesToBet();
+		System.out.println("games upadted");
 		}
 	
-	@Scheduled(cron = "0 0/5 * 1/1 * ?")
+	@Scheduled(fixedRate = 30000)
 	public void checkBets() {
 		betService.checkBetsForTodayGames();
+		betService.checkMultiBetsForTodayGames();
 		System.out.println("bets updated");
 		}
 }

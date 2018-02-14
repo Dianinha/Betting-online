@@ -3,7 +3,7 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
 <meta http-equiv="Content-Type" content="text/html;	charset=UTF-8" />
-<title>Listof your friends</title>
+<title>Add friends</title>
 
 <link href="https://fonts.googleapis.com/css?family=Open+Sans"
 	rel="stylesheet" />
@@ -22,52 +22,49 @@
 	<div class="container">
 		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
-				
 
+				<div class="col ml-4 mr-3">
+					<div>
 					
-					<div class="row mt-4 ">
-						<div class="col tborder mx-1 py-4">
-							<div th:if="${friends}">
-							
-								<h2>Your friends:</h2>
-								<table class="table table-striped">
-		<thead>
-			<tr>
-				<th scope="col">Username</th>
-				<th scope="col">E-mail</th>
-				<th scope="col">Send message</th>
-				<th scope="col">Delete friend</th>
-			</tr>
-		</thead>
-		<tbody>
-									<tr th:each="friend: ${friends}" >
-									<td>
-									<span th:text="${friend.username}" style="color:#001021"></span></td>
-										<td>
-										<span
-										th:text="${friend.email}" style="color:#df2935"></span> </td>
-										<td>
-										<a
-										th:href="@{/user/sendMessage}"><input type="submit"
-											value="Send message to"
-											class="btn btn-outline-success" /></a></td>
-											
-										<td><span
-										th:unless="${friend.username.equals('service')}"> <a
-											th:href="@{/user/deleteFriend(username=${friend.username})}"><input
-												type="submit" value="Delete friend"
-												class="btn btn-outline-success btn-back " /></a></span></td>
-								</tr>
-								</tbody>
-								</table>
-							</div>
+					<div th:if="${message}" class="alert alert-success" role="alert">
+					<span th:text="${message}"> </span>
+				</div>
+					
+						<div th:if="${invites}">
+							<h2>Your invites to Group bets:</h2>
+							<ul class="list-group">
+								<li th:each="invite: ${invites}" class="list-group-item"><span
+									th:text="${invite.sender.username}"></span> Group bet on:
+									<ul>
+										<li th:each="bet: ${invite.groupBet.bet}"><span
+											th:text="'Bet is on: ' + ${bet.betOn} + ' Game: '+ ${bet.game.event.homeTeamName}+' vs. '+${bet.game.event.awayTeamName}"
+											style="color: #df2935"></span></li>
+
+									</ul>
+									<span th:text="'Cost: '+${invite.groupBet.joinedAmount}"></span> 
+									
+									<span th:with="result=${invite.groupBet.joinedAmount * invite.groupBet.joinedRating}"><span
+							th:text="'Possible win now: '+${result}" style="color: #df2935"></span></span>
+									
+									<a th:href="@{/bet/acceptInvite(invite=${invite.id})}"><input
+										type="submit" value="Accept invite"
+										class="btn btn-outline-success my-2 my-sm-0 mx-3" /></a> <a
+									th:href="@{/bet/discardInvite(invite=${invite.id})}"><input
+										type="submit" value="Discard invite"
+										class="btn btn-outline-success my-2 my-sm-0" /></a></li>
+							</ul>
+						</div>
+						<div th:unless="${invites}">
+							<div class="alert alert-warning" role="alert">You have no
+								invites :(</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
+
 		</div>
 
+	</div>
 	<footer th:include="fragments/footer	::	pagefooter"></footer>
 
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

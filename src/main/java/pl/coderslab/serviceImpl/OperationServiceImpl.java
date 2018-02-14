@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.coderslab.model.SingleBet;
+import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.Operation;
 import pl.coderslab.model.OperationType;
 import pl.coderslab.model.Wallet;
@@ -97,6 +98,18 @@ public class OperationServiceImpl implements OperationService {
 		joinedRate = joinedRate.multiply(singleBet.getRate());	
 		}
 		operation.setOperationInfo("Multiple Bet placed. Amount: " + amount + " bet rate: " + joinedRate);
+		return operationRepository.save(operation);
+	}
+	
+	@Override
+	public Operation createPrizeForMultipleBetOperation(Wallet wallet, MultipleBet multipleBet) {
+		Operation operation = new Operation();
+		operation.setWallet(wallet);
+		BigDecimal amount = multipleBet.getJoinedAmount().multiply(multipleBet.getJoinedRating());
+		operation.setAmount(amount);
+		operation.setOperationType(OperationType.BET_PRIZE);
+		operation.setTimeOfOperation(LocalDateTime.now());
+		operation.setOperationInfo("Funds have been added to Your wallet: " + amount + ". You have won the bet! ");
 		return operationRepository.save(operation);
 	}
 

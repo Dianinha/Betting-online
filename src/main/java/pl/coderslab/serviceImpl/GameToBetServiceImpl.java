@@ -147,17 +147,29 @@ public class GameToBetServiceImpl implements GameToBetService {
 		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
 		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
 		double odds = 0.25;
-		if (homeStanding.getMatchesPlayed() < 7) {
-			odds = 0.3 * head.getNumberOfDrawHome() / head.getLastHomeGamesNumber()
-					+ 0.3 * head.getNumberOfDrawAway() / head.getLastAwayGameNumber()
+
+		int constHome = head.getLastHomeGamesNumber();
+		int constAway = head.getLastAwayGameNumber();
+		if (constHome == 0) {
+			constHome = 1;
+		}
+		if (constAway == 0) {
+			constAway = 1;
+		}
+		if (homeStanding.getMatchesPlayed() < 1) {
+
+			odds = 0.3 * head.getNumberOfDrawHome() / constHome + 0.3 * head.getNumberOfDrawAway() / constAway
+					+ 0.3 * head.getNumberOfDrawBetweenTeams() / 5 + 0.025;
+		} else if (homeStanding.getMatchesPlayed() < 7) {
+			odds = 0.3 * head.getNumberOfDrawHome() / constHome + 0.3 * head.getNumberOfDrawAway() / constAway
 					+ 0.3 * head.getNumberOfDrawBetweenTeams() / 5 + 0.025;
 		} else {
 			odds = 0.1 * homeStanding.getMatchesDraw() / homeStanding.getMatchesPlayed()
 					+ 0.1 * awayStanding.getMatchesDraw() / awayStanding.getMatchesPlayed()
 					+ 0.15 * homeStanding.getHomeMatchesDraw() / homeStanding.getHomeMatchesPlayed()
 					+ 0.15 * awayStanding.getAwayMatchesDraw() / awayStanding.getAwayMatchesPlayed()
-					+ 0.15 * head.getNumberOfDrawHome() / head.getLastHomeGamesNumber()
-					+ 0.15 * head.getNumberOfDrawAway() / head.getLastAwayGameNumber()
+					+ 0.15 * head.getNumberOfDrawHome() / constHome
+					+ 0.15 * head.getNumberOfDrawAway() / constAway
 					+ 0.15 * head.getNumberOfDrawBetweenTeams() / 5 + 0.0125;
 
 		}
@@ -168,20 +180,29 @@ public class GameToBetServiceImpl implements GameToBetService {
 	private double calculateOddsToWinHome(String home, String away, H2H head, League league) {
 		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
 		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
-		System.out.println(homeStanding);
-		System.out.println(awayStanding);
 		double odds = 0.25;
-		if (homeStanding.getMatchesPlayed() < 7) {
-			odds = 0.3 * head.getNumberOfWinsHome() / head.getLastHomeGamesNumber()
-					+ 0.3 * head.getNumberOfLosesAway() / head.getLastAwayGameNumber()
+		int constHome = head.getLastHomeGamesNumber();
+		int constAway = head.getLastAwayGameNumber();
+		if (constHome == 0) {
+			constHome = 1;
+		}
+		if (constAway == 0) {
+			constAway = 1;
+		}
+		if (homeStanding.getMatchesPlayed() < 1) {
+			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / 5
+					+ 0.3 * head.getNumberOfWinsHomevsAAway() / constAway + 0.025;
+		} else if (homeStanding.getMatchesPlayed() < 7) {
+			odds = 0.3 * head.getNumberOfWinsHome() / constHome
+					+ 0.3 * head.getNumberOfLosesAway() / constAway
 					+ 0.3 * head.getNumberOfWinsHomevsAAway() / 5 + 0.025;
 		} else {
 			odds = 0.05 * homeStanding.getMatchesWon() / homeStanding.getMatchesPlayed()
 					+ 0.05 * awayStanding.getMatchesLost() / awayStanding.getMatchesPlayed()
 					+ 0.2 * homeStanding.getHomeMatchesWon() / homeStanding.getHomeMatchesPlayed()
 					+ 0.2 * awayStanding.getAwayMatchesLost() / awayStanding.getAwayMatchesPlayed()
-					+ 0.15 * head.getNumberOfWinsHome() / head.getLastHomeGamesNumber()
-					+ 0.15 * head.getNumberOfLosesAway() / head.getLastAwayGameNumber()
+					+ 0.15 * head.getNumberOfWinsHome() / constHome
+					+ 0.15 * head.getNumberOfLosesAway() / constAway
 					+ 0.15 * head.getNumberOfWinsHomevsAAway() / 5 + 0.0125;
 
 		}
@@ -192,6 +213,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	private H2H createH2H(String home, String away) {
 		H2H result = new H2H();
+		home = home.replace("'", "");
+		away = away.replace("'", "");
 		String url = "https://apifootball.com/api/?action=get_H2H&firstTeam=" + home.replace(' ', '+') + "&secondTeam="
 				+ away.replace(' ', '+') + "&APIkey=" + apiRepository.findOne((long) 1).getKeyCode();
 		JSONParser parser = new JSONParser();
@@ -292,7 +315,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 		result.setNumberOfWinsHome(numberofWonLastGamesHome);
 		result.setNumberOfWinsHomevsAAway(numberofWonLastGamesHomeVSAway);
 
-		System.out.println(result);
 
 		return result;
 
@@ -316,9 +338,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 						status = status.replace("'", "");
 						if (status.contains("+")) {
 							String statusMin = status.substring(0, status.indexOf('+'));
-							minutesIn = Integer.parseInt(statusMin);
+							minutesIn = Integer.parseInt(statusMin.trim());
 						} else {
-							minutesIn = Integer.parseInt(status.substring(0, status.length() - 1));
+							minutesIn = Integer.parseInt(status.substring(0, status.length()));
 						}
 						int homeScore = event.getHomeTeamScore();
 						int awayScore = event.getAwayTeamScore();
@@ -330,50 +352,55 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 						if (minutesIn > 80) {
 							game.setActive(false);
+							gameRepository.save(game);
 						} else {
 							double homeProbabilityFromTime = 0.00;
 							double drawProbabilityFromTime = 0.00;
 							if (scoreDifference >= 3) {
-								mySecretX= 0.2;
+								mySecretX = 0.2;
 								homeProbabilityFromTime = 0.989;
 								drawProbabilityFromTime = 0.01;
 
 							} else if (scoreDifference == 2) {
-								mySecretX=0.6;
+								mySecretX = 0.6;
 								homeProbabilityFromTime = 0.95;
 								drawProbabilityFromTime = 0.04;
-								mySecretX=0.85;
+								mySecretX = 0.85;
 							} else if (scoreDifference == 1) {
 
 								homeProbabilityFromTime = 0.7;
 								drawProbabilityFromTime = 0.26;
 
 							} else if (scoreDifference == 0) {
-								mySecretX=1.0;
+								mySecretX = 1.0;
 								homeProbabilityFromTime = 0.3 * (game.getOddsToWinHome()
 										/ (game.getOddsToWinHome() + game.getOddsToWinAway()));
 								drawProbabilityFromTime = 0.7;
 
 							} else if (scoreDifference == -1) {
-								mySecretX=0.85;
+								mySecretX = 0.85;
 								homeProbabilityFromTime = 0.04;
 								drawProbabilityFromTime = 0.26;
 
 							} else if (scoreDifference == -2) {
-								mySecretX=0.6;
+								mySecretX = 0.6;
 								homeProbabilityFromTime = 0.01;
 								drawProbabilityFromTime = 0.04;
-							} else if (scoreDifference < -3) {
-								mySecretX=0.2;
+							} else if (scoreDifference <= -3) {
+								mySecretX = 0.2;
 								homeProbabilityFromTime = 0.001;
 								drawProbabilityFromTime = 0.01;
 							}
-
+							System.out.println(minutesIn);
 							int minutesToBetEnd = 80 - minutesIn;
-							double percentOfGameThatIsLeft = minutesToBetEnd / 80;
-							double oddsForHome = mySecretX*(game.getOddsToWinHome() * percentOfGameThatIsLeft) + (2.0-mySecretX)*((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
-							double oddsForDraw =  mySecretX* game.getOddsToWinDraw() * percentOfGameThatIsLeft + (2.0-mySecretX)*((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
-							double oddsForAway = 1-oddsForHome-oddsForDraw;
+							System.out.println(minutesToBetEnd);
+							double percentOfGameThatIsLeft = (double)(minutesToBetEnd) / 80.00;
+							System.out.println(percentOfGameThatIsLeft);
+							double oddsForHome = mySecretX * (game.getOddsToWinHome() * percentOfGameThatIsLeft)
+									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
+							double oddsForDraw = mySecretX * game.getOddsToWinDraw() * percentOfGameThatIsLeft
+									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * drawProbabilityFromTime);
+							double oddsForAway = 1 - oddsForHome - oddsForDraw;
 							game.setRateHome(generateRate(oddsForHome));
 							game.setRateDraw(generateRate(oddsForDraw));
 							game.setRateAway(generateRate(oddsForAway));
