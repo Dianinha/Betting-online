@@ -193,7 +193,7 @@ public class BetServiceImpl implements BetService {
 		for (MultipleBet multipleBet : multibetsPlaced) {
 			List<SingleBet> singleBets = multipleBet.getBets();
 			if (checkIfAnyEventInListHaveStarted(singleBets)) {
-				multipleBet.setConvertionToGroupBetPossible(false);
+				multipleBet.setGroupBetPossible(false);;
 				multipleBetRepository.save(multipleBet);
 			}
 			for (SingleBet singleBet : singleBets) {
@@ -284,8 +284,7 @@ public class BetServiceImpl implements BetService {
 			}
 			singleBet.setStatus(BetStatus.ENDED_IN_MULTIBET);
 			betRepository.save(singleBet);
-		} else {
-		}
+		} 
 
 	}
 
@@ -298,14 +297,12 @@ public class BetServiceImpl implements BetService {
 	 *         ENDED_IN_MULTIBET, false otherwise
 	 */
 	private boolean checkIfAllBetsInMultipleBetAreEnded(List<SingleBet> betsInMultipleBet) {
-		boolean result = true;
 		for (SingleBet singleBet : betsInMultipleBet) {
 			if (!singleBet.getStatus().equals(BetStatus.ENDED_IN_MULTIBET)) {
-				result = false;
-				return result;
+				return false;
 			}
 		}
-		return result;
+		return true;
 
 	}
 

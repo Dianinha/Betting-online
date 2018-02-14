@@ -61,19 +61,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 	@Override
 	public void createGamesToBetFromEvents(List<Event> events) {
 		List<Event> futureEvents = new ArrayList<>();
-		for (Event event : futureEvents) {
-			if (event.getLegaue().getCountry() == null) {
-				GameToBet game = new GameToBet();
-				game.setActive(false);
-				game.setId(event.getId());
-				game.setEvent(event);
-				game.setRateAway(new BigDecimal(1.0));
-				game.setRateHome(new BigDecimal(1.0));
-				game.setRateDraw(new BigDecimal(1.0));
-				gameRepository.save(game);
-				event.setGame(game);
-				eventRepository.save(event);
-			} else {
+		for (Event event : events) {
 				GameToBet game = new GameToBet();
 				if (event.getStatus().equals("FT")) {
 					game.setActive(false);
@@ -87,7 +75,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 				Event improvedEvent = eventRepository.save(event);
 				futureEvents.add(improvedEvent);
 			}
-		}
 		updateGamesToBet(futureEvents);
 
 	}
@@ -128,11 +115,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 				game.setActive(false);
 				gameRepository.save(game);
 			} else {
-				if (event.getLegaue().getCountry() == null) {
-				} else {
-					if (event.getLegaue().getCountry() != null || event.getLegaue().getName().contains("GROUP")) {
-						gameRepository.save(recalculateOdds(game, event));
-					}
+				if (event.getLegaue().getCountry() != null) {
+					gameRepository.save(recalculateOdds(game, event));
 				}
 			}
 
@@ -166,6 +150,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 		game.setRateHome(generateRate(game.getOddsToWinHome()));
 		game.setRateAway(generateRate(game.getOddsToWinAway()));
 		game.setRateDraw(generateRate(game.getOddsToWinDraw()));
+		System.out.println(game);
 		return game;
 	}
 
@@ -471,8 +456,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 							 * Depending on score I have different constants that represents the weights of
 							 * probabilities mySecretX is very secret and I cannot talk about it. Sorry.
 							 * OK... so it fixes the problem that occurs if there is like 10 minutes in the
-							 * game and one team already scored like 3 goals. So the probability from just standings and H2H stops matter and the
-							 * actual score is more important. Not perfect but still it works.
+							 * game and one team already scored like 3 goals. So the probability from just
+							 * standings and H2H stops matter and the actual score is more important. Not
+							 * perfect but still it works.
 							 * 
 							 */
 							if (scoreDifference >= 3) {
@@ -484,9 +470,9 @@ public class GameToBetServiceImpl implements GameToBetService {
 								mySecretX = 0.6;
 								homeProbabilityFromTime = 0.95;
 								drawProbabilityFromTime = 0.04;
-								mySecretX = 0.85;
+								
 							} else if (scoreDifference == 1) {
-
+								mySecretX = 0.85;
 								homeProbabilityFromTime = 0.7;
 								drawProbabilityFromTime = 0.26;
 

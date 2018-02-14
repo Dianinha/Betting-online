@@ -154,7 +154,7 @@ public class EventServiceImpl implements EventService {
 
 					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
 					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, eventId);
-
+					
 					// save event
 					if (event.getLegaue() != null) {
 						event = eventRepo.save(event);
@@ -273,7 +273,7 @@ public class EventServiceImpl implements EventService {
 					JSONObject eventJson = (JSONObject) jsonEvenObject;
 
 					String eventId = (String) eventJson.get("match_id");
-					Long id = Long.parseLong(eventId);
+					long id = Long.parseLong(eventId);
 					if (eventRepo.findOne(id) != null) {
 
 						Event event = eventRepo.findOne(id);

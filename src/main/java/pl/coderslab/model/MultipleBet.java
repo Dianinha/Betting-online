@@ -21,7 +21,7 @@ public class MultipleBet {
 	@Column(name = "bet_id")
 	private long id;
 
-	@OneToMany(fetch=FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "multipleBet_bet", joinColumns = @JoinColumn(name = "groupBet_id"), inverseJoinColumns = @JoinColumn(name = "bet_id"))
 	private List<SingleBet> bets;
 
@@ -36,8 +36,8 @@ public class MultipleBet {
 	private BetStatus status;
 
 	private String result;
-	
-	private boolean isConvertionToGroupBetPossible;
+
+	private boolean groupBetPossible;
 
 	private boolean isItAGroupBet;
 
@@ -93,12 +93,12 @@ public class MultipleBet {
 		this.joinedAmount = joinedAmount;
 	}
 
-	public boolean isConvertionToGroupBetPossible() {
-		return isConvertionToGroupBetPossible;
+	public boolean isGroupBetPossible() {
+		return groupBetPossible;
 	}
 
-	public void setConvertionToGroupBetPossible(boolean isConvertionToGroupBetPossible) {
-		this.isConvertionToGroupBetPossible = isConvertionToGroupBetPossible;
+	public void setGroupBetPossible(boolean groupBetPossible) {
+		this.groupBetPossible = groupBetPossible;
 	}
 
 	public BetStatus getStatus() {

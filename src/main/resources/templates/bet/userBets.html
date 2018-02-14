@@ -43,7 +43,7 @@
 							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
 							<td th:with="result=${bet.rate * bet.amount}"><span
 								th:text="${result}"></span></td>
-							
+
 							<td th:if="${bet.game.event.status.equals('')}"><a
 								th:href="@{/bet/convertToGroupBet(id=${bet.id}, type=single)}"><input
 									type="submit" value="Make it a group bet!"
@@ -89,7 +89,7 @@
 						<td></td>
 						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
 							th:text="${result}" style="color: #df2935"></span></td>
-						<td th:unless="${bets.isConvertionToGroupBetPossible==false}"><a
+						<td th:if="${bets.groupBetPossible}"><a
 							th:href="@{/bet/convertToGroupBet(id=${bets.id},type=multi)}"><input
 								type="submit" value="Make it a group bet!"
 								class="btn btn-outline-success my-2 my-sm-0 " /></a></td>

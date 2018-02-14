@@ -155,7 +155,7 @@ public class BetController {
 			if (amount != null) {
 				amountOfBet = new BigDecimal(amount);
 			} else {
-				amountOfBet = BigDecimal.valueOf((double) session.getAttribute("currentAmount"));
+				amountOfBet = (BigDecimal) session.getAttribute("currentAmount");
 			}
 		}
 		bet.setUser(user);
@@ -257,7 +257,7 @@ public class BetController {
 			multiBet.setItAGroupBet(false);
 			multiBet.setBets(userBets);
 			multiBet.setUser(user);
-			multiBet.setConvertionToGroupBetPossible(true);
+			multiBet.setGroupBetPossible(true);
 			multiBet.setJoinedAmount(userBets.get(0).getAmount());
 			multiBet.setJoinedRating(betService.calculateRateInMultipleBet(userBets));
 
@@ -379,7 +379,7 @@ public class BetController {
 			betService.changeBetToGroupBet(bet);
 		} else if (type.equals("multi")) {
 			MultipleBet multiBet = multiBetRepository.findOne(id);
-			if (multiBet.isConvertionToGroupBetPossible()==false) {
+			if (multiBet.isGroupBetPossible()==false) {
 				model.addAttribute("message", "One of the games has already started. You cannot change it to group bet");
 				return "user/myBets";
 			}

@@ -46,6 +46,10 @@ public class UserControllerForWalletOnly {
 	@Autowired
 	private OperationService operationService;
 
+	@RequestMapping(path = "/wallet")
+	public String badUrlCatcher() {
+		return "redirect:/user";
+	}
 
 	/**
 	 * This method show User acquiring funds option
@@ -136,7 +140,7 @@ public class UserControllerForWalletOnly {
 
 		}
 
-		return "redirect:/user/wallet";
+		return "redirect:/user/creditCards";
 	}
 
 	/**

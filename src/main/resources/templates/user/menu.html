@@ -51,7 +51,7 @@
 		</div>
 	</div>
 	<div th:if="${message}">
-	<span th:text="${message}"></span>
+		<span th:text="${message}"></span>
 	</div>
 	<div class="container">
 		<div class="row my-5 py-5 px-3">
@@ -77,7 +77,7 @@
 					<div class="col tborder mx-1 py-4"
 						style="background-color: #ffffff">
 
-						<h3>Your active bets:</h3>
+						<h3>You have active bets on games:</h3>
 						<div class="betstbl">
 							<table class="table table-striped usertbl">
 								<thead>
@@ -87,21 +87,10 @@
 										<th scope="col">Teams</th>
 										<th scope="col">Score</th>
 										<th scope="col">Time</th>
-										<th scope="col">Bet</th>
-										<th scope="col">To win</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
-										<td>Football</td>
-										<td>Süper Lig</td>
-										<td><span style="color: #df2935">Galatasaray</span> vs <span
-											style="color: #df2935">Antalyaspor</span></td>
-										<td>0:0</td>
-										<td>18:00</td>
-										<td>1</td>
-										<td><span style="color: #df2935; font-weight: bold">700zł</span></td>
-									</tr>
+								<tbody id="userLiveResultsUserBets">
+
 
 								</tbody>
 							</table>
@@ -112,46 +101,24 @@
 					<div class="col tborder mx-1 py-4"
 						style="background-color: #ffffff">
 
-						<h3>Popular bets:</h3>
+						<h3>Upcoming games:</h3>
 						<div class="betstbl">
 							<table class="table table-striped usertbl">
 								<thead>
 									<tr>
-										<th scope="col">Add to obs.</th>
+										<th scope="col">Observe</th>
 										<th scope="col">Sport</th>
-										<th scope="col">Competition</th>
+										<th scope="col">League</th>
 										<th scope="col">Teams</th>
 										<th scope="col">Score</th>
+										<th scope="col">Date</th>
 										<th scope="col">Time</th>
 										<th scope="col">Home</th>
 										<th scope="col">Draw</th>
 										<th scope="col">Away</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
-										<td>
-											<form th:action="@{/user}" method="get">
-												<div>
-													<input type="submit" value="+"
-														class="btn btn-outline-success" style="font-size: 10px;" />
-												</div>
-											</form>
-										</td>
-										<td>Football</td>
-										<td>Football</td>
-										<td>Süper Lig</td>
-										<td><span style="color: #df2935">Galatasaray</span> vs <span
-											style="color: #df2935">Antalyaspor</span></td>
-										<td>0:0</td>
-										<td>18:00</td>
-										<td style="background-color: #df2935"><a
-											style="color: #ffffff !important; font-weight: bold;">2.20</a></td>
-										<td style="background-color: #001021"><a
-											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
-										<td style="background-color: #df2935"><a
-											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
-									</tr>
+								<tbody id="userLiveResultsPopularBets">
 
 								</tbody>
 							</table>
@@ -168,6 +135,7 @@
 							<table class="table table-striped usertbl">
 								<thead>
 									<tr>
+									<th scope="col">Do not obsv.</th>
 										<th scope="col">Sport</th>
 										<th scope="col">Competition</th>
 										<th scope="col">Teams</th>
@@ -178,21 +146,8 @@
 										<th scope="col">Away</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
-										<td>Football</td>
-										<td>Süper Lig</td>
-										<td><span style="color: #df2935">Galatasaray</span> vs <span
-											style="color: #df2935">Antalyaspor</span></td>
-										<td>0:0</td>
-										<td>18:00</td>
-										<td style="background-color: #df2935"><a
-											style="color: #ffffff !important; font-weight: bold;">2.20</a></td>
-										<td style="background-color: #001021"><a
-											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
-										<td style="background-color: #df2935"><a
-											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
-									</tr>
+								<tbody id = "userLiveResultsObserved">
+								
 
 								</tbody>
 							</table>
@@ -220,25 +175,6 @@
 									</tr>
 								</thead>
 								<tbody id="userLiveResults">
-									<!-- <tr th:each="liveNowEv : ${liveNow}">
-										<td th:if="${liveNowEv.category.name}"><span
-											th:text="${liveNowEv.category.name}"></span></td>
-										<td th:text="${liveNowEv.legaue.name}"></td>
-										<td><span style="color: #df2935"
-											th:text="${liveNowEv.homeTeamName}"></span> vs <span
-											style="color: #df2935" th:text="${liveNowEv.awayTeamName}"></span></td>
-										<td th:text="${liveNowEv.homeTeamScore} + ':' + ${liveNowEv.awayTeamScore}">0:0</td>
-										<td th:text="${liveNowEv.time}">18:00</td>
-										<td style="background-color: #df2935"><a
-											style="color: #ffffff !important; font-weight: bold;"
-											th:text="${liveNowEv.game.rateHome}">2.20</a></td>
-										<td style="background-color: #001021"
-											th:text="${liveNowEv.game.rateDraw}"><a
-											style="color: #ffffff !important; font-weight: bold">3.20</a></td>
-										<td style="background-color: #df2935"
-											th:text="${liveNowEv.game.rateAway}"><a
-											style="color: #ffffff !important; font-weight: bold;">2.65</a></td>
-									</tr> -->
 
 								</tbody>
 							</table>
@@ -301,5 +237,67 @@
 			setInterval(updateUserpage, 1000);
 		});
 	</script>
+	<script th:inline="javascript">
+		$(document)
+				.ready(
+						function() {
+							function updateUserpage2() {
+								$
+										.ajax({
+											url : "http://localhost:5555/results/userLiveResultsActiveBets",
+											dataType : "html",
+											cache : false,
+											success : function(data) {
+												$('#userLiveResultsUserBets')
+														.html(data);
+											}
+										});
+							}
+							updateUserpage2();
+							setInterval(updateUserpage2, 1000);
+						});
+	</script>
+	<script th:inline="javascript">
+		$(document)
+				.ready(
+						function() {
+							function updateUserpage3() {
+								$
+										.ajax({
+											url : "http://localhost:5555/results/userLiveResultsPopularBets",
+											dataType : "html",
+											cache : false,
+											success : function(data) {
+												$('#userLiveResultsPopularBets')
+														.html(data);
+											}
+										});
+							}
+							updateUserpage3();
+							setInterval(updateUserpage3, 1000);
+						});
+	</script>
+	<script th:inline="javascript">
+		$(document)
+				.ready(
+						function() {
+							function updateUserpage4() {
+								$
+										.ajax({
+											url : "http://localhost:5555/results/userLiveResultsObserved",
+											dataType : "html",
+											cache : false,
+											success : function(data) {
+												$('#userLiveResultsObserved')
+														.html(data);
+											}
+										});
+							}
+							updateUserpage4();
+							setInterval(updateUserpage4, 1000);
+						});
+	</script>
+	
+	
 </body>
 </html>

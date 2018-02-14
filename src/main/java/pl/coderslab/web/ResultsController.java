@@ -2,28 +2,39 @@ package pl.coderslab.web;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
-import pl.coderslab.repositories.LeagueRepository;
+import pl.coderslab.model.GroupBet;
+import pl.coderslab.model.MultipleBet;
+import pl.coderslab.model.SingleBet;
+import pl.coderslab.model.User;
+import pl.coderslab.service.BetService;
 import pl.coderslab.service.CountryService;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
 import pl.coderslab.service.LeagueService;
 import pl.coderslab.service.StandingService;
+import pl.coderslab.service.UserService;
 
-/**This controller manages results for other pages. User should not access it.
+/**
+ * This controller manages results for other pages. User should not access it.
  * 
  * @author dianinha
  *
@@ -39,6 +50,9 @@ public class ResultsController {
 	LeagueService leagueService;
 
 	@Autowired
+	UserService userService;
+
+	@Autowired
 	EventService eventService;
 
 	@Autowired
@@ -47,11 +61,15 @@ public class ResultsController {
 	@Autowired
 	GameToBetService gameService;
 
-/**Create countries from API
- * If You have just set up the application, please go to this address and create countries in database.
- * 
- * @return
- */
+	@Autowired
+	BetService betService;
+
+	/**
+	 * Create countries from API If You have just set up the application, please go
+	 * to this address and create countries in database.
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/countries")
 	@ResponseBody
 	public String countries() {
@@ -59,10 +77,12 @@ public class ResultsController {
 		return "Hello countries";
 	}
 
-/**Create leagues from API.
- * If You have just set up the application, please go to this address and create countries in database.
- * @return
- */
+	/**
+	 * Create leagues from API. If You have just set up the application, please go
+	 * to this address and create countries in database.
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/leagues")
 	@ResponseBody
 	public String legaues() {
@@ -71,35 +91,32 @@ public class ResultsController {
 		return "Hello leagues";
 	}
 
-
 	@RequestMapping(value = "/tryLive")
 	public String tryLive(Model model, HttpSession session) {
 		return "/live/eventlive";
 	}
 
-
-
-//	@RequestMapping(value = "/updateJsonResults")
-//	@ResponseBody
-//	public JSONArray updateJsonResults() {
-//		List<Event> liveEvents = eventService.liveEvent();
-//		JSONArray list = new JSONArray();
-//		for (Event event : liveEvents) {
-//			JSONObject obj = new JSONObject();
-//			obj.put("date", event.getDate().toString());
-//			obj.put("time", event.getTime());
-//			League league = event.getLegaue();
-//			obj.put("leagueName", league.getName());
-//			obj.put("homeTeamName", event.getHomeTeamName());
-//			obj.put("awayTeamName", event.getAwayTeamName());
-//			obj.put("homeTeamScore", event.getHomeTeamScore());
-//			obj.put("awayTeamScore", event.getAwayTeamScore());
-//			obj.put("homeTeamScoreHalfTime", event.getHomeTeamScoreHalfTime());
-//			obj.put("awayTeamScoreHalfTime", event.getAwayTeamScoreHalfTime());
-//			list.add(obj);
-//		}
-//		return list;
-//	}
+	// @RequestMapping(value = "/updateJsonResults")
+	// @ResponseBody
+	// public JSONArray updateJsonResults() {
+	// List<Event> liveEvents = eventService.liveEvent();
+	// JSONArray list = new JSONArray();
+	// for (Event event : liveEvents) {
+	// JSONObject obj = new JSONObject();
+	// obj.put("date", event.getDate().toString());
+	// obj.put("time", event.getTime());
+	// League league = event.getLegaue();
+	// obj.put("leagueName", league.getName());
+	// obj.put("homeTeamName", event.getHomeTeamName());
+	// obj.put("awayTeamName", event.getAwayTeamName());
+	// obj.put("homeTeamScore", event.getHomeTeamScore());
+	// obj.put("awayTeamScore", event.getAwayTeamScore());
+	// obj.put("homeTeamScoreHalfTime", event.getHomeTeamScoreHalfTime());
+	// obj.put("awayTeamScoreHalfTime", event.getAwayTeamScoreHalfTime());
+	// list.add(obj);
+	// }
+	// return list;
+	// }
 
 	@RequestMapping(value = "/updateHtmlResults")
 	@ResponseBody
@@ -163,8 +180,11 @@ public class ResultsController {
 		return myHtml;
 	}
 
-	/**This is method for updating home page result. This returns HTML code due to me not being able to have ajax method with jSON and Thymeleaf in one view.
-	 * I did not want to waste time for looking for solution, so I just put the code in html.
+	/**
+	 * This is method for updating home page result. This returns HTML code due to
+	 * me not being able to have ajax method with jSON and Thymeleaf in one view. I
+	 * did not want to waste time for looking for solution, so I just put the code
+	 * in html.
 	 * 
 	 * @return
 	 */
@@ -248,7 +268,8 @@ public class ResultsController {
 		return myHtml;
 	}
 
-	/**This updates user section "Live Results" on User main page.
+	/**
+	 * This updates user section "Live Results" on User main page.
 	 * 
 	 * @return
 	 */
@@ -262,8 +283,14 @@ public class ResultsController {
 
 			@Override
 			public int compare(Event o1, Event o2) {
+				if (o1.getDate().compareTo(o2.getDate()) == 0) {
+					if (o1.getTime().compareTo(o2.getTime()) == 0) {
+						return o1.getHomeTeamName().compareTo(o2.getHomeTeamName());
+					}
+					return o1.getTime().compareTo(o2.getTime());
+				}
+				return o1.getDate().compareTo(o2.getDate());
 
-				return o1.getTime().compareTo(o2.getTime());
 			}
 		});
 		for (int i = 0; i < liveEvents.size(); i++) {
@@ -304,14 +331,17 @@ public class ResultsController {
 			GameToBet game = gameService.findByEvent(event);
 			String betButtons = "";
 			if (game.isActive()) {
-				betButtons ="<td style=\"background-color: #df2935\">"
-						+ "<a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">" + event.getGame().getRateHome()
-						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
+				betButtons = "<td style=\"background-color: #df2935\">"
+						+ "<a href=\"http://localhost:5555/bet/add?gameId=" + event.getId()
+						+ "&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">"
+						+ event.getGame().getRateHome()
+						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="
+						+ event.getId() + "&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
 						+ event.getGame().getRateDraw()
-						+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="
+						+ event.getId() + "&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
 						+ event.getGame().getRateAway() + "</a></td>";
-			}
-			else {
+			} else {
 				betButtons = "<td></td><td></td><td></td>";
 			}
 			if (!in.equals("FINISHED")) {
@@ -319,13 +349,196 @@ public class ResultsController {
 						+ "</td><td><span style=\"color: #df2935\">" + event.getLegaue().getName()
 						+ "</span></td><td><span style=\"color: #df2935\">" + event.getHomeTeamName()
 						+ "</span> vs. <span style=\"color: #df2935\">" + event.getAwayTeamName() + "</span></td><td>"
-						+ event.getHomeTeamScore() + ":" + event.getAwayTeamScore() + "</td><td>" + in
-						+ "</td>"+ betButtons + "</tr>";
+						+ event.getHomeTeamScore() + ":" + event.getAwayTeamScore() + "</td><td>" + in + "</td>"
+						+ betButtons + "</tr>";
 
 			}
 
-			
 		}
 		return myHtml;
 	}
+
+	@RequestMapping(value = "/userLiveResultsPopularBets")
+	@ResponseBody
+	public String getResultsForUserPagePopularBets() {
+		String myHtml = "";
+		LocalDate today = LocalDate.now();
+		LocalDate fewDaysFromNow = LocalDate.now().plusDays(3);
+		List<Event> liveEvents = eventService.findByDateBetween(today, fewDaysFromNow);
+		Collections.sort(liveEvents, new Comparator<Event>() {
+
+			@Override
+			public int compare(Event o1, Event o2) {
+				if (o1.getDate().compareTo(o2.getDate()) == 0) {
+					if (o1.getTime().compareTo(o2.getTime()) == 0) {
+						return o1.getHomeTeamName().compareTo(o2.getHomeTeamName());
+					}
+					return o1.getTime().compareTo(o2.getTime());
+				}
+				return o1.getDate().compareTo(o2.getDate());
+
+			}
+		});
+		for (int i = 0; i < liveEvents.size(); i++) {
+			Event event = liveEvents.get(i);
+			String time = event.getTime();
+			String in = "NOTHING";
+			time = time.trim();
+
+			GameToBet game = gameService.findByEvent(event);
+			String betButtons = "";
+			try {
+				if (game.isActive()) {
+					betButtons = "<td style=\"background-color: #df2935\">"
+							+ "<a href=\"http://localhost:5555/bet/add?gameId=" + event.getId()
+							+ "&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">"
+							+ event.getGame().getRateHome()
+							+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="
+							+ event.getId() + "&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
+							+ event.getGame().getRateDraw()
+							+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="
+							+ event.getId() + "&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+							+ event.getGame().getRateAway() + "</a></td>";
+				} else {
+					betButtons = "<td></td><td></td><td></td>";
+				}
+				if (!in.equals("FINISHED")) {
+					myHtml = myHtml + "<tr><td><form action=\"/user/addToObserved?eventId=" + event.getId()
+							+ "\" method=\"post\"> <div> <input type=\"submit\" value=\"+\" class=\"btn btn-outline-success\" style=\"font-size:10px;\"/> </div> </form></td><td>"
+							+ event.getCategory().getName() + "</td><td><span style=\"color: #df2935\">"
+							+ event.getLegaue().getName() + "</span></td><td><span style=\"color: #df2935\">"
+							+ event.getHomeTeamName() + "</span> vs. <span style=\"color: #df2935\">"
+							+ event.getAwayTeamName() + "</span></td><td>" + event.getHomeTeamScore() + ":"
+							+ event.getAwayTeamScore() + "</td><td>" + event.getDate() + "</td><td>" + time + "</td>"
+							+ betButtons + "</tr>";
+
+				}
+			} catch (Exception e) {
+			}
+
+
+		}
+		return myHtml;
+	}
+
+	@RequestMapping(value = "/userLiveResultsObserved")
+	@ResponseBody
+	public String getResultsForUserPageObserved(Authentication authentication) {
+		User user = userService.getAuthenticatedUser(authentication);
+		List<Event> events = new ArrayList<>(user.getUserObservedGames());
+		String myHtml = "";
+		Collections.sort(events, new Comparator<Event>() {
+
+			@Override
+			public int compare(Event o1, Event o2) {
+				if (o1.getDate().compareTo(o2.getDate()) == 0) {
+					if (o1.getTime().compareTo(o2.getTime()) == 0) {
+						return o1.getHomeTeamName().compareTo(o2.getHomeTeamName());
+					}
+					return o1.getTime().compareTo(o2.getTime());
+				}
+				return o1.getDate().compareTo(o2.getDate());
+
+			}
+		});
+		for (int i = 0; i < events.size(); i++) {
+			Event event = events.get(i);
+			String time = event.getTime();
+			String in = "NOTHING";
+			time = time.trim();
+
+			GameToBet game = gameService.findByEvent(event);
+			String betButtons = "";
+			try {
+				if (game.isActive()) {
+					betButtons = "<td style=\"background-color: #df2935\">"
+							+ "<a href=\"http://localhost:5555/bet/add?gameId=" + event.getId()
+							+ "&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">"
+							+ event.getGame().getRateHome()
+							+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="
+							+ event.getId() + "&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
+							+ event.getGame().getRateDraw()
+							+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="
+							+ event.getId() + "&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+							+ event.getGame().getRateAway() + "</a></td>";
+				} else {
+					betButtons = "<td></td><td></td><td></td>";
+				}
+				if (!in.equals("FINISHED")) {
+					myHtml = myHtml + "<tr><td><form action=\"/user/removeFromObserved?eventId=" + event.getId()
+							+ "\" method=\"post\"> <div> <input type=\"submit\" value=\"-\" class=\"btn btn-outline-success\" style=\"font-size:10px;\"/> </div> </form></td><td>"
+							+ event.getCategory().getName() + "</td><td><span style=\"color: #df2935\">"
+							+ event.getLegaue().getName() + "</span></td><td><span style=\"color: #df2935\">"
+							+ event.getHomeTeamName() + "</span> vs. <span style=\"color: #df2935\">"
+							+ event.getAwayTeamName() + "</span></td><td>" + event.getHomeTeamScore() + ":"
+							+ event.getAwayTeamScore() + "</td><td>" + event.getDate() + "</td><td>" + time + "</td>"
+							+ betButtons + "</tr>";
+
+				}
+			} catch (Exception e) {
+			}
+
+		}
+		return myHtml;
+	}
+
+	@RequestMapping(value = "/userLiveResultsActiveBets")
+	@ResponseBody
+	public String getResultsForUserPageBets(Authentication auth) {
+		String myHtml = "";
+		User user = userService.getAuthenticatedUser(auth);
+
+		List<SingleBet> userSingles = betService.findBetsByUserAndStatus(BetStatus.PLACED, user);
+		List<MultipleBet> userMultipleBets = betService.findMultipleBetsByUserAndStatus(BetStatus.PLACED, user);
+		List<GroupBet> userGroupBet = betService.findGroupBetByUser(user);
+		Set<SingleBet> joinedBets = new HashSet<>();
+		joinedBets.addAll(userSingles);
+		for (MultipleBet multipleBet : userMultipleBets) {
+			joinedBets.addAll(multipleBet.getBets());
+		}
+		for (GroupBet groupBet : userGroupBet) {
+			joinedBets.addAll(groupBet.getBet());
+		}
+		Set<Event> events = new HashSet<>();
+		for (SingleBet singleBet : joinedBets) {
+
+			GameToBet game = singleBet.getGame();
+			Event event = game.getEvent();
+			events.add(event);
+		}
+		List<Event> eventsUserHasBetsOn = new ArrayList<>(events);
+		Collections.sort(eventsUserHasBetsOn, new Comparator<Event>() {
+
+			@Override
+			public int compare(Event o1, Event o2) {
+				if (o1.getDate().compareTo(o2.getDate()) == 0) {
+					if (o1.getTime().compareTo(o2.getTime()) == 0) {
+						return o1.getHomeTeamName().compareTo(o2.getHomeTeamName());
+					}
+					return o1.getTime().compareTo(o2.getTime());
+				}
+				return o1.getDate().compareTo(o2.getDate());
+
+			}
+		});
+		for (Event event2 : eventsUserHasBetsOn) {
+			GameToBet game2 = event2.getGame();
+			if (!eventService.checkIfEventHasEnded(game2.getEvent())) {
+				String time = event2.getTime();
+				if (!event2.getStatus().equals("")) {
+					time = event2.getStatus();
+				}
+				myHtml = myHtml + "<tr><td>" + event2.getCategory().getName() + "</td><td>"
+						+ event2.getLegaue().getName() + "</td><td><span style=\"color: #df2935\">"
+						+ event2.getHomeTeamName() + "</span> vs. <span style=\"color: #df2935\">"
+						+ event2.getAwayTeamName() + "</span></td><td>" + event2.getHomeTeamScore() + ":"
+						+ event2.getAwayTeamScore() + "</td><td>" + time + "</td></tr>";
+
+			}
+
+		}
+
+		return myHtml;
+	}
+
 }

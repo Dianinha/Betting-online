@@ -22,14 +22,14 @@ public class SheduledTasks {
 
 	@Autowired
 	private GameToBetService gameService;
-	
+
 	@Autowired
 	private BetService betService;
-	
+
 	@Autowired
 	private StandingService standingService;
 
-	@Scheduled(cron = "33 56 14 1/1 * ?")
+	@Scheduled(cron = "0 18 18 1/1 * ?")
 	public void createEvents() {
 		LocalDate dateStart = LocalDate.now().plusDays(1);
 		String startDate = dateStart.toString();
@@ -37,23 +37,24 @@ public class SheduledTasks {
 		String stopDate = dateStop.toString();
 		eventService.createEvents(startDate, stopDate);
 		List<Event> createdEvents = eventService.findByDateBetween(dateStart, dateStop);
-		//standingService.createStandingsOnceForDay();
+		// standingService.createStandingsOnceForDay();
 		gameService.createGamesToBetFromEvents(createdEvents);
 		System.out.println("Events and games are created!!!!!!!!!!!!!!!!!!!!!!!!");
 
 	}
 
-	@Scheduled(fixedRate = 30000)
-	public void updateLiveEvents() {
-		eventService.updateliveEvents();
-		gameService.updateLiveEventsGamesToBet();
-		System.out.println("games upadted");
-		}
-	
-	@Scheduled(fixedRate = 30000)
-	public void checkBets() {
-		betService.checkBetsForTodayGames();
-		betService.checkMultiBetsForTodayGames();
-		System.out.println("bets updated");
-		}
+	// @Scheduled(fixedRate = 30000)
+	// public void updateLiveEvents() {
+	// eventService.updateliveEvents();
+	// gameService.updateLiveEventsGamesToBet();
+	// System.out.println("games upadted");
+	// }
+	//
+	// @Scheduled(fixedRate = 30000)
+	// public void checkBets() {
+	// betService.checkBetsForTodayGames();
+	// betService.checkMultiBetsForTodayGames();
+	// System.out.println("bets updated");
+	// }
+
 }
