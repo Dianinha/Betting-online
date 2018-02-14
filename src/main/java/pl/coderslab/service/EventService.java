@@ -9,7 +9,6 @@ public interface EventService {
 
 	void createEvents(String from, String to);
 
-	//List<Event> liveEvent();
 	
 	void updateliveEvents();
 
@@ -18,5 +17,7 @@ public interface EventService {
 	List<Event> findByDateBetween(LocalDate from, LocalDate to);
 	
 	boolean checkIfEventHasEnded(Event event);
+
+	void createFakeEvents();
 
 }

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -148,6 +149,110 @@ public class EventServiceImpl implements EventService {
 						}
 					} catch (Exception e) {
 					}
+
+					// Is it live?
+					event.setMatchLive((String) eventJson.get("match_live"));
+
+					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
+					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, eventId);
+					
+					// save event
+					if (event.getLegaue() != null) {
+						event = eventRepo.save(event);
+						// Save goals
+						saveGoalScorers(goalScorers, eventId);
+					}
+
+				}
+			}
+			in.close();
+		} catch (
+
+		MalformedURLException e) {
+			e.printStackTrace();
+			System.out.println("here1");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("here2");
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.out.println("here3");
+		}
+
+	}
+	
+	@Override
+	public void createFakeEvents() {
+		// Completing URL
+		String finalUrl = "http://localhost:5555/results/fakeEventsLive";
+		// JSON parser creation:
+		JSONParser parser = new JSONParser();
+
+		try {
+			BufferedReader in = getJSONReader(finalUrl);
+			String inputLine;
+
+			// Reading JSON
+			while ((inputLine = in.readLine()) != null) {
+				// parsing Array of JSON
+				JSONArray JSONEvents = (JSONArray) parser.parse(inputLine);
+
+				// parsing every object
+				for (Object jsonEvent : JSONEvents) {
+
+					// Creating JSON object
+					JSONObject eventJson = (JSONObject) jsonEvent;
+
+					// creating new event
+
+					Event event = new Event();
+					// Id
+					Long eventId = (Long) eventJson.get("match_id");
+					event.setId(eventId);
+
+					// League
+					Long leagueId =(Long) eventJson.get("league_id");
+					try {
+						League eventsLeague = leagueService.findById(leagueId);
+						event.setLegaue(eventsLeague);
+						if (eventsLeague.getCountry() != null) {
+							Country country = eventsLeague.getCountry();
+							event.setCountry(country);
+						}
+
+					} catch (Exception e) {
+					}
+
+					// Country
+
+					event.setCategory(categoryRepository.findByName("Football"));
+
+					// Formatting date from String
+					String dateInString = (String) eventJson.get("match_date");
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					LocalDate eventDate = LocalDate.parse(dateInString, formatter);
+					event.setDate(eventDate);
+
+					// Event status = "FT" - ended, "HF" - half-time or in format /d/d' -> minutes
+					// in the game
+					event.setStatus((String) eventJson.get("match_status"));
+
+					// Time of the event
+					event.setTime((String) eventJson.get("match_time"));
+
+					event.setHomeTeamName((String) eventJson.get("match_hometeam_name"));
+
+					// In try in case of mistakes in API
+					Random r = new Random();
+							event.setHomeTeamScore(r.nextInt(5));
+
+					// Away Team Name
+					event.setAwayTeamName((String) eventJson.get("match_awayteam_name"));
+
+					// In try in case of mistakes in API
+							event.setAwayTeamScore(r.nextInt(5));
+					// In try in case of mistakes in API
+					
 
 					// Is it live?
 					event.setMatchLive((String) eventJson.get("match_live"));

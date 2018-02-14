@@ -57,4 +57,13 @@ public class SheduledTasks {
 	// System.out.println("bets updated");
 	// }
 
+	@Scheduled(fixedRate = 30000)
+	public void fakeEvents() {
+
+		eventService.createFakeEvents();
+		List<Event> events = eventService.findByDate(LocalDate.now());
+		gameService.createGamesToBetFromEvents(events);
+		gameService.updateLiveEventsGamesToBet();
+		System.out.println("created fake events");
+	}
 }

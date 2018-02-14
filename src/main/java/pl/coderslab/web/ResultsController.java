@@ -7,10 +7,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.tomcat.jni.Local;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,6 +26,7 @@ import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
 import pl.coderslab.model.GroupBet;
+import pl.coderslab.model.League;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.User;
@@ -96,27 +101,42 @@ public class ResultsController {
 		return "/live/eventlive";
 	}
 
-	// @RequestMapping(value = "/updateJsonResults")
-	// @ResponseBody
-	// public JSONArray updateJsonResults() {
-	// List<Event> liveEvents = eventService.liveEvent();
-	// JSONArray list = new JSONArray();
-	// for (Event event : liveEvents) {
-	// JSONObject obj = new JSONObject();
-	// obj.put("date", event.getDate().toString());
-	// obj.put("time", event.getTime());
-	// League league = event.getLegaue();
-	// obj.put("leagueName", league.getName());
-	// obj.put("homeTeamName", event.getHomeTeamName());
-	// obj.put("awayTeamName", event.getAwayTeamName());
-	// obj.put("homeTeamScore", event.getHomeTeamScore());
-	// obj.put("awayTeamScore", event.getAwayTeamScore());
-	// obj.put("homeTeamScoreHalfTime", event.getHomeTeamScoreHalfTime());
-	// obj.put("awayTeamScoreHalfTime", event.getAwayTeamScoreHalfTime());
-	// list.add(obj);
-	// }
-	// return list;
-	// }
+	@RequestMapping(value = "/fakeEventsLive")
+	@ResponseBody
+	public JSONArray updateJsonResults() {
+		LocalDate date = LocalDate.of(2018, 02, 13);
+		long counter = 1;
+		Random r = new Random();
+		List<Event> liveEvents = eventService.findByDate(date);
+		JSONArray list = new JSONArray();
+		for (Event event : liveEvents) {
+			JSONObject obj = new JSONObject();
+
+			obj.put("match_id", counter);
+			counter++;
+			obj.put("league_id", event.getLegaue().getId());
+			obj.put("match_date", LocalDate.now().toString());
+			String status = r.nextInt(90) + "'";
+			obj.put("match_status", status);
+			int hour = LocalDateTime.now().getHour();
+			String matchHour = hour + ":01";
+			obj.put("match_time", matchHour);
+			obj.put("match_hometeam_name", event.getHomeTeamName());
+			obj.put("match_awayteam_name", event.getAwayTeamName());
+
+			int homeScore = r.nextInt(5);
+			int awayScore = r.nextInt(5);
+
+			obj.put("match_hometeam_score", homeScore);
+			obj.put("match_awayteam_score", awayScore);
+
+			obj.put("match_live", event.getMatchLive());
+			JSONArray jsonArraygoals = (JSONArray) new JSONArray();
+			obj.put("goalscorer", jsonArraygoals);
+			list.add(obj);
+		}
+		return list;
+	}
 
 	@RequestMapping(value = "/updateHtmlResults")
 	@ResponseBody
@@ -415,7 +435,6 @@ public class ResultsController {
 				}
 			} catch (Exception e) {
 			}
-
 
 		}
 		return myHtml;
