@@ -95,4 +95,28 @@ public class MessageServiceImpl implements MessageService {
 
 	}
 
+	@Override
+	public void createUserRequestInvitation(User sender, List<User> recievers) {
+		Message message = new Message();
+		message.setSender(sender);
+		message.setRecievers(recievers);
+		message.setTitle("Friend request from: " + sender.getUsername());
+		message.setContent("User " + sender.getUsername()
+				+ " wants to be on Your friends list. Would You accept? Check Your invites to accept or discard the invite");
+		sendMessage(message);
+	}
+
+	@Override
+	public void createRequestAcceptedMessage(User accepted, User reciever) {
+		Message message = new Message();
+		message.setTitle("Invitation accepted");
+		message.setContent("Your invite has been accepted: " + accepted.getUsername()
+				+ " is Your new friends. You can now send messages to each other and invite to group bets.");
+		message.setSender(accepted);
+		List<User> recievers = new ArrayList<>();
+		recievers.add(reciever);
+		message.setRecievers(recievers);
+		sendMessage(message);
+	}
+
 }

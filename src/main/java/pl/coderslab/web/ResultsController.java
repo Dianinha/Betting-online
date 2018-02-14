@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,16 +16,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
-import pl.coderslab.model.League;
-import pl.coderslab.model.Standing;
 import pl.coderslab.repositories.LeagueRepository;
 import pl.coderslab.service.CountryService;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
 import pl.coderslab.service.LeagueService;
 import pl.coderslab.service.StandingService;
-import pl.coderslab.serviceImpl.StandingServiceImpl;
 
+/**This controller manages results for other pages. User should not access it.
+ * 
+ * @author dianinha
+ *
+ */
 @Controller
 @RequestMapping(value = "/results")
 public class ResultsController {
@@ -47,9 +47,11 @@ public class ResultsController {
 	@Autowired
 	GameToBetService gameService;
 
-	@Autowired
-	private LeagueRepository leagueRepository;
-
+/**Create countries from API
+ * If You have just set up the application, please go to this address and create countries in database.
+ * 
+ * @return
+ */
 	@RequestMapping(value = "/countries")
 	@ResponseBody
 	public String countries() {
@@ -57,7 +59,10 @@ public class ResultsController {
 		return "Hello countries";
 	}
 
-	
+/**Create leagues from API.
+ * If You have just set up the application, please go to this address and create countries in database.
+ * @return
+ */
 	@RequestMapping(value = "/leagues")
 	@ResponseBody
 	public String legaues() {
@@ -66,25 +71,6 @@ public class ResultsController {
 		return "Hello leagues";
 	}
 
-	
-
-	@RequestMapping(value = "/standings")
-	@ResponseBody
-	public String standings() {
-		ssi.createStandingsOnceForDay();
-		return "Hello standings";
-	}
-
-	@RequestMapping(value = "/events")
-	@ResponseBody
-	public String events() {
-		// eventService.createEvents("2018-02-11", "2018-02-11");
-		List<Event> events = eventService.findByDateBetween(LocalDate.now(), LocalDate.now());
-		for (Event event : events) {
-			System.out.println(event);
-		}
-		return "Hello events";
-	}
 
 	@RequestMapping(value = "/tryLive")
 	public String tryLive(Model model, HttpSession session) {
@@ -177,6 +163,11 @@ public class ResultsController {
 		return myHtml;
 	}
 
+	/**This is method for updating home page result. This returns HTML code due to me not being able to have ajax method with jSON and Thymeleaf in one view.
+	 * I did not want to waste time for looking for solution, so I just put the code in html.
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/homePageResults")
 	@ResponseBody
 	public String getResultsForHomePage() {
@@ -257,6 +248,10 @@ public class ResultsController {
 		return myHtml;
 	}
 
+	/**This updates user section "Live Results" on User main page.
+	 * 
+	 * @return
+	 */
 	@RequestMapping(value = "/userLiveResults")
 	@ResponseBody
 	public String getResultsForUserPage() {
@@ -307,18 +302,25 @@ public class ResultsController {
 			String score = event.getHomeTeamScore() + ":" + event.getAwayTeamScore();
 
 			GameToBet game = gameService.findByEvent(event);
+			String betButtons = "";
+			if (game.isActive()) {
+				betButtons ="<td style=\"background-color: #df2935\">"
+						+ "<a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">" + event.getGame().getRateHome()
+						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ event.getGame().getRateDraw()
+						+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
+						+ event.getGame().getRateAway() + "</a></td>";
+			}
+			else {
+				betButtons = "<td></td><td></td><td></td>";
+			}
 			if (!in.equals("FINISHED")) {
 				myHtml = myHtml + "<tr><td>" + event.getCategory().getName()
 						+ "</td><td><span style=\"color: #df2935\">" + event.getLegaue().getName()
 						+ "</span></td><td><span style=\"color: #df2935\">" + event.getHomeTeamName()
 						+ "</span> vs. <span style=\"color: #df2935\">" + event.getAwayTeamName() + "</span></td><td>"
 						+ event.getHomeTeamScore() + ":" + event.getAwayTeamScore() + "</td><td>" + in
-						+ "</td><td style=\"background-color: #df2935\">"
-						+ "<a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=home\" style=\"color: #ffffff !important; font-weight: bold;\">" + event.getGame().getRateHome()
-						+ "</a></td><td style=\"background-color: #001021\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=draw\" style=\"color: #ffffff !important; font-weight: bold\">"
-						+ event.getGame().getRateDraw()
-						+ "</a></td><td style=\"background-color: #df2935\"><a href=\"http://localhost:5555/bet/add?gameId="+event.getId()+"&betOn=away\" style=\"color: #ffffff !important; font-weight: bold\">"
-						+ event.getGame().getRateAway() + "</a></td></tr>";
+						+ "</td>"+ betButtons + "</tr>";
 
 			}
 

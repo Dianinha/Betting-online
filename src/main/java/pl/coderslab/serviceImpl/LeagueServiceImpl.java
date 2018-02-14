@@ -34,6 +34,9 @@ public class LeagueServiceImpl implements LeagueService {
 	@Autowired
 	private CountryRepository countryRepository;
 
+	/**Creates leagues. If country is null league is not created.
+	 * 
+	 */
 	@Override
 	public void createLeagues() {
 		JSONParser parser = new JSONParser();
@@ -53,14 +56,18 @@ public class LeagueServiceImpl implements LeagueService {
 					String leagueName = (String) ligueJson.get("league_name");
 					try {
 						Country country = countryRepository.findOne(countryId);
-						League leaugue = new League();
-						leaugue.setId(laeugueId);
-						leaugue.setName(leagueName);
-						leaugue.setCountry(country);
-						System.out.println(leaugue);
-						leagueRepository.save(leaugue);
+						if (country!= null) {
+							League leaugue = new League();
+							leaugue.setId(laeugueId);
+							leaugue.setName(leagueName);
+							leaugue.setCountry(country);
+							leagueRepository.save(leaugue);
+						}
+						else {
+							System.out.println("League was not created - no country");
+						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						System.out.println("League was not created - mistake");
 					}
 				}
 			}

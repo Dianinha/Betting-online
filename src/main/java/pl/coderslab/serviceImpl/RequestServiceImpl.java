@@ -22,7 +22,11 @@ public class RequestServiceImpl implements RequestService {
 	private UserService userService;
 
 	@Override
-	public Request createRequest(Request request) {
+	public Request createRequest(User sender, User reciever) {
+		Request request = new Request();
+		request.setStatus(true);
+		request.setSender(sender);
+		request.setReciever(reciever);
 		return requestRepository.save(request);
 	}
 

@@ -7,7 +7,7 @@ import pl.coderslab.model.User;
 
 public interface RequestService {
 
-	Request createRequest(Request request);
+	Request createRequest(User sender, User reciever);
 
 	void acceptRequest(Request request);
 

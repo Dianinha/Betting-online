@@ -19,7 +19,11 @@ import pl.coderslab.model.User;
 import pl.coderslab.repositories.RoleRepository;
 import pl.coderslab.service.AddressService;
 import pl.coderslab.service.UserService;
-
+/**This controller is for home page and login, register actions
+ * 
+ * @author dianinha
+ *
+ */
 @Controller
 public class HomePageController {
 
@@ -33,27 +37,45 @@ public class HomePageController {
 	@Autowired
 	AddressService addressService;
 
+	/** Displays home page
+	 * 
+	 * @return
+	 */
 	@RequestMapping(path = { "", "/home" })
 	public String homePage() {
 		return "index";
 	}
 
+	/**Log in page
+	 * 
+	 * @return
+	 */
 	@RequestMapping(path = "/login")
 	public String log() {
 		return "/access/login";
 	}
 
+	/**Allows User to register
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String registerNewUser(Model model) {
 		model.addAttribute("user", new User());
-		// PLEASE DO NOT FORGET TO DELETE IT
-		// Role role = new Role();
-		// role.setName("ROLE_USER");
-		// roleRepository.save(role);
-
 		return "/access/register";
 	}
 
+	/**Process registration
+	 * 
+	 * @param model
+	 * @param user
+	 * @param result
+	 * @param session
+	 * @param over18
+	 * @param agreement
+	 * @return
+	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String registration(Model model, @Valid User user, BindingResult result, HttpSession session,
 			@RequestParam(value = "over18", required = false) String over18,
@@ -87,8 +109,6 @@ public class HomePageController {
 			session.setAttribute("user", savedUser);
 			return "redirect:/registerAddress";
 		} catch (Exception e) {
-			System.out.println(e + " creation failed");
-			e.printStackTrace();
 			if (userService.findByEmail(user.getEmail()) != null) {
 				model.addAttribute("failureMessage", "User with this e-mail is already registered");
 				return "/access/register";
@@ -101,12 +121,25 @@ public class HomePageController {
 		return "redirect:/failure";
 	}
 
+	/**Address registration
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/registerAddress", method = RequestMethod.GET)
 	public String registerAddress(Model model) {
 		model.addAttribute("address", new Address());
 		return "/access/registerAddress";
 	}
 
+	/**Processing address registration
+	 * 
+	 * @param model
+	 * @param address
+	 * @param result
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value = "/registerAddress", method = RequestMethod.POST)
 	public String registerAddressPost(Model model, @Valid Address address, BindingResult result, HttpSession session) {
 		if (result.hasErrors()) {
@@ -120,17 +153,27 @@ public class HomePageController {
 			return "redirect:/success";
 
 		} catch (Exception e) {
-			System.out.println(e);
 
 		}
 		return "redirect:/failure";
 	}
 
+	/**Success page
+	 * 
+	 * @param model
+	 * @param session
+	 * @return
+	 */
 	@RequestMapping(value = "/success", method = RequestMethod.GET)
 	public String test(Model model, HttpSession session) {
 		return "/access/success";
 	}
 
+	/**Failure page
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/failure", method = RequestMethod.GET)
 	public String test2(Model model) {
 		return "failure";

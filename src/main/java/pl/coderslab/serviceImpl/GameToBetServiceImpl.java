@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -29,6 +30,12 @@ import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
 import pl.coderslab.service.StandingService;
 
+/**
+ * Implementation for {@link GameToBetService}
+ * 
+ * @author dianinha
+ *
+ */
 @Service
 public class GameToBetServiceImpl implements GameToBetService {
 
@@ -47,9 +54,13 @@ public class GameToBetServiceImpl implements GameToBetService {
 	@Autowired
 	EventRepository eventRepository;
 
+	/**
+	 * Creating {@link GameToBet} from {@link List} of {@link Event}
+	 * 
+	 */
 	@Override
 	public void createGamesToBetFromEvents(List<Event> events) {
-		List<Event> futureEvents = events;
+		List<Event> futureEvents = new ArrayList<>();
 		for (Event event : futureEvents) {
 			if (event.getLegaue().getCountry() == null) {
 				GameToBet game = new GameToBet();
@@ -64,7 +75,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 				eventRepository.save(event);
 			} else {
 				GameToBet game = new GameToBet();
-				System.out.println(event.getStatus());
 				if (event.getStatus().equals("FT")) {
 					game.setActive(false);
 				} else {
@@ -74,41 +84,53 @@ public class GameToBetServiceImpl implements GameToBetService {
 				game.setEvent(event);
 				gameRepository.save(game);
 				event.setGame(game);
-				eventRepository.save(event);
-
+				Event improvedEvent = eventRepository.save(event);
+				futureEvents.add(improvedEvent);
 			}
 		}
 		updateGamesToBet(futureEvents);
 
 	}
 
+	/**
+	 * Finding {@link GameToBet} by {@link Event}
+	 * 
+	 */
 	@Override
 	public GameToBet findByEvent(Event event) {
 		return gameRepository.findByEvent(event);
 	}
 
+	/**
+	 * Find {@link GameToBet} by id
+	 * 
+	 */
 	@Override
 	public GameToBet findById(long id) {
 		return gameRepository.findOne(id);
 	}
 
+	/**
+	 * Updates already created {@link GameToBet}
+	 * <p>
+	 * If Event has ended there is no longer possibility to place bets If there is
+	 * no country for the event do nothing
+	 * </p>
+	 * 
+	 * 
+	 */
 	@Override
 	public void updateGamesToBet(List<Event> liveEvents) {
 
 		for (Event event : liveEvents) {
+			GameToBet game = gameRepository.findByEvent(event);
 			if (eventService.checkIfEventHasEnded(event)) {
-
-				GameToBet game = gameRepository.findByEvent(event);
 				game.setActive(false);
 				gameRepository.save(game);
 			} else {
 				if (event.getLegaue().getCountry() == null) {
-
-					// liga mistrzów tutaj
 				} else {
-					GameToBet game = gameRepository.findByEvent(event);
 					if (event.getLegaue().getCountry() != null || event.getLegaue().getName().contains("GROUP")) {
-
 						gameRepository.save(recalculateOdds(game, event));
 					}
 				}
@@ -118,11 +140,25 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	}
 
+	/**
+	 * Recalculating odds for {@link GameToBet}
+	 * 
+	 * @param game
+	 * @param event
+	 * @return
+	 */
 	private GameToBet recalculateOdds(GameToBet game, Event event) {
 		String homeTeamName = event.getHomeTeamName();
 		String awayTeamName = event.getAwayTeamName();
-		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(homeTeamName, event.getLegaue());
-		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(awayTeamName, event.getLegaue());
+		Standing homeStanding = null;
+		Standing awayStanding = null;
+		try {
+			homeStanding = standingService.findStangingByTeamNameAndLeague(homeTeamName, event.getLegaue());
+			awayStanding = standingService.findStangingByTeamNameAndLeague(awayTeamName, event.getLegaue());
+		} catch (Exception e) {
+			System.out.println("Unable to find standing for: " + homeTeamName + " or " + awayTeamName);
+		}
+
 		H2H headToHead = createH2H(homeTeamName, awayTeamName);
 		game.setOddsToWinDraw(calculateOddsToDraw(homeTeamName, awayTeamName, headToHead, event.getLegaue()));
 		game.setOddsToWinHome(calculateOddsToWinHome(homeTeamName, awayTeamName, headToHead, event.getLegaue()));
@@ -133,16 +169,64 @@ public class GameToBetServiceImpl implements GameToBetService {
 		return game;
 	}
 
+	/**
+	 * Generates how much can be won for 1 PLN from odd.
+	 * 
+	 * <p>
+	 * The rate cannot be lower than 1.00 and bigger than 41.00
+	 * </p>
+	 * 
+	 * @param odd
+	 * @return
+	 */
 	private BigDecimal generateRate(double odd) {
 		double y = 1 / odd * 0.92;
 		if (y < 1) {
-			return new BigDecimal(1.00);
+			return BigDecimal.valueOf(1.00);
+		} else if (y > 41) {
+			return BigDecimal.valueOf(41.00);
 		} else {
-			return new BigDecimal(y);
+			return BigDecimal.valueOf(y);
 		}
 
 	}
 
+	/**
+	 * Calculates what are basis odd to match end in draw. This is my own method.
+	 * 
+	 * <p>
+	 * Sometimes there are problems like the team have not played with each other.
+	 * That is why constHome and contsAway are created, so I will not divide by
+	 * zero.
+	 * </p>
+	 * 
+	 * <p>
+	 * The algorithm is goes like that: IF there was less than 1 game (in league)
+	 * for any of the teams saved in my database then I have no data. So the draw
+	 * rate is 0.25 as typical draw rate.
+	 * 
+	 * IF less than 7 matched where played by any of the Teams I just get numbers
+	 * from H2H (if I have any)
+	 * 
+	 * IF I have decent data I add: weight: 0.1 draws for Home team divided by whole
+	 * matches played from league standing weight: 0.1 draws for Away team divided
+	 * by whole matches played from league standing weight 0.15 draws in home played
+	 * games for home team divided by matched played in home weight 0.15 draws in
+	 * away played games for away team divided by matched played in away weight 0.15
+	 * from H2H number of draws for Home team divided by number of last game played
+	 * by Home (should be 10) weight 0.15 from H2H number of draws for Away team
+	 * divided by number of last game played by Away (should be 10) weight 0.15
+	 * number of draws between two teams divided by 5 (in my H2H i get last 5 games)
+	 * 0.0125 which is calculated 0.05 multiplied by 0.25 which is constant for
+	 * draws
+	 * </p>
+	 * 
+	 * @param home
+	 * @param away
+	 * @param head
+	 * @param league
+	 * @return
+	 */
 	private double calculateOddsToDraw(String home, String away, H2H head, League league) {
 		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
 		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
@@ -156,11 +240,15 @@ public class GameToBetServiceImpl implements GameToBetService {
 		if (constAway == 0) {
 			constAway = 1;
 		}
-		if (homeStanding.getMatchesPlayed() < 1) {
+		if (homeStanding.getMatchesPlayed() < 1 || constHome < 2 || constAway < 2
+				|| awayStanding.getMatchesPlayed() < 1) {
 
-			odds = 0.3 * head.getNumberOfDrawHome() / constHome + 0.3 * head.getNumberOfDrawAway() / constAway
-					+ 0.3 * head.getNumberOfDrawBetweenTeams() / 5 + 0.025;
-		} else if (homeStanding.getMatchesPlayed() < 7) {
+			odds = 0.25;
+			// odds = 0.3 * head.getNumberOfDrawHome() / constHome + 0.3 *
+			// head.getNumberOfDrawAway() / constAway
+			// + 0.3 * head.getNumberOfDrawBetweenTeams() / 5 + 0.025;
+
+		} else if (homeStanding.getMatchesPlayed() < 7 || awayStanding.getMatchesPlayed() < 7) {
 			odds = 0.3 * head.getNumberOfDrawHome() / constHome + 0.3 * head.getNumberOfDrawAway() / constAway
 					+ 0.3 * head.getNumberOfDrawBetweenTeams() / 5 + 0.025;
 		} else {
@@ -172,14 +260,37 @@ public class GameToBetServiceImpl implements GameToBetService {
 					+ 0.15 * head.getNumberOfDrawBetweenTeams() / 5 + 0.0125;
 
 		}
-		System.out.println(odds + "Draw");
 		return odds;
 	}
 
+	/**
+	 * This method calculate odd for Home team to win.
+	 * <p>
+	 * Sometimes there are problems like the team have not played with each other.
+	 * That is why constHome and contsAway are created, so I will not divide by
+	 * zero.
+	 * </p>
+	 * If I have sufficient data I calculate if: weight 0.05 home all won matches in
+	 * league divided by all played weight 0.05 away all lost matches divided by
+	 * away all played weight 0.2 home matches won home in league divided by all
+	 * played in home weight 0.2 away matches lost in away in league divided by all
+	 * played in away weight 0.15 from H2H number of last wins for home divided by
+	 * number of games (should be 10) weight 0.15 from H2H number of last loses for
+	 * away divided by number of games (should be 10) weight 0.15 number of times
+	 * that home team won with away team in last 5 games 0.0125 which is calculated
+	 * 0.05 multiplied by 0.25 which is constant
+	 * 
+	 * 
+	 * @param home
+	 * @param away
+	 * @param head
+	 * @param league
+	 * @return
+	 */
 	private double calculateOddsToWinHome(String home, String away, H2H head, League league) {
 		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
 		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
-		double odds = 0.25;
+		double odds = 0.375;
 		int constHome = head.getLastHomeGamesNumber();
 		int constAway = head.getLastAwayGameNumber();
 		if (constHome == 0) {
@@ -188,10 +299,10 @@ public class GameToBetServiceImpl implements GameToBetService {
 		if (constAway == 0) {
 			constAway = 1;
 		}
-		if (homeStanding.getMatchesPlayed() < 1) {
-			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / 5
-					+ 0.3 * head.getNumberOfWinsHomevsAAway() / constAway + 0.025;
-		} else if (homeStanding.getMatchesPlayed() < 7) {
+		if (homeStanding.getMatchesPlayed() < 1 || constHome < 2 || constAway < 2
+				|| awayStanding.getMatchesPlayed() < 1) {
+			odds = 0.375;
+		} else if (homeStanding.getMatchesPlayed() < 7 || awayStanding.getMatchesPlayed() < 7) {
 			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / constAway
 					+ 0.3 * head.getNumberOfWinsHomevsAAway() / 5 + 0.025;
 		} else {
@@ -203,11 +314,17 @@ public class GameToBetServiceImpl implements GameToBetService {
 					+ 0.15 * head.getNumberOfWinsHomevsAAway() / 5 + 0.0125;
 
 		}
-		System.out.println(odds + " Home win");
 		return odds;
 
 	}
 
+	/**
+	 * Creating H2H from jSON
+	 * 
+	 * @param home
+	 * @param away
+	 * @return
+	 */
 	private H2H createH2H(String home, String away) {
 		H2H result = new H2H();
 		home = home.replace("'", "");
@@ -295,13 +412,10 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 		MalformedURLException e) {
 			e.printStackTrace();
-			System.out.println("here1");
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("here2");
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("here3");
 		}
 		result.setNumberOfDrawBetweenTeams(numberOfDrawCounter);
 		result.setNumberOfDrawHome(numberOfDrawHomeCounter);
@@ -316,6 +430,10 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 	}
 
+	/**
+	 * Changes the rates in get according to the game score.
+	 * 
+	 */
 	@Override
 	public void updateLiveEventsGamesToBet() {
 		List<Event> liveEvents = eventService.findByDate(LocalDate.now());
@@ -342,9 +460,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 						int awayScore = event.getAwayTeamScore();
 						double mySecretX = 0;
 						int scoreDifference = homeScore - awayScore;
-						double oddsHome = event.getGame().getOddsToWinHome();
-						double oddsAway = event.getGame().getOddsToWinAway();
-						double oddsDraw = event.getGame().getOddsToWinDraw();
 
 						if (minutesIn > 80) {
 							game.setActive(false);
@@ -352,6 +467,14 @@ public class GameToBetServiceImpl implements GameToBetService {
 						} else {
 							double homeProbabilityFromTime = 0.00;
 							double drawProbabilityFromTime = 0.00;
+							/**
+							 * Depending on score I have different constants that represents the weights of
+							 * probabilities mySecretX is very secret and I cannot talk about it. Sorry.
+							 * OK... so it fixes the problem that occurs if there is like 10 minutes in the
+							 * game and one team already scored like 3 goals. So the probability from just standings and H2H stops matter and the
+							 * actual score is more important. Not perfect but still it works.
+							 * 
+							 */
 							if (scoreDifference >= 3) {
 								mySecretX = 0.2;
 								homeProbabilityFromTime = 0.989;
@@ -387,11 +510,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 								homeProbabilityFromTime = 0.001;
 								drawProbabilityFromTime = 0.01;
 							}
-							System.out.println(minutesIn);
 							int minutesToBetEnd = 80 - minutesIn;
-							System.out.println(minutesToBetEnd);
 							double percentOfGameThatIsLeft = (double) (minutesToBetEnd) / 80.00;
-							System.out.println(percentOfGameThatIsLeft);
 							double oddsForHome = mySecretX * (game.getOddsToWinHome() * percentOfGameThatIsLeft)
 									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
 							double oddsForDraw = mySecretX * game.getOddsToWinDraw() * percentOfGameThatIsLeft
@@ -404,7 +524,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 						}
 
 					} catch (Exception e) {
-						System.out.println("Cannot parse: " + status);
 					}
 				}
 			}
@@ -412,11 +531,19 @@ public class GameToBetServiceImpl implements GameToBetService {
 		}
 	}
 
+	/**
+	 * Finds {@link List} of {@link GameToBet} from list of {@link Event}
+	 * 
+	 */
 	@Override
 	public List<GameToBet> findByListOfEvents(List<Event> events) {
 		return gameRepository.findByEventIn(events);
 	}
 
+	/**
+	 * Retrieves the String what user placed bet on. For display method only.
+	 * 
+	 */
 	@Override
 	public String getTeamNameByBetOn(GameToBet game, String betOn) {
 		if (betOn.equals("home")) {
@@ -426,13 +553,16 @@ public class GameToBetServiceImpl implements GameToBetService {
 
 		} else if (betOn.equals("away")) {
 			return "away in game: " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
-		}
-		else {
+		} else {
 			return "Bet unrecognized";
 		}
 
 	}
 
+	/**
+	 * Returns the rate of bet.
+	 * 
+	 */
 	@Override
 	public BigDecimal getRateByBetOn(GameToBet game, String betOn) {
 		if (betOn.equals("home")) {
@@ -441,8 +571,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 			return game.getRateDraw();
 		} else if (betOn.equals("away")) {
 			return game.getRateAway();
-		}
-		else {
+		} else {
 			return BigDecimal.valueOf(0);
 		}
 	}

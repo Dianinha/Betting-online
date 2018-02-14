@@ -16,8 +16,12 @@ public interface MessageService {
 	Message sendMessage(Message message);
 
 	Message addReciever(Message message, User user);
-	
+
 	Message addSender(Message message, User user);
-	
+
 	void createAndSendGroupBetInvitationMessage(User sender, List<User> recievers, GroupBet groupBet);
+
+	void createUserRequestInvitation(User sender, List<User> recievers);
+
+	void createRequestAcceptedMessage(User accepted, User reciever);
 }
