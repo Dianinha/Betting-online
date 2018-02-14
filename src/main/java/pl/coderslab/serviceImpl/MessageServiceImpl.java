@@ -11,9 +11,11 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pl.coderslab.model.GroupBet;
 import pl.coderslab.model.Message;
 import pl.coderslab.model.User;
 import pl.coderslab.repositories.MessageRepository;
+import pl.coderslab.service.BetService;
 import pl.coderslab.service.MessageService;
 
 @Service
@@ -21,6 +23,9 @@ public class MessageServiceImpl implements MessageService {
 
 	@Autowired
 	private MessageRepository messageRepository;
+
+	@Autowired
+	private BetService betService;
 
 	@Override
 	public Set<Message> findMessagesByReciever(User user) {
@@ -73,6 +78,21 @@ public class MessageServiceImpl implements MessageService {
 	public Message addSender(Message message, User user) {
 		message.setSender(user);
 		return message;
+	}
+
+	@Override
+	public void createAndSendGroupBetInvitationMessage(User sender, List<User> recievers, GroupBet groupBet) {
+
+		Message message = new Message();
+		message.setSender(sender);
+		message.setRecievers(recievers);
+		message.setTime(LocalDateTime.now());
+		message.setTitle("You have group bet request from: " + sender.getUsername());
+		message.setContent("User " + sender.getUsername() + " wants You to join in group betting! Possible win: "
+				+ betService.calculatePossilbeWinInGroupBet(groupBet) + " with the amount: "
+				+ groupBet.getJoinedAmount());
+		sendMessage(message);
+
 	}
 
 }

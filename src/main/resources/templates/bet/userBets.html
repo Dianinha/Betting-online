@@ -21,7 +21,9 @@
 	<div class="container">
 		<div class="row my-5 py-5 pl-4">
 			<div class="col ">
-
+				<div th:if="${message}">
+					<span th:text="${message}"></span>
+				</div>
 				<h1>Your active single bets:</h1>
 				<table class="table table-striped">
 					<thead>
@@ -36,14 +38,16 @@
 
 						<tr th:each="bet: ${bets}">
 							<td
-								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}" style="color: #df2935"></td>
+								th:text="${bet.game.event.homeTeamName}+ ' vs ' + ${bet.game.event.awayTeamName}"
+								style="color: #df2935"></td>
 							<td th:text="'Your bet was on: ' + ${bet.betOn}"></td>
 							<td th:with="result=${bet.rate * bet.amount}"><span
 								th:text="${result}"></span></td>
-								<td>
-								<a th:href="@{/bet/convertToGroupBet(id=${bet.id}, type=single)}"><input type="submit" value="Make it a group bet!"
-					class="btn btn-outline-success my-2 my-sm-0 " /></a>
-								</td>
+							
+							<td th:if="${bet.game.event.status.equals('')}"><a
+								th:href="@{/bet/convertToGroupBet(id=${bet.id}, type=single)}"><input
+									type="submit" value="Make it a group bet!"
+									class="btn btn-outline-success my-2 my-sm-0 " /></a></td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${bets}">
@@ -85,10 +89,10 @@
 						<td></td>
 						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
 							th:text="${result}" style="color: #df2935"></span></td>
-							<td>
-								<a th:href="@{/bet/convertToGroupBet(id=${bets.id},type=multi)}"><input type="submit" value="Make it a group bet!"
-					class="btn btn-outline-success my-2 my-sm-0 " /></a>
-								</td>
+						<td th:unless="${bets.isConvertionToGroupBetPossible==false}"><a
+							th:href="@{/bet/convertToGroupBet(id=${bets.id},type=multi)}"><input
+								type="submit" value="Make it a group bet!"
+								class="btn btn-outline-success my-2 my-sm-0 " /></a></td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${multiBets}">
@@ -170,7 +174,7 @@
 						<td></td>
 						<td th:with="result=${bets.joinedRating * bets.joinedAmount}"><span
 							th:text="${result}"></span></td>
-							<td th:text="${bets.result}"></td>
+						<td th:text="${bets.result}"></td>
 						</tr>
 					</tbody>
 					<tbody th:unless="${oldMultiBets}">

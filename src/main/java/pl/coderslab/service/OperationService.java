@@ -3,9 +3,10 @@ package pl.coderslab.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import pl.coderslab.model.SingleBet;
+import pl.coderslab.model.GroupBet;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.Operation;
+import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.Wallet;
 
 public interface OperationService {
@@ -25,4 +26,6 @@ public interface OperationService {
 	List<Operation> findAllOperationByWallet(Wallet wallet);
 
 	Operation createPrizeForMultipleBetOperation(Wallet wallet, MultipleBet multipleBet);
+	
+	Operation joinGroupBetOperation (Wallet wallet, GroupBet groupBet);
 }

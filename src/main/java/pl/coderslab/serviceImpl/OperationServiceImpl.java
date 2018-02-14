@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pl.coderslab.model.SingleBet;
+import pl.coderslab.model.GroupBet;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.Operation;
 import pl.coderslab.model.OperationType;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.repositories.OperationRepository;
+import pl.coderslab.service.BetService;
 import pl.coderslab.service.OperationService;
 
 @Service
@@ -22,6 +24,9 @@ public class OperationServiceImpl implements OperationService {
 
 	@Autowired
 	OperationRepository operationRepository;
+	
+	@Autowired
+	BetService betService;
 
 	@Override
 	public Operation save(Operation operation) {
@@ -110,6 +115,18 @@ public class OperationServiceImpl implements OperationService {
 		operation.setOperationType(OperationType.BET_PRIZE);
 		operation.setTimeOfOperation(LocalDateTime.now());
 		operation.setOperationInfo("Funds have been added to Your wallet: " + amount + ". You have won the bet! ");
+		return operationRepository.save(operation);
+	}
+
+	@Override
+	public Operation joinGroupBetOperation(Wallet wallet, GroupBet groupBet) {
+		Operation operation = new Operation();
+		operation.setWallet(wallet);
+		operation.setAmount(groupBet.getJoinedAmount());
+		operation.setOperationType(OperationType.PLACE_BET);
+		operation.setTimeOfOperation(LocalDateTime.now());
+		BigDecimal possibleWin = betService.calculatePossilbeWinInGroupBet(groupBet);
+		operation.setOperationInfo("You have joined the Group Bet. Possible win for the moment of bet placement: " + possibleWin + ". You were charged: " + groupBet.getJoinedAmount());
 		return operationRepository.save(operation);
 	}
 

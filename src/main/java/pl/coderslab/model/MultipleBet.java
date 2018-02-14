@@ -36,6 +36,8 @@ public class MultipleBet {
 	private BetStatus status;
 
 	private String result;
+	
+	private boolean isConvertionToGroupBetPossible;
 
 	private boolean isItAGroupBet;
 
@@ -89,6 +91,14 @@ public class MultipleBet {
 
 	public void setJoinedAmount(BigDecimal joinedAmount) {
 		this.joinedAmount = joinedAmount;
+	}
+
+	public boolean isConvertionToGroupBetPossible() {
+		return isConvertionToGroupBetPossible;
+	}
+
+	public void setConvertionToGroupBetPossible(boolean isConvertionToGroupBetPossible) {
+		this.isConvertionToGroupBetPossible = isConvertionToGroupBetPossible;
 	}
 
 	public BetStatus getStatus() {

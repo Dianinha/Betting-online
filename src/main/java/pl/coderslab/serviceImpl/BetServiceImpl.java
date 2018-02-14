@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
+import pl.coderslab.model.GroupBet;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.User;
 import pl.coderslab.model.Wallet;
 import pl.coderslab.repositories.BetRepository;
+import pl.coderslab.repositories.GroupBetRepository;
 import pl.coderslab.repositories.MultipleBetRepository;
 import pl.coderslab.service.BetService;
 import pl.coderslab.service.EventService;
@@ -29,7 +31,10 @@ public class BetServiceImpl implements BetService {
 	BetRepository betRepository;
 
 	@Autowired
-	MultipleBetRepository multibetRepository;
+	MultipleBetRepository multipleBetRepository;
+
+	@Autowired
+	GroupBetRepository groupBetRepository;
 
 	@Autowired
 	GameToBetService gameService;
@@ -184,9 +189,13 @@ public class BetServiceImpl implements BetService {
 	@Override
 	public void checkMultiBetsForTodayGames() {
 
-		List<MultipleBet> multibetsPlaced = multibetRepository.findByStatus(BetStatus.PLACED);
+		List<MultipleBet> multibetsPlaced = multipleBetRepository.findByStatus(BetStatus.PLACED);
 		for (MultipleBet multipleBet : multibetsPlaced) {
 			List<SingleBet> singleBets = multipleBet.getBets();
+			if (checkIfAnyEventInListHaveStarted(singleBets)) {
+				multipleBet.setConvertionToGroupBetPossible(false);
+				multipleBetRepository.save(multipleBet);
+			}
 			for (SingleBet singleBet : singleBets) {
 				if (singleBet.getStatus().equals(BetStatus.PLACED)) {
 					Event betsEvent = singleBet.getGame().getEvent();
@@ -194,7 +203,7 @@ public class BetServiceImpl implements BetService {
 				}
 			}
 
-			List<SingleBet> updatedSingleBets = multibetRepository.findOne(multipleBet.getId()).getBets();
+			List<SingleBet> updatedSingleBets = multipleBetRepository.findOne(multipleBet.getId()).getBets();
 			if (checkIfAllBetsInMultipleBetAreEnded(updatedSingleBets)) {
 
 				finalizeMultipleBet(multipleBet, resultOfMultipleBet(updatedSingleBets));
@@ -227,7 +236,7 @@ public class BetServiceImpl implements BetService {
 
 		}
 		multipleBet.setStatus(BetStatus.FINALIZED);
-		multibetRepository.save(multipleBet);
+		multipleBetRepository.save(multipleBet);
 
 	}
 
@@ -280,10 +289,13 @@ public class BetServiceImpl implements BetService {
 
 	}
 
-	/**This method checks if all the {@link SingleBet} in the given {@link List} has ended.
+	/**
+	 * This method checks if all the {@link SingleBet} in the given {@link List} has
+	 * ended.
 	 * 
 	 * @param betsInMultipleBet
-	 * @return true is all the {@link SingleBet} has the {@link BetStatus} ENDED_IN_MULTIBET, false otherwise
+	 * @return true is all the {@link SingleBet} has the {@link BetStatus}
+	 *         ENDED_IN_MULTIBET, false otherwise
 	 */
 	private boolean checkIfAllBetsInMultipleBetAreEnded(List<SingleBet> betsInMultipleBet) {
 		boolean result = true;
@@ -297,7 +309,8 @@ public class BetServiceImpl implements BetService {
 
 	}
 
-	/**This method checks who won the {@link Event}.
+	/**
+	 * This method checks who won the {@link Event}.
 	 * 
 	 * @param event
 	 * @return {@link String} one of the following: home, away or draw
@@ -321,7 +334,9 @@ public class BetServiceImpl implements BetService {
 
 	}
 
-	/**This method check if the {@link SingleBet} was placed is the same result as {@link Event} result
+	/**
+	 * This method check if the {@link SingleBet} was placed is the same result as
+	 * {@link Event} result
 	 * 
 	 * @param singleBet
 	 * @param event
@@ -333,7 +348,9 @@ public class BetServiceImpl implements BetService {
 
 	}
 
-	/**This method finalizes the {@link SingleBet}. If it was won it adds funds to {@link User} {@link Wallet} and creates according {@link Operation}
+	/**
+	 * This method finalizes the {@link SingleBet}. If it was won it adds funds to
+	 * {@link User} {@link Wallet} and creates according {@link Operation}
 	 * 
 	 * <p>
 	 * Important! This method also saves the {@link SingleBet}
@@ -342,7 +359,7 @@ public class BetServiceImpl implements BetService {
 	 * @param singleBet
 	 * @param event
 	 */
-	
+
 	private void finalizeSingleBet(SingleBet singleBet, Event event) {
 		if (checkIfBetWasWon(singleBet, event)) {
 			User user = singleBet.getUser();
@@ -366,21 +383,90 @@ public class BetServiceImpl implements BetService {
 		return betRepository.findOne(id);
 	}
 
-	
-	
-	/**This method changes {@link SingleBet} attribute setItGroupBet to true and also it saves the {@link SingleBet}
+	/**
+	 * This method changes {@link SingleBet} attribute setItGroupBet to true and
+	 * also it saves the {@link SingleBet}
 	 * 
 	 * <p>
 	 * Important - this method saves the {@link SingleBet}
 	 * </p>
 	 * 
-	 * @param bet to change attribute
+	 * @param bet
+	 *            to change attribute
 	 */
 	@Override
 	public void changeBetToGroupBet(SingleBet bet) {
 
 		bet.setItGroupBet(true);
 		betRepository.save(bet);
+	}
+
+	/**
+	 * This method calculates the joined Rate for the {@link List} of
+	 * {@link SingleBet}
+	 * 
+	 * @param bets
+	 *            that will be used for calculations
+	 * @return {@link BigDecimal} of multiplied rates of {@link SingleBet} bets
+	 */
+
+	@Override
+	public BigDecimal calculateRateInMultipleBet(List<SingleBet> bets) {
+		BigDecimal result = BigDecimal.valueOf(1.00);
+		for (SingleBet singleBet : bets) {
+			result = result.multiply(singleBet.getRate());
+		}
+		return result;
+	}
+
+	/**
+	 * This method calculates the possible win from rate and amount
+	 * 
+	 * @return {@link BigDecimal} of multiplied two values
+	 */
+	@Override
+	public BigDecimal calculatePossilbeWinInMultipleBet(BigDecimal rate, BigDecimal amount) {
+		BigDecimal result = amount;
+		return result.multiply(rate);
+	}
+
+	@Override
+	public BigDecimal calculatePossilbeWinInGroupBet(GroupBet groupBet) {
+		double numberOfPeople = (double) groupBet.getUsers().size();
+		double rate = numberOfPeople / 100.00 + 1.00;
+		BigDecimal regularWin = groupBet.getJoinedAmount().multiply(groupBet.getJoinedRating());
+		BigDecimal wholeWin = regularWin.multiply(BigDecimal.valueOf(rate));
+		BigDecimal winPerUser = wholeWin.divide(BigDecimal.valueOf(numberOfPeople), 2);
+		return winPerUser;
+	}
+
+	@Override
+	public void addUserToGroupBet(User user, GroupBet groupBet) {
+		List<User> users = groupBet.getUsers();
+		users.add(user);
+		groupBet.setUsers(users);
+		groupBetRepository.save(groupBet);
+	}
+
+	@Override
+	public boolean checkIfAnyEventInListHaveStarted(List<SingleBet> bets) {
+		for (SingleBet singleBet : bets) {
+			if (!singleBet.getGame().getEvent().getStatus().equals("")) {
+				return true;
+			}
+
+		}
+		return false;
+	}
+
+	@Override
+	public List<MultipleBet> findMultipleBetsByUserAndStatus(BetStatus status, User user) {
+		return multipleBetRepository.findByUser(BetStatus.PLACED, user);
+	}
+
+	@Override
+	public List<GroupBet> findGroupBetByUser(User user) {
+		return groupBetRepository.findByUsersIn(user);
 	}
 
 }

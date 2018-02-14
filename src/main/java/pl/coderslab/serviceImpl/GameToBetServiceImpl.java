@@ -168,8 +168,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 					+ 0.1 * awayStanding.getMatchesDraw() / awayStanding.getMatchesPlayed()
 					+ 0.15 * homeStanding.getHomeMatchesDraw() / homeStanding.getHomeMatchesPlayed()
 					+ 0.15 * awayStanding.getAwayMatchesDraw() / awayStanding.getAwayMatchesPlayed()
-					+ 0.15 * head.getNumberOfDrawHome() / constHome
-					+ 0.15 * head.getNumberOfDrawAway() / constAway
+					+ 0.15 * head.getNumberOfDrawHome() / constHome + 0.15 * head.getNumberOfDrawAway() / constAway
 					+ 0.15 * head.getNumberOfDrawBetweenTeams() / 5 + 0.0125;
 
 		}
@@ -193,16 +192,14 @@ public class GameToBetServiceImpl implements GameToBetService {
 			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / 5
 					+ 0.3 * head.getNumberOfWinsHomevsAAway() / constAway + 0.025;
 		} else if (homeStanding.getMatchesPlayed() < 7) {
-			odds = 0.3 * head.getNumberOfWinsHome() / constHome
-					+ 0.3 * head.getNumberOfLosesAway() / constAway
+			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / constAway
 					+ 0.3 * head.getNumberOfWinsHomevsAAway() / 5 + 0.025;
 		} else {
 			odds = 0.05 * homeStanding.getMatchesWon() / homeStanding.getMatchesPlayed()
 					+ 0.05 * awayStanding.getMatchesLost() / awayStanding.getMatchesPlayed()
 					+ 0.2 * homeStanding.getHomeMatchesWon() / homeStanding.getHomeMatchesPlayed()
 					+ 0.2 * awayStanding.getAwayMatchesLost() / awayStanding.getAwayMatchesPlayed()
-					+ 0.15 * head.getNumberOfWinsHome() / constHome
-					+ 0.15 * head.getNumberOfLosesAway() / constAway
+					+ 0.15 * head.getNumberOfWinsHome() / constHome + 0.15 * head.getNumberOfLosesAway() / constAway
 					+ 0.15 * head.getNumberOfWinsHomevsAAway() / 5 + 0.0125;
 
 		}
@@ -315,7 +312,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 		result.setNumberOfWinsHome(numberofWonLastGamesHome);
 		result.setNumberOfWinsHomevsAAway(numberofWonLastGamesHomeVSAway);
 
-
 		return result;
 
 	}
@@ -394,7 +390,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 							System.out.println(minutesIn);
 							int minutesToBetEnd = 80 - minutesIn;
 							System.out.println(minutesToBetEnd);
-							double percentOfGameThatIsLeft = (double)(minutesToBetEnd) / 80.00;
+							double percentOfGameThatIsLeft = (double) (minutesToBetEnd) / 80.00;
 							System.out.println(percentOfGameThatIsLeft);
 							double oddsForHome = mySecretX * (game.getOddsToWinHome() * percentOfGameThatIsLeft)
 									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
@@ -419,6 +415,36 @@ public class GameToBetServiceImpl implements GameToBetService {
 	@Override
 	public List<GameToBet> findByListOfEvents(List<Event> events) {
 		return gameRepository.findByEventIn(events);
+	}
+
+	@Override
+	public String getTeamNameByBetOn(GameToBet game, String betOn) {
+		if (betOn.equals("home")) {
+			return "home in game : " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
+		} else if (betOn.equals("draw")) {
+			return "draw in game: " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
+
+		} else if (betOn.equals("away")) {
+			return "away in game: " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
+		}
+		else {
+			return "Bet unrecognized";
+		}
+
+	}
+
+	@Override
+	public BigDecimal getRateByBetOn(GameToBet game, String betOn) {
+		if (betOn.equals("home")) {
+			return game.getRateHome();
+		} else if (betOn.equals("draw")) {
+			return game.getRateDraw();
+		} else if (betOn.equals("away")) {
+			return game.getRateAway();
+		}
+		else {
+			return BigDecimal.valueOf(0);
+		}
 	}
 
 }
