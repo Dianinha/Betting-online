@@ -6,6 +6,13 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * This class is not stored in database. Its only use is to simplify the process of editing and saving {@link User} data.
+ * SimpleUser can and SHOULD be created from {@link User}.
+ * 
+ * @author dianinha
+ *
+ */
 public class UserSimple {
 
 	@Size(min = 3, max = 26, message = "Username should be at least 3 characters long. Maximum size is 26.")

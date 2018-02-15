@@ -1,7 +1,9 @@
 package pl.coderslab.service;
 
-import pl.coderslab.model.Country;
-
 public interface CountryService {
-	Country createCountry();
+	/**
+	 * Creates in database list of countries that I have events for. It should be user ONCE befor deploying the application. 
+	 * It is first method that should be called BEFORE the leagues creation.
+	 */
+	void createCountries();
 }

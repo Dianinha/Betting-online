@@ -14,6 +14,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import pl.coderslab.service.StandingService;
 
 @Service
 public class StandingServiceImpl implements StandingService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	StandingRepository standingRepo;
@@ -111,15 +115,15 @@ public class StandingServiceImpl implements StandingService {
 				}
 			}
 			in.close();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			System.out.println("here1");
+		} catch (
+
+		MalformedURLException e) {
+			LOGGER.error("URL Error in standings", e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("here2");
+			LOGGER.error("Conn Error in standings", e);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("here3");
+			LOGGER.error("Parse Error in standings", e);
 		}
 
 		return standings;
@@ -176,18 +180,10 @@ public class StandingServiceImpl implements StandingService {
 	public void createStandingsOnceForDay() {
 		List<League> leagues = leagueRepo.findAll();
 		for (League league : leagues) {
-			if (league.getCountry()!=null||league.getName().contains("Group")) {
+			if (league.getCountry() != null || league.getName().contains("Group")) {
 
 				List<Standing> standings = createStandings(league);
 				saveStandings(standings);
-//				for (Standing standing : standings) {
-//					try {
-//						//standingRepo.save(standing);
-//					} catch (Exception e) {
-//						System.out.println(e.getMessage());
-//						System.out.println(standing);
-//					}
-//				}
 			}
 		}
 	}

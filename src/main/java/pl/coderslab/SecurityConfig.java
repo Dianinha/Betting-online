@@ -9,21 +9,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import pl.coderslab.handlers.LoginHandler;
-import pl.coderslab.serviceImpl.SpringDataUserDetailsService;
+import pl.coderslab.service.implementation.SpringDataUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled=true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//	@Autowired
-//	DataSource dataSource;
-//
-//	@Override
-//	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(customUserDetailsService()).passwordEncoder(passwordEncoder());
-//	}
-	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();

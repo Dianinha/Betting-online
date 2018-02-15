@@ -14,6 +14,23 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+/**
+ * This class represents a bet that is placed on multiple events together. All
+ * bets must be won for user to win this bet.
+ * 
+ * <p>
+ * Possible future modification:
+ * <ul>
+ * <li>make bet an interface and different types of bets like SingleBet or
+ * MultipleBet or GroupBet should implement it</li>
+ * <li>RENAME joinedAmount because it is misleading. Now there is no time for it
+ * because it is in too many views. It should be called "amount"</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class MultipleBet {
 	@Id
@@ -37,8 +54,16 @@ public class MultipleBet {
 
 	private String result;
 
+	/**
+	 * Refers to possibility to make this bet a group bet. If event one of the
+	 * events have already started there is no option to change a MultipleBet to
+	 * GroupBet.
+	 */
 	private boolean groupBetPossible;
 
+	/**
+	 * True if it was converted to group bet, false otherwise
+	 */
 	private boolean isItAGroupBet;
 
 	public MultipleBet() {

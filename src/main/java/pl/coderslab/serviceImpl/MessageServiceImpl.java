@@ -119,4 +119,15 @@ public class MessageServiceImpl implements MessageService {
 		sendMessage(message);
 	}
 
+	@Override
+	public void createInvitationAcceptedMessage(User sender, User reciever) {
+		Message message = new Message();
+		message.setTitle("Invitation accepted");
+		message.setContent("Your invite has been accepted: " + sender.getUsername()
+				+ " is Your new friends. You can now send messages to each other and invite to group bets.");
+		message.setSender(sender);
+		message = addReciever(message, reciever);
+		sendMessage(message);		
+	}
+
 }

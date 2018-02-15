@@ -8,6 +8,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/**
+ * Request that is send to other users to join the {@link GroupBet}
+ * 
+ * It is related with {@link GroupBet} with many to one relationship. This
+ * request can have only one sender and one receiver. Request status corresponds
+ * to whether is active (user has not accept or discard it yet) or not.
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class GroupBetRequest {
 
@@ -20,12 +30,18 @@ public class GroupBetRequest {
 	@JoinColumn
 	protected User sender;
 
+	/**
+	 * Sorry I misspelled that
+	 */
 	@ManyToOne
 	@JoinColumn
 	protected User reciever;
 
 	protected boolean status;
 
+	/**
+	 * Again, useless for now.
+	 */
 	@Column
 	private String betCode;
 

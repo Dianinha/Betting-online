@@ -8,12 +8,21 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/**
+ * This class corresponds to invite to {@link User} friends list.
+ * 
+ * Possible change : name change to "FriendRequest". When I added
+ * {@link GroupBetRequest} the name of this class is very misleading.
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class Request {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="request_id")
+	@Column(name = "request_id")
 	protected long id;
 
 	@ManyToOne

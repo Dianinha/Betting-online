@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,8 @@ import pl.coderslab.service.WalletService;
 @Service
 public class UserServiceImpl implements UserService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
+	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
@@ -107,6 +111,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			user = userRepository.findByUsername(auth.getName());
 		} catch (Exception e) {
+			LOGGER.info("Fail to authenticate user");
 		}
 		return user;
 	}

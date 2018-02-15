@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,8 @@ import pl.coderslab.service.WalletService;
 @Controller
 @RequestMapping(value = "/user")
 public class UserControllerForWalletOnly {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	private CreditCardService creditService;
@@ -88,10 +92,7 @@ public class UserControllerForWalletOnly {
 	public String creditCardOption(Model model, Authentication authentication) {
 		List<CreditCardInfo> userCreditCards = null;
 		User user = userService.getAuthenticatedUser(authentication);
-		try {
 			userCreditCards = creditService.findByUser(user);
-		} catch (Exception e) {
-		}
 		if (userCreditCards.size() != 0) {
 			model.addAttribute("creditCards", userCreditCards);
 		}
@@ -131,6 +132,7 @@ public class UserControllerForWalletOnly {
 			User user = userService.getAuthenticatedUser(authentication);
 			creditCardMade = creditService.create(creditCardInfo, user);
 		} catch (Exception e) {
+			LOGGER.info("Failed to create new credit card information.");
 		}
 
 		Integer fundsToAdd = (Integer) session.getAttribute("fundsToAdd");
@@ -160,7 +162,9 @@ public class UserControllerForWalletOnly {
 		return "/user/creditCardConfirmation";
 	}
 
-	/**This method checks if given CVV checks with the one in the database. If so it finalized the purchase.
+	/**
+	 * This method checks if given CVV checks with the one in the database. If so it
+	 * finalized the purchase.
 	 * 
 	 * @param model
 	 * @param authentication
@@ -192,12 +196,14 @@ public class UserControllerForWalletOnly {
 			session.setAttribute("creditCardId", null);
 
 		} catch (Exception e) {
+			LOGGER.info("Failed to pay with credit card. ");
 		}
 
 		return "redirect:/user";
 	}
 
-	/**This method is for paying for funds without saved credit card
+	/**
+	 * This method is for paying for funds without saved credit card
 	 * 
 	 * @param model
 	 * @param session
@@ -209,7 +215,9 @@ public class UserControllerForWalletOnly {
 		return "/user/payment";
 	}
 
-	/**This method finalizes the purchase of funds without saved credit card. Only the basic data for credit card must be right.
+	/**
+	 * This method finalizes the purchase of funds without saved credit card. Only
+	 * the basic data for credit card must be right.
 	 * 
 	 * @param creditCardInfo
 	 * @param result
@@ -225,7 +233,7 @@ public class UserControllerForWalletOnly {
 			return "/user/payment";
 		}
 		User user = userService.getAuthenticatedUser(authentication);
-		
+
 		try {
 			Wallet wallet = walletService.findByUser(user);
 			Integer amountInInteger = (Integer) session.getAttribute("fundsToAdd");
@@ -234,11 +242,13 @@ public class UserControllerForWalletOnly {
 			operationService.createAddOperation(wallet, amount, creditCardInfo.getLastFourDigits());
 			session.setAttribute("currentFunds", wallet.getAmount());
 		} catch (Exception e) {
+			LOGGER.info("Failed to finalize the payment.");
 		}
 		return "redirect:/user";
 	}
 
-	/**This method displays {@link User} {@link CreditCardInfo}
+	/**
+	 * This method displays {@link User} {@link CreditCardInfo}
 	 * 
 	 * @param model
 	 * @param session
@@ -248,13 +258,14 @@ public class UserControllerForWalletOnly {
 	@RequestMapping(value = "/creditCards", method = RequestMethod.GET)
 	public String creditCards(Model model, HttpSession session, Authentication authentication) {
 		List<CreditCardInfo> userCreditCards = null;
-			User user = userService.getAuthenticatedUser(authentication);
-			userCreditCards = creditService.findByUser(user);
+		User user = userService.getAuthenticatedUser(authentication);
+		userCreditCards = creditService.findByUser(user);
 		model.addAttribute("creditCards", userCreditCards);
 		return "/user/creditCards";
 	}
 
-	/**This method displays all {@link User} {@link Operation}
+	/**
+	 * This method displays all {@link User} {@link Operation}
 	 * 
 	 * @param model
 	 * @param authentication
@@ -269,14 +280,16 @@ public class UserControllerForWalletOnly {
 		return "/user/operationHistory";
 	}
 
-	/**This method deletes {@link User} {@link CreditCardInfo} by its id
+	/**
+	 * This method deletes {@link User} {@link CreditCardInfo} by its id
 	 * 
 	 * @param model
-	 * @param id of Credit Card Information
+	 * @param id
+	 *            of Credit Card Information
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteCreditCard", method = RequestMethod.GET)
-	public String deleteCreditCard(Model model,	@RequestParam("cardId") long id) {
+	public String deleteCreditCard(Model model, @RequestParam("cardId") long id) {
 		boolean flag = creditService.deleteById(id);
 		if (flag) {
 			return "redirect:/user";

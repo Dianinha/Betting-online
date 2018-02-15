@@ -1,5 +1,7 @@
 package pl.coderslab.model;
 
+import java.util.regex.Pattern;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +13,32 @@ import javax.validation.constraints.Min;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * {@code Address} represents {@link User} address information. It stores
+ * information about User (in relation one to one), Street name (stored in
+ * {@link String}, street number (stored in int), flat number (stored in int),
+ * zipCope (stored in {@link String} without pattern it will be good to add it
+ * someday), city (stored in {@link String}) and country ({@link String}). User
+ * can also provide additional info in {@link String}, if his or her flat number
+ * or street number have a letter <br>
+ * <br>
+ * Example: For: Main Street 52a <br>
+ * streetName : Main <br>
+ * streetNumber : 52 <br>
+ * additionalLetterToNumber : a <br>
+ * 
+ * <p>
+ * 
+ * Possible future modifications:
+ * <ul>
+ * <li>add {@link Pattern} to zip code</li>
+ * <li>provide list of countries, so user cannot type anything</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "addresses")
 public class Address {
@@ -24,30 +52,29 @@ public class Address {
 	@OneToOne
 	private User user;
 
-	@NotBlank(message="Street name cannot be empty.")
+	@NotBlank(message = "Street name cannot be empty.")
 	private String streetName;
 
-	@Min(value=0, message="Please pick number greater than 0.")
+	@Min(value = 0, message = "Please pick number greater than 0.")
 	private int streetNumber;
-	
+
 	private String additionalLetterToNumber;
 
 	private int flatNumber;
 
-	//@Pattern(regexp = "\\d\\d-\\d\\d\\d")
 	private String zipCode;
 
-	@NotBlank(message="City cannot be empty.")
+	@NotBlank(message = "City cannot be empty.")
 	private String city;
 
-	@NotBlank(message="Country cannot be empty.")
+	@NotBlank(message = "Country cannot be empty.")
 	private String country;
 
 	// Constructor
 	public Address() {
 		super();
 	}
-	
+
 	// getters and setters
 	public long getId() {
 		return id;
@@ -189,14 +216,9 @@ public class Address {
 	// simplified to string
 	@Override
 	public String toString() {
-		return "Address [id=" + id + ", user=" + user.getId() + ", streetName=" + streetName + ", streetNumber=" + streetNumber
-				+ ", additionalLetterToNumber=" + additionalLetterToNumber + ", flatNumber=" + flatNumber + ", zipCode="
-				+ zipCode + ", city=" + city + ", country=" + country + "]";
+		return "Address [id=" + id + ", user=" + user.getId() + ", streetName=" + streetName + ", streetNumber="
+				+ streetNumber + ", additionalLetterToNumber=" + additionalLetterToNumber + ", flatNumber=" + flatNumber
+				+ ", zipCode=" + zipCode + ", city=" + city + ", country=" + country + "]";
 	}
-	
-	
-	
-	
-	
 
 }

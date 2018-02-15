@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -44,6 +46,8 @@ import pl.coderslab.service.WalletService;
 @Controller
 @RequestMapping(path = "/bet")
 public class BetController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	GameToBetService gameService;
@@ -87,7 +91,6 @@ public class BetController {
 	 * according message and is redirected to the main user page. </p>
 	 * 
 	 */
-
 	@RequestMapping(value = "/add", method = RequestMethod.GET)
 	public String addBetGet(@RequestParam("gameId") long gameId, @RequestParam("betOn") String betOn, Model model,
 			HttpSession session) {
@@ -249,6 +252,7 @@ public class BetController {
 				} catch (Exception e) {
 					session.setAttribute("currentBetCart", null);
 					model.addAttribute("message", "Something went wrong. Please place bet again.");
+					LOGGER.info("Failed to finalize SingleBet saving");
 					return "/bet/finalized";
 				}
 			}
@@ -325,6 +329,7 @@ public class BetController {
 				session.setAttribute("lastRate", null);
 				session.setAttribute("betOn", null);
 				model.addAttribute("message", "Something went wrong. Please place bet again.");
+				LOGGER.info("Failed to finalize MultipleBet saving.");
 				return "/bet/finalized";
 			}
 
@@ -379,8 +384,9 @@ public class BetController {
 			betService.changeBetToGroupBet(bet);
 		} else if (type.equals("multi")) {
 			MultipleBet multiBet = multiBetRepository.findOne(id);
-			if (multiBet.isGroupBetPossible()==false) {
-				model.addAttribute("message", "One of the games has already started. You cannot change it to group bet");
+			if (multiBet.isGroupBetPossible() == false) {
+				model.addAttribute("message",
+						"One of the games has already started. You cannot change it to group bet");
 				return "user/myBets";
 			}
 			bets = multiBet.getBets();
@@ -476,7 +482,9 @@ public class BetController {
 		return "bet/invites";
 	}
 
-	/**This method allows {@link User} to accept {@link GroupBetRequest} and join the {@link GroupBet}
+	/**
+	 * This method allows {@link User} to accept {@link GroupBetRequest} and join
+	 * the {@link GroupBet}
 	 * 
 	 * @param model
 	 * @param id
@@ -492,24 +500,27 @@ public class BetController {
 		if (!groupBetRequestService.checkIfYouCanJoinTheGroupBet(request)) {
 			model.addAttribute("message",
 					"Sorry, You cannot join this Group Bet anymore. Maximum number of people already has joined or Group Bet has already ended.");
-		} else if (walletService.hasWalletSufficientFunds(wallet, groupBet.getJoinedAmount())){
-				walletService.substractFunds(wallet, groupBet.getJoinedAmount());
-				betService.addUserToGroupBet(user, groupBet);
-				groupBetRequestService.discardRequest(request);
-				model.addAttribute("message", "You have joined the group bet");
-				operationService.joinGroupBetOperation(wallet, groupBet);
-			} else {
-				model.addAttribute("message", "You do not have sufficient funds to join this group bet.");
-			}
+		} else if (walletService.hasWalletSufficientFunds(wallet, groupBet.getJoinedAmount())) {
+			walletService.substractFunds(wallet, groupBet.getJoinedAmount());
+			betService.addUserToGroupBet(user, groupBet);
+			groupBetRequestService.discardRequest(request);
+			model.addAttribute("message", "You have joined the group bet");
+			operationService.joinGroupBetOperation(wallet, groupBet);
+		} else {
+			model.addAttribute("message", "You do not have sufficient funds to join this group bet.");
+		}
 
-	return "bet/invites";
+		return "bet/invites";
 
 	}
 
-	/**This method discard unwanted {@link GroupBetRequest}. It's status is set to false.
+	/**
+	 * This method discard unwanted {@link GroupBetRequest}. It's status is set to
+	 * false.
 	 * 
 	 * @param model
-	 * @param id of GroupBetRequest
+	 * @param id
+	 *            of GroupBetRequest
 	 * @return
 	 */
 	@RequestMapping(value = "/discardInvite", method = RequestMethod.GET)

@@ -12,6 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * This class represents operations done on {@link User} {@link Wallet}
+ * 
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "operations")
 public class Operation {
@@ -27,7 +34,7 @@ public class Operation {
 	private BigDecimal amount;
 
 	private OperationType operationType;
-	
+
 	private String operationInfo;
 
 	@ManyToOne
@@ -66,14 +73,6 @@ public class Operation {
 		this.amount = amount;
 	}
 
-	public String getCreditCardLastForDigits() {
-		return operationInfo;
-	}
-
-	public void setCreditCardLastForDigits(String creditCardLastForDigits) {
-		this.operationInfo = creditCardLastForDigits;
-	}
-
 	public Wallet getWallet() {
 		return wallet;
 	}
@@ -89,7 +88,6 @@ public class Operation {
 	public void setOptionalComment(String optionalComment) {
 		this.optionalComment = optionalComment;
 	}
-	
 
 	public OperationType getOperationType() {
 		return operationType;
@@ -164,8 +162,8 @@ public class Operation {
 	@Override
 	public String toString() {
 		return "Operation [id=" + id + ", timeOfOperation=" + timeOfOperation + ", amount=" + amount
-				+ ", creditCardLastForDigits=" + operationInfo + ", wallet=" + wallet.getId()
-				+ ", optionalComment=" + optionalComment + "]";
+				+ ", creditCardLastForDigits=" + operationInfo + ", wallet=" + wallet.getId() + ", optionalComment="
+				+ optionalComment + "]";
 	}
 
 }

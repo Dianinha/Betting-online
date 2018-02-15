@@ -24,4 +24,6 @@ public interface MessageService {
 	void createUserRequestInvitation(User sender, List<User> recievers);
 
 	void createRequestAcceptedMessage(User accepted, User reciever);
+	
+	void createInvitationAcceptedMessage(User sender, User reciever);
 }

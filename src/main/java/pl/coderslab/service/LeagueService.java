@@ -9,5 +9,10 @@ public interface LeagueService {
 	 */
 	public void createLeagues();
 
+	/**
+	 * Finds league by its id
+	 * @param id
+	 * @return League with corresponding id
+	 */
 	League findById(long id);
 }

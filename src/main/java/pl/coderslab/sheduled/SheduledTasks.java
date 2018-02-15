@@ -3,6 +3,8 @@ package pl.coderslab.sheduled;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,10 +15,13 @@ import pl.coderslab.service.BetService;
 import pl.coderslab.service.EventService;
 import pl.coderslab.service.GameToBetService;
 import pl.coderslab.service.StandingService;
+import pl.coderslab.service.implementation.EventServiceImpl;
 
 @Component
 public class SheduledTasks {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
+	
 	@Autowired
 	private EventService eventService;
 
@@ -57,13 +62,13 @@ public class SheduledTasks {
 	// System.out.println("bets updated");
 	// }
 
-	@Scheduled(fixedRate = 30000)
-	public void fakeEvents() {
-
-		eventService.createFakeEvents();
-		List<Event> events = eventService.findByDate(LocalDate.now());
-		gameService.createGamesToBetFromEvents(events);
-		gameService.updateLiveEventsGamesToBet();
-		System.out.println("created fake events");
-	}
+//	@Scheduled(fixedRate = 60000)
+//	public void fakeEvents() {
+//
+//		eventService.createFakeEvents();
+//		List<Event> events = eventService.findByDate(LocalDate.now());
+//		gameService.createGamesToBetFromEvents(events);
+//		gameService.updateLiveEventsGamesToBet();
+//		System.out.println("created fake events");
+//	}
 }

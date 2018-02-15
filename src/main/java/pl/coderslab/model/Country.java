@@ -9,6 +9,21 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import pl.coderslab.service.CountryService;
+/**
+ * This class represents country. Country data is created from API through {@link CountryService}
+ * Every country has name, related leagues and related standings.
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li> use this data in {@link Address} country field</li>
+ * <li> make country a {@link Category}</li>
+ * </ul>
+ * </p>
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "countries")
 public class Country {

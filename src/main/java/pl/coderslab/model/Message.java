@@ -14,19 +14,35 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * Class represents message that can be send by {@link User}
+ * 
+ * 
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li> plan a scheduled messages send from application</li>
+ * <li> add possibility to send photos or other data</li>
+ * <li> add possibility for richer content than just text </li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "messages")
 public class Message {
 
-	//ADD TIME PLEASE
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	private String title;
 
-	@Column(columnDefinition="TEXT")
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -37,6 +53,7 @@ public class Message {
 	private List<User> recievers;
 
 	private LocalDateTime time;
+
 	public Message() {
 		super();
 	}
@@ -80,8 +97,6 @@ public class Message {
 	public void setRecievers(List<User> recievers) {
 		this.recievers = recievers;
 	}
-	
-	
 
 	public LocalDateTime getTime() {
 		return time;

@@ -14,5 +14,7 @@ public interface GameToBetRepository extends JpaRepository<GameToBet, Long>{
 	GameToBet findByEvent(Event event);
 	
 	List<GameToBet> findByEventIn(List<Event> events);
+	
+	List<GameToBet> findByActive(boolean active);
 	 
 }

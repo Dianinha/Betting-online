@@ -28,6 +28,7 @@ import pl.coderslab.service.UserService;
 @RequestMapping(value = "/user")
 public class UserControllerForUserDataOnly {
 
+
 	@Autowired
 	private UserService userService;
 

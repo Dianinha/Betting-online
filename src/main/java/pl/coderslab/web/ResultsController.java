@@ -12,9 +12,10 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.tomcat.jni.Local;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,6 @@ import pl.coderslab.model.BetStatus;
 import pl.coderslab.model.Event;
 import pl.coderslab.model.GameToBet;
 import pl.coderslab.model.GroupBet;
-import pl.coderslab.model.League;
 import pl.coderslab.model.MultipleBet;
 import pl.coderslab.model.SingleBet;
 import pl.coderslab.model.User;
@@ -47,6 +47,8 @@ import pl.coderslab.service.UserService;
 @Controller
 @RequestMapping(value = "/results")
 public class ResultsController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	CountryService countryService;
@@ -78,7 +80,7 @@ public class ResultsController {
 	@RequestMapping(value = "/countries")
 	@ResponseBody
 	public String countries() {
-		countryService.createCountry();
+		countryService.createCountries();
 		return "Hello countries";
 	}
 
@@ -111,29 +113,34 @@ public class ResultsController {
 		JSONArray list = new JSONArray();
 		for (Event event : liveEvents) {
 			JSONObject obj = new JSONObject();
+			try {
 
-			obj.put("match_id", counter);
-			counter++;
-			obj.put("league_id", event.getLegaue().getId());
-			obj.put("match_date", LocalDate.now().toString());
-			String status = r.nextInt(90) + "'";
-			obj.put("match_status", status);
-			int hour = LocalDateTime.now().getHour();
-			String matchHour = hour + ":01";
-			obj.put("match_time", matchHour);
-			obj.put("match_hometeam_name", event.getHomeTeamName());
-			obj.put("match_awayteam_name", event.getAwayTeamName());
+				obj.put("match_id", counter);
+				counter++;
+				obj.put("league_id", event.getLegaue().getId());
+				obj.put("match_date", LocalDate.now().toString());
+				String status = r.nextInt(90) + "'";
+				obj.put("match_status", status);
+				int hour = LocalDateTime.now().getHour();
+				String matchHour = hour + ":01";
+				obj.put("match_time", matchHour);
+				obj.put("match_hometeam_name", event.getHomeTeamName());
+				obj.put("match_awayteam_name", event.getAwayTeamName());
 
-			int homeScore = r.nextInt(5);
-			int awayScore = r.nextInt(5);
+				int homeScore = r.nextInt(5);
+				int awayScore = r.nextInt(5);
 
-			obj.put("match_hometeam_score", homeScore);
-			obj.put("match_awayteam_score", awayScore);
+				obj.put("match_hometeam_score", homeScore);
+				obj.put("match_awayteam_score", awayScore);
 
-			obj.put("match_live", event.getMatchLive());
-			JSONArray jsonArraygoals = (JSONArray) new JSONArray();
-			obj.put("goalscorer", jsonArraygoals);
-			list.add(obj);
+				obj.put("match_live", event.getMatchLive());
+				JSONArray jsonArraygoals = (JSONArray) new JSONArray();
+				obj.put("goalscorer", jsonArraygoals);
+				list.add(obj);
+
+			} catch (Exception e) {
+				LOGGER.info("Failed to create fake event.");
+			}
 		}
 		return list;
 	}
@@ -143,11 +150,8 @@ public class ResultsController {
 	public String updateStringResults() {
 		String myHtml = "";
 		LocalDate today = LocalDate.now().plusDays(3);
-		System.out.println(today);
 		List<Event> liveEvents = eventService.findByDateBetween(today, today);
-		System.out.println(liveEvents.size());
 		for (Event event : liveEvents) {
-			System.out.println(event);
 			String date = event.getDate().toString();
 			String time = event.getTime();
 			String in = "NOTHING";
@@ -160,6 +164,7 @@ public class ResultsController {
 			try {
 				matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
 			} catch (Exception e) {
+				LOGGER.info("Failed to parse String to Integer in updateStringResults method in Results Controller");
 				if (why.equals("45")) {
 					matchMin = 45;
 				}
@@ -240,8 +245,10 @@ public class ResultsController {
 				matchMin = Integer.parseInt(time.substring((time.indexOf(':')) + 1), time.length());
 			} catch (Exception e) {
 				if (why.equals("45")) {
+					
 					matchMin = 45;
 				}
+				LOGGER.info("Failed to parse String to Integer in getResultsForHomePage method in Results Controller");
 			}
 
 			if (matchHour > hour) {
@@ -434,6 +441,7 @@ public class ResultsController {
 
 				}
 			} catch (Exception e) {
+				LOGGER.info("Failed to create html in getResultsForUserPagePopularBets method in Results Controller");
 			}
 
 		}
@@ -495,6 +503,7 @@ public class ResultsController {
 
 				}
 			} catch (Exception e) {
+				LOGGER.info("Failed to create html in getResultsForUserPageObserved method in Results Controller");
 			}
 
 		}

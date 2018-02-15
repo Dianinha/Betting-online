@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +16,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,8 @@ import pl.coderslab.service.LeagueService;
 
 @Service
 public class EventServiceImpl implements EventService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	PlayerRepository playerRepo;
@@ -92,11 +96,16 @@ public class EventServiceImpl implements EventService {
 						}
 
 					} catch (Exception e) {
+						LOGGER.info("Failed attempt to create an event with league without country");
 					}
 
 					// Country
 
-					event.setCategory(categoryRepository.findByName("Football"));
+					try {
+						event.setCategory(categoryRepository.findByName("Football"));
+					} catch (Exception e) {
+						LOGGER.info("If You see this log it means that You forget to make category Football");
+					}
 
 					// Formatting date from String
 					String dateInString = (String) eventJson.get("match_date");
@@ -115,12 +124,12 @@ public class EventServiceImpl implements EventService {
 
 					// In try in case of mistakes in API
 					try {
-						if (!eventJson.get("match_hometeam_score").toString().equals("")) {
+						if (!eventJson.get("match_hometeam_score").equals("")) {
 							event.setHomeTeamScore(Integer.parseInt((String) eventJson.get("match_hometeam_score")));
 						}
 
 					} catch (Exception e) {
-						System.out.println("yes it works");
+						LOGGER.info("Failed to create home score in event");
 					}
 
 					// Away Team Name
@@ -132,6 +141,8 @@ public class EventServiceImpl implements EventService {
 							event.setAwayTeamScore(Integer.parseInt((String) eventJson.get("match_awayteam_score")));
 						}
 					} catch (Exception e) {
+						LOGGER.info("Failed to create half time score in event");
+						;
 					}
 					// In try in case of mistakes in API
 					try {
@@ -140,6 +151,7 @@ public class EventServiceImpl implements EventService {
 									Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
 						}
 					} catch (Exception e) {
+						LOGGER.info("Failed to create home half time score in event");
 					}
 					// In try in case of mistakes in API
 					try {
@@ -148,6 +160,7 @@ public class EventServiceImpl implements EventService {
 									Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
 						}
 					} catch (Exception e) {
+						LOGGER.info("Failed to create away half time score in event");
 					}
 
 					// Is it live?
@@ -155,7 +168,7 @@ public class EventServiceImpl implements EventService {
 
 					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
 					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, eventId);
-					
+
 					// save event
 					if (event.getLegaue() != null) {
 						event = eventRepo.save(event);
@@ -166,21 +179,17 @@ public class EventServiceImpl implements EventService {
 				}
 			}
 			in.close();
-		} catch (
-
-		MalformedURLException e) {
-			e.printStackTrace();
-			System.out.println("here1");
+		} catch (MalformedURLException e) {
+			LOGGER.error("URL Error in eventService", e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("here2");
+			LOGGER.error("Conn Error in eventService", e);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("here3");
+			LOGGER.error("Parse Error in eventService", e);
 		}
 
 	}
-	
+
 	@Override
 	public void createFakeEvents() {
 		// Completing URL
@@ -211,7 +220,7 @@ public class EventServiceImpl implements EventService {
 					event.setId(eventId);
 
 					// League
-					Long leagueId =(Long) eventJson.get("league_id");
+					Long leagueId = (Long) eventJson.get("league_id");
 					try {
 						League eventsLeague = leagueService.findById(leagueId);
 						event.setLegaue(eventsLeague);
@@ -221,6 +230,7 @@ public class EventServiceImpl implements EventService {
 						}
 
 					} catch (Exception e) {
+						LOGGER.info("Failed attempt to create an event with league without country");
 					}
 
 					// Country
@@ -244,22 +254,21 @@ public class EventServiceImpl implements EventService {
 
 					// In try in case of mistakes in API
 					Random r = new Random();
-							event.setHomeTeamScore(r.nextInt(5));
+					event.setHomeTeamScore(r.nextInt(4));
 
 					// Away Team Name
 					event.setAwayTeamName((String) eventJson.get("match_awayteam_name"));
 
 					// In try in case of mistakes in API
-							event.setAwayTeamScore(r.nextInt(5));
+					event.setAwayTeamScore(r.nextInt(4));
 					// In try in case of mistakes in API
-					
 
 					// Is it live?
 					event.setMatchLive((String) eventJson.get("match_live"));
 
 					JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
 					List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, eventId);
-					
+
 					// save event
 					if (event.getLegaue() != null) {
 						event = eventRepo.save(event);
@@ -273,14 +282,12 @@ public class EventServiceImpl implements EventService {
 		} catch (
 
 		MalformedURLException e) {
-			e.printStackTrace();
-			System.out.println("here1");
+			LOGGER.error("URL Error in eventService FAKE", e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("here2");
+			LOGGER.error("Conn Error in eventService FAKE", e);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("here3");
+			LOGGER.error("Parse Error in eventService FAKE", e);
 		}
 
 	}
@@ -334,10 +341,7 @@ public class EventServiceImpl implements EventService {
 
 	private Player checkIfExistsIfNotCreateNew(String playerName) {
 		Player player = null;
-		try {
-			player = playerRepo.findByName(playerName);
-		} catch (Exception e) {
-		}
+		player = playerRepo.findByName(playerName);
 		if (player == null) {
 			player = new Player();
 			player.setName(playerName);
@@ -385,6 +389,7 @@ public class EventServiceImpl implements EventService {
 						try {
 							event.setStatus((String) eventJson.get("match_status"));
 						} catch (Exception e) {
+							LOGGER.info("Fail te crete match status in updateLiveEvents");
 						}
 						event.setCategory(categoryRepository.findByName("Football"));
 						event.setTime((String) eventJson.get("match_time"));
@@ -397,6 +402,7 @@ public class EventServiceImpl implements EventService {
 										Integer.parseInt((String) eventJson.get("match_hometeam_score")));
 							}
 						} catch (Exception e) {
+							LOGGER.info("Fail to parse hometeam score updateLiveEvents");
 						}
 
 						try {
@@ -408,17 +414,20 @@ public class EventServiceImpl implements EventService {
 							}
 
 						} catch (Exception e) {
+							LOGGER.info("Failed to parse awat team score updateLiveEvents");
 						}
 
 						try {
 							event.setHomeTeamScoreHalfTime(
 									Integer.parseInt((String) eventJson.get("match_hometeam_halftime_score")));
 						} catch (Exception e) {
+							LOGGER.info("Failed to parse half score liveUpdateEvents");
 						}
 						try {
 							event.setAwayTeamScoreHalfTime(
 									Integer.parseInt((String) eventJson.get("match_awayteam_halftime_score")));
 						} catch (Exception e) {
+							LOGGER.info("Failed to parse half score liveUpdateEvents");
 						}
 						JSONArray jsonArraygoals = (JSONArray) eventJson.get("goalscorer");
 						List<GoalScorer> goalScorers = createGoalScorersForTheEvent(jsonArraygoals, id);
@@ -431,14 +440,12 @@ public class EventServiceImpl implements EventService {
 			}
 			in.close();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			System.out.println("here1");
+			LOGGER.error("URL Error in eventService UPDATE", e);
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("here2");
+			LOGGER.error("Conn Error in eventService UPDATE", e);
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("here3");
+			LOGGER.error("Parse Error in eventService UPDATE", e);
 		}
 
 	}

@@ -13,6 +13,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * Class that represents virtual {@link User} wallet. Has relations to
+ * {@link User} as its owner, stored {@link CreditCardInfo} and its own history
+ * of {@link Operation}
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "wallets")
 public class Wallet {

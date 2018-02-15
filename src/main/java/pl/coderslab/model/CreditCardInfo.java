@@ -15,13 +15,26 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.annotation.Transient;
 
+/**
+ * This class stores {@link User} credit card information. In real life this
+ * data should be secured or send to some payment service (for example PayPal). 
+ * By any reason CVV should not be stored in database! This is just for make up data.
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li> connecting it to some real payment methods </li>
+ * <li> hash and secure this information in database </li>
+ * <li> credit card number should be corected now there is weird error message caused by BigDecimal if number is null</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "creditCardInfos")
 public class CreditCardInfo {
@@ -102,9 +115,10 @@ public class CreditCardInfo {
 	public String getLastFourDigits() {
 		return lastFourDigits;
 	}
+
 	public void setLastFourDigits() {
 		String card = creditCardNumber.toString();
-		this.lastFourDigits = card.substring(card.length()-4, card.length());
+		this.lastFourDigits = card.substring(card.length() - 4, card.length());
 	}
 
 	public void setLastFourDigits(String lastFourDigits) {
@@ -159,7 +173,6 @@ public class CreditCardInfo {
 		this.type = type;
 	}
 
-	
 	// simplified to string
 	@Override
 	public String toString() {

@@ -6,6 +6,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * This class has no use in my application right now.
+ * 
+ * Still, there are many possibilities with it.
+ * <ul>
+ * <li> create ranking of players </li>
+ * <li> create players statistics </li>
+ * <li> and many more, sky is the limit</li>
+ * </ul>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class Player {
 

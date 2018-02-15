@@ -21,12 +21,22 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-
+/**
+ * This class corresponds to User of my application
+ * 
+ * Further corrections:
+ * <ul>
+ * <li> attribute passwordConfirmed should be deleted </li>
+ * <li> validation should be corrected</li>
+ * </ul>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "users")
 public class User {
 
-	// attributes - ADD AGE
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")

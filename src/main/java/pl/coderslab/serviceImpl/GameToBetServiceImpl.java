@@ -15,6 +15,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,8 @@ import pl.coderslab.service.StandingService;
 @Service
 public class GameToBetServiceImpl implements GameToBetService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
+
 	@Autowired
 	EventService eventService;
 
@@ -62,19 +66,19 @@ public class GameToBetServiceImpl implements GameToBetService {
 	public void createGamesToBetFromEvents(List<Event> events) {
 		List<Event> futureEvents = new ArrayList<>();
 		for (Event event : events) {
-				GameToBet game = new GameToBet();
-				if (event.getStatus().equals("FT")) {
-					game.setActive(false);
-				} else {
-					game.setActive(true);
-				}
-				game.setId(event.getId());
-				game.setEvent(event);
-				gameRepository.save(game);
-				event.setGame(game);
-				Event improvedEvent = eventRepository.save(event);
-				futureEvents.add(improvedEvent);
+			GameToBet game = new GameToBet();
+			if (event.getStatus().equals("FT")) {
+				game.setActive(false);
+			} else {
+				game.setActive(true);
 			}
+			game.setId(event.getId());
+			game.setEvent(event);
+			gameRepository.save(game);
+			event.setGame(game);
+			Event improvedEvent = eventRepository.save(event);
+			futureEvents.add(improvedEvent);
+		}
 		updateGamesToBet(futureEvents);
 
 	}
@@ -140,7 +144,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 			homeStanding = standingService.findStangingByTeamNameAndLeague(homeTeamName, event.getLegaue());
 			awayStanding = standingService.findStangingByTeamNameAndLeague(awayTeamName, event.getLegaue());
 		} catch (Exception e) {
-			System.out.println("Unable to find standing for: " + homeTeamName + " or " + awayTeamName);
+			LOGGER.info("Unable to find standing for: " + homeTeamName + " or " + awayTeamName);
 		}
 
 		H2H headToHead = createH2H(homeTeamName, awayTeamName);
@@ -150,7 +154,6 @@ public class GameToBetServiceImpl implements GameToBetService {
 		game.setRateHome(generateRate(game.getOddsToWinHome()));
 		game.setRateAway(generateRate(game.getOddsToWinAway()));
 		game.setRateDraw(generateRate(game.getOddsToWinDraw()));
-		System.out.println(game);
 		return game;
 	}
 
@@ -166,10 +169,16 @@ public class GameToBetServiceImpl implements GameToBetService {
 	 */
 	private BigDecimal generateRate(double odd) {
 		double y = 1 / odd * 0.92;
-		if (y < 1) {
+		if (y < 1 && y > 0) {
 			return BigDecimal.valueOf(1.00);
 		} else if (y > 41) {
 			return BigDecimal.valueOf(41.00);
+		} else if (y < 0) {
+			y = y * (-1.00);
+			if (y > 41) {
+				return BigDecimal.valueOf(41.00);
+			}
+			return BigDecimal.valueOf(y);
 		} else {
 			return BigDecimal.valueOf(y);
 		}
@@ -263,7 +272,8 @@ public class GameToBetServiceImpl implements GameToBetService {
 	 * number of games (should be 10) weight 0.15 from H2H number of last loses for
 	 * away divided by number of games (should be 10) weight 0.15 number of times
 	 * that home team won with away team in last 5 games 0.0125 which is calculated
-	 * 0.05 multiplied by 0.25 which is constant
+	 * 0.05 multiplied by 0.25 which is constant (my own) for home team that plays
+	 * in house
 	 * 
 	 * 
 	 * @param home
@@ -275,7 +285,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 	private double calculateOddsToWinHome(String home, String away, H2H head, League league) {
 		Standing homeStanding = standingService.findStangingByTeamNameAndLeague(home, league);
 		Standing awayStanding = standingService.findStangingByTeamNameAndLeague(away, league);
-		double odds = 0.375;
+		double odds = 0.5;
 		int constHome = head.getLastHomeGamesNumber();
 		int constAway = head.getLastAwayGameNumber();
 		if (constHome == 0) {
@@ -286,17 +296,17 @@ public class GameToBetServiceImpl implements GameToBetService {
 		}
 		if (homeStanding.getMatchesPlayed() < 1 || constHome < 2 || constAway < 2
 				|| awayStanding.getMatchesPlayed() < 1) {
-			odds = 0.375;
+			odds = 0.5;
 		} else if (homeStanding.getMatchesPlayed() < 7 || awayStanding.getMatchesPlayed() < 7) {
 			odds = 0.3 * head.getNumberOfWinsHome() / constHome + 0.3 * head.getNumberOfLosesAway() / constAway
-					+ 0.3 * head.getNumberOfWinsHomevsAAway() / 5 + 0.025;
+					+ 0.3 * head.getNumberOfWinsHomevsAway() / 5 + 0.025;
 		} else {
 			odds = 0.05 * homeStanding.getMatchesWon() / homeStanding.getMatchesPlayed()
 					+ 0.05 * awayStanding.getMatchesLost() / awayStanding.getMatchesPlayed()
 					+ 0.2 * homeStanding.getHomeMatchesWon() / homeStanding.getHomeMatchesPlayed()
 					+ 0.2 * awayStanding.getAwayMatchesLost() / awayStanding.getAwayMatchesPlayed()
 					+ 0.15 * head.getNumberOfWinsHome() / constHome + 0.15 * head.getNumberOfLosesAway() / constAway
-					+ 0.15 * head.getNumberOfWinsHomevsAAway() / 5 + 0.0125;
+					+ 0.15 * head.getNumberOfWinsHomevsAway() / 5 + 0.0125;
 
 		}
 		return odds;
@@ -393,14 +403,13 @@ public class GameToBetServiceImpl implements GameToBetService {
 				numberOfGamesAway = jsonAwayTeam.size();
 			}
 			in.close();
-		} catch (
-
-		MalformedURLException e) {
-			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			LOGGER.error("URL Error in gameToBetService", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Conn Error in gameToBetService", e);
 		} catch (ParseException e) {
 			e.printStackTrace();
+			LOGGER.error("Parse Error in gameToBetService", e);
 		}
 		result.setNumberOfDrawBetweenTeams(numberOfDrawCounter);
 		result.setNumberOfDrawHome(numberOfDrawHomeCounter);
@@ -409,7 +418,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 		result.setLastHomeGamesNumber(numberOfGamesHome);
 		result.setNumberOfLosesAway(numberofLostLastGamesAway);
 		result.setNumberOfWinsHome(numberofWonLastGamesHome);
-		result.setNumberOfWinsHomevsAAway(numberofWonLastGamesHomeVSAway);
+		result.setNumberOfWinsHomevsAway(numberofWonLastGamesHomeVSAway);
 
 		return result;
 
@@ -457,7 +466,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 							 * probabilities mySecretX is very secret and I cannot talk about it. Sorry.
 							 * OK... so it fixes the problem that occurs if there is like 10 minutes in the
 							 * game and one team already scored like 3 goals. So the probability from just
-							 * standings and H2H stops matter and the actual score is more important. Not
+							 * standings and H2H matter less and the actual score is more important. Not
 							 * perfect but still it works.
 							 * 
 							 */
@@ -467,10 +476,10 @@ public class GameToBetServiceImpl implements GameToBetService {
 								drawProbabilityFromTime = 0.01;
 
 							} else if (scoreDifference == 2) {
-								mySecretX = 0.6;
+								mySecretX = 0.5;
 								homeProbabilityFromTime = 0.95;
 								drawProbabilityFromTime = 0.04;
-								
+
 							} else if (scoreDifference == 1) {
 								mySecretX = 0.85;
 								homeProbabilityFromTime = 0.7;
@@ -488,7 +497,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 								drawProbabilityFromTime = 0.26;
 
 							} else if (scoreDifference == -2) {
-								mySecretX = 0.6;
+								mySecretX = 0.5;
 								homeProbabilityFromTime = 0.01;
 								drawProbabilityFromTime = 0.04;
 							} else if (scoreDifference <= -3) {
@@ -503,6 +512,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 							double oddsForDraw = mySecretX * game.getOddsToWinDraw() * percentOfGameThatIsLeft
 									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * drawProbabilityFromTime);
 							double oddsForAway = 1 - oddsForHome - oddsForDraw;
+							System.out.println("Home: " + oddsForHome + "Draw: " + oddsForDraw + "Away " + oddsForAway);
 							game.setRateHome(generateRate(oddsForHome));
 							game.setRateDraw(generateRate(oddsForDraw));
 							game.setRateAway(generateRate(oddsForAway));
@@ -510,6 +520,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 						}
 
 					} catch (Exception e) {
+						LOGGER.info("Failed to calculate live odds");
 					}
 				}
 			}
@@ -560,6 +571,11 @@ public class GameToBetServiceImpl implements GameToBetService {
 		} else {
 			return BigDecimal.valueOf(0);
 		}
+	}
+
+	@Override
+	public List<GameToBet> findActiveGames() {
+		return gameRepository.findByActive(true);
 	}
 
 }

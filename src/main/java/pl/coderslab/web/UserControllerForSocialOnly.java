@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import pl.coderslab.model.Message;
 import pl.coderslab.model.Request;
 import pl.coderslab.model.User;
 import pl.coderslab.service.MessageService;
@@ -157,15 +156,7 @@ public class UserControllerForSocialOnly {
 		requestService.acceptRequest(request);
 		User reciever = request.getReciever();
 		User sender = request.getSender();
-		Message message = new Message();
-		message.setTitle("Invitation accepted");
-		message.setContent("Your invite has been accepted: " + reciever.getUsername()
-				+ " is Your new friends. You can now send messages to each other and invite to group bets.");
-		message.setSender(reciever);
-		List<User> recievers = new ArrayList<>();
-		recievers.add(sender);
-		message.setRecievers(recievers);
-		messageService.sendMessage(message);
+		messageService.createInvitationAcceptedMessage(reciever, sender);
 		return "redirect:/user/invites";
 	}
 

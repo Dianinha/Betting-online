@@ -1,12 +1,25 @@
 package pl.coderslab.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+/**
+ * Class with almost no use for now.
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li>show goal scorers in live events</li>
+ * <li> let user see the goal scorers in past games</li>
+ * <li>calculate statistics for {@link Player} with this data</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class GoalScorer {
 
@@ -85,9 +98,8 @@ public class GoalScorer {
 	public String toString() {
 		return "GoalScorer [id=" + id + ", time=" + time + ", homeScorer=" + homeScorer + ", awayScorer=" + awayScorer
 				+ ", score=" + score + ""
-						//+ ", event=" + event + "]"
-						;
+		// + ", event=" + event + "]"
+		;
 	}
 
-	
 }

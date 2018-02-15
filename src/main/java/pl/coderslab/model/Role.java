@@ -9,7 +9,20 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
-
+/**
+ * User role in application.
+ * 
+ * IMPORTANT! Before using the application please add "ROLE_USER" to database. 
+ * 
+ * Further possibilities: 
+ * <ul>
+ * <li>create section for ROLE_ADMIN </li>
+ * <li> create special role for API receivers? </li>
+ * </ul>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "roles")
 public class Role {

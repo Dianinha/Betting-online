@@ -6,8 +6,28 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Class for storing API keys.
+ * 
+ * <p>
+ * Application is tailored with: {@linkplain https://apifootball.com/} <br>
+ * If You want to use it without modification You have to register on this page
+ * and add to database Your API key with id=1
+ * </p>
+ * <p>
+ * Possible future modification:
+ * <ul>
+ * <li>Add API key name</li>
+ * <li>Add data from more API : create {@link Enum} ApiType and differ parsing
+ * methods in Services basing on the ApiType</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
-@Table(name="ApiKeys")
+@Table(name = "ApiKeys")
 public class APIKey {
 
 	@Id
@@ -18,6 +38,22 @@ public class APIKey {
 
 	public APIKey() {
 		super();
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getKeyCode() {
+		return keyCode;
+	}
+
+	public void setKeyCode(String keyCode) {
+		this.keyCode = keyCode;
 	}
 
 	@Override
@@ -48,29 +84,9 @@ public class APIKey {
 		return true;
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	
-
-	public String getKeyCode() {
-		return keyCode;
-	}
-
-	public void setKeyCode(String keyCode) {
-		this.keyCode = keyCode;
-	}
-
 	@Override
 	public String toString() {
 		return "APIKey [id=" + id + ", key=" + keyCode + "]";
 	}
-	
-	
 
 }

@@ -11,24 +11,73 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import pl.coderslab.service.EventService;
+
+/**
+ * This class represents real life football event. The data is created from the
+ * API through {@link EventService}
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li>make the Event class more diverse and be a parent to many specific event
+ * classes, for example FootballEvent, BasketBallEvent, etc.</li>
+ * <li>OR make Event an Interface and have specific classes like FootBallEvent
+ * implement it. Could be even better</li>
+ * <li>change relation with {@link Category} to ManyToMany so event can belong
+ * to many categories</li>
+ * <li>add statistics (possible by API)</li>
+ * <li>add cards (possible by API)</li>
+ * <li>add line ups (possible by API)</li>
+ * <li>actually use the goal scorers data that I gather</li>
+ * <li>also use the half time score data that I gather</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class Event {
 
 	@Id
 	private long id;
 
+	/**
+	 * Country that event is related to : usually the country of league
+	 */
 	@ManyToOne
 	@JoinColumn
 	private Country country;
 
+	/**
+	 * League that Event is played in
+	 */
 	@ManyToOne
 	@JoinColumn
 	private League legaue;
 
 	private LocalDate date;
 
+	/**
+	 * Status shows event status. It can be:
+	 * <ul>
+	 * <li>"FT" : event has ended</li>
+	 * <li>"" : empty {@link String}, event has not yet begun
+	 * <li>
+	 * <li>"HT" : half time</li>
+	 * <li>"XX'" : where X represents one digit. It is a number of minutes in a
+	 * game, for example: "9'" stands for nine minutes in the game</li>
+	 * <li>"XX'+X" : where X represents one digit. It is a number of minutes in a
+	 * game plus added time, for example: "45'+3" stands for 45 minutes in a game
+	 * plus third minute from extra time</li>
+	 * <ul>
+	 */
 	private String status;
 
+	/**
+	 * Time that Event starts
+	 */
 	private String time;
 
 	private String homeTeamName;
@@ -43,21 +92,27 @@ public class Event {
 
 	private int awayTeamScore;
 
+	/**
+	 * Unfortunately not used yet in my application
+	 */
 	private int homeTeamScoreHalfTime;
 
+	/**
+	 * Unfortunately not used yet in my application
+	 */
 	private int awayTeamScoreHalfTime;
 
 	private String matchLive;
-	
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
 	private Category category;
 
+	/**
+	 * Unfortunately not used yet in my application
+	 */
 	@OneToMany(mappedBy = "event")
 	private List<GoalScorer> goalScorrers;
-
-
 
 	public Event() {
 		super();
@@ -82,7 +137,6 @@ public class Event {
 	public League getLegaue() {
 		return legaue;
 	}
-	
 
 	public void setLegaue(League legaue) {
 		this.legaue = legaue;
@@ -191,8 +245,6 @@ public class Event {
 	public void setGoalScorrers(List<GoalScorer> goalScorrers) {
 		this.goalScorrers = goalScorrers;
 	}
-
-
 
 	@Override
 	public String toString() {

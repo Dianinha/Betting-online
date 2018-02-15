@@ -5,10 +5,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * This class represents categories for {@link Event} For now, event can have only one category.
+ * Category is described by attribute {@link String} name.
+ * <p>
+ * For now there are only Football games.
+ * </p>
+ * 
+ * <p>
+ * Important! Before using the application, please create category "Football" in
+ * database.
+ * </p>
+ * 
+ * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li>
+ * add subcategory, for example for football it can be league or country
+ * </li>
+ * <li>change relationship with event to ManyToMany, so event can have more then one category </li>
+ * <li> add category description</li>
+ * </ul>
+ * </p>
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -19,7 +44,6 @@ public class Category {
 	private long id;
 
 	@NotBlank
-	@NotNull
 	private String name;
 
 	// Constructor

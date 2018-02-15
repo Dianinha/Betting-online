@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +21,17 @@ import pl.coderslab.model.User;
 import pl.coderslab.repositories.RoleRepository;
 import pl.coderslab.service.AddressService;
 import pl.coderslab.service.UserService;
-/**This controller is for home page and login, register actions
+
+/**
+ * This controller is for home page and login, register actions
  * 
  * @author dianinha
  *
  */
 @Controller
 public class HomePageController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Autowired
 	UserService userService;
@@ -37,7 +43,8 @@ public class HomePageController {
 	@Autowired
 	AddressService addressService;
 
-	/** Displays home page
+	/**
+	 * Displays home page
 	 * 
 	 * @return
 	 */
@@ -46,7 +53,8 @@ public class HomePageController {
 		return "index";
 	}
 
-	/**Log in page
+	/**
+	 * Log in page
 	 * 
 	 * @return
 	 */
@@ -55,7 +63,8 @@ public class HomePageController {
 		return "/access/login";
 	}
 
-	/**Allows User to register
+	/**
+	 * Allows User to register
 	 * 
 	 * @param model
 	 * @return
@@ -66,7 +75,8 @@ public class HomePageController {
 		return "/access/register";
 	}
 
-	/**Process registration
+	/**
+	 * Process registration
 	 * 
 	 * @param model
 	 * @param user
@@ -93,11 +103,11 @@ public class HomePageController {
 		if (result.hasErrors()) {
 			return "/access/register";
 		}
-		if (over18==null) {
+		if (over18 == null) {
 			model.addAttribute("failureMessage", "You have to be at least 18 years old to register.");
 			return "/access/register";
 		}
-		if (agreement==null) {
+		if (agreement == null) {
 			model.addAttribute("failureMessage", "Please agree to our site conditions");
 			return "/access/register";
 		}
@@ -111,9 +121,11 @@ public class HomePageController {
 		} catch (Exception e) {
 			if (userService.findByEmail(user.getEmail()) != null) {
 				model.addAttribute("failureMessage", "User with this e-mail is already registered");
+				LOGGER.info("User tried to create account with taken email.");
 				return "/access/register";
 			} else if (userService.findByUsername(user.getUsername()) != null) {
 				model.addAttribute("failureMessage", "This username is already taken. Please pick another one.");
+				LOGGER.info("User tried to create account with taken username.");
 				return "/access/register";
 			}
 
@@ -121,7 +133,8 @@ public class HomePageController {
 		return "redirect:/failure";
 	}
 
-	/**Address registration
+	/**
+	 * Address registration
 	 * 
 	 * @param model
 	 * @return
@@ -132,7 +145,8 @@ public class HomePageController {
 		return "/access/registerAddress";
 	}
 
-	/**Processing address registration
+	/**
+	 * Processing address registration
 	 * 
 	 * @param model
 	 * @param address
@@ -153,12 +167,13 @@ public class HomePageController {
 			return "redirect:/success";
 
 		} catch (Exception e) {
-
+			LOGGER.info("Failed attempt to create address.");
 		}
 		return "redirect:/failure";
 	}
 
-	/**Success page
+	/**
+	 * Success page
 	 * 
 	 * @param model
 	 * @param session
@@ -169,7 +184,8 @@ public class HomePageController {
 		return "/access/success";
 	}
 
-	/**Failure page
+	/**
+	 * Failure page
 	 * 
 	 * @param model
 	 * @return

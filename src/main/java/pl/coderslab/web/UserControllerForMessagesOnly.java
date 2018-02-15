@@ -2,6 +2,8 @@ package pl.coderslab.web;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,8 @@ import pl.coderslab.service.UserService;
 @RequestMapping(value = "/user")
 public class UserControllerForMessagesOnly {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserControllerForMessagesOnly.class);
+
 	@Autowired
 	private UserService userService;
 
@@ -46,6 +50,7 @@ public class UserControllerForMessagesOnly {
 			model.addAttribute("recieved", messageService.findMessagesByReciever(user));
 			model.addAttribute("send", messageService.findMessagesBySender(user));
 		} catch (Exception e) {
+			LOGGER.info("Failed to get User messages.");
 		}
 		return "/user/messages";
 	}
@@ -83,17 +88,15 @@ public class UserControllerForMessagesOnly {
 		}
 		User userToSendMessage = null;
 		User sender = userService.getAuthenticatedUser(authentication);
-		try {
 			userToSendMessage = userService.findByUsername(username);
-		} catch (Exception e) {
-			return "/user/addMessage";
-		}
 
 		try {
 			message = messageService.addReciever(message, userToSendMessage);
 			message = messageService.addSender(message, sender);
 			messageService.sendMessage(message);
 		} catch (Exception e) {
+			LOGGER.info("Failed to send a message");
+			return "/user/addMessage";
 		}
 
 		return "redirect:/user/messages";

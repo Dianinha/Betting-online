@@ -10,7 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
+/**
+ * This class coresponds to bet that is placed by User.
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 @Table(name = "bets")
 public class SingleBet {
@@ -28,7 +33,9 @@ public class SingleBet {
 	@ManyToOne
 	@JoinColumn
 	private GameToBet game;
-
+/**
+ * Possible values: draw, home or away
+ */
 	private String betOn;
 
 	private BigDecimal amount;

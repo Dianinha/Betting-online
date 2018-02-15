@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,8 @@ import pl.coderslab.service.UserService;
 @RequestMapping(value = "/user")
 public class UserController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
+	
 	@Autowired
 	private UserService userService;
 
@@ -75,6 +79,7 @@ public class UserController {
 		try {
 			observedEvents.remove(eventService.findOne(eventId));
 		} catch (Exception e) {
+			LOGGER.info("Failed remove observed events");
 		}
 
 		user.setUserObservedGames(observedEvents);

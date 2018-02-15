@@ -8,6 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import pl.coderslab.service.StandingService;
+/**
+ * Corresponds to standing in {@link League} for one team in one season.
+ * Data is gathered from API through {@link StandingService}
+ * 
+ * @author dianinha
+ *
+ */
 @Entity
 public class Standing {
 

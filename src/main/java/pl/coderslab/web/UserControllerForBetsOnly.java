@@ -29,6 +29,8 @@ import pl.coderslab.service.UserService;
 @RequestMapping(value = "/user")
 public class UserControllerForBetsOnly {
 
+	
+
 	@Autowired
 	private UserService userService;
 

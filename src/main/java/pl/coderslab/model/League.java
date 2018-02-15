@@ -9,6 +9,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import pl.coderslab.service.LeagueService;
+/**
+ * Class represents Leagues. Data is gathered from API through {@link LeagueService}
+ * every league has corresponding country.
+ * 
+ *  * <p>
+ * Possible future modifications:
+ * <ul>
+ * <li> make league a {@link Category}</li>
+ * </ul>
+ * </p>
+ */
 @Entity
 @Table(name="leagues")
 public class League {

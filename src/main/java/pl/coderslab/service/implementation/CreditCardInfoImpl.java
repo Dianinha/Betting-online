@@ -1,7 +1,9 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class CreditCardInfoImpl implements CreditCardService {
 
 	@Autowired
 	private WalletService walletService;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	@Override
 	public List<CreditCardInfo> findByUser(User user) {
@@ -55,8 +59,9 @@ public class CreditCardInfoImpl implements CreditCardService {
 			creditCardRepo.delete(id);
 			result = true;
 		} catch (Exception e) {
+			LOGGER.info("Failed to delete credit card.");
 		}
-	
+
 		return result;
 	}
 

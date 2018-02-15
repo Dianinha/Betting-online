@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import pl.coderslab.service.LeagueService;
 
 @Service
 public class LeagueServiceImpl implements LeagueService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
 
 	private static final String url = "https://apifootball.com/api/?action=get_leagues&APIkey=";
 
@@ -64,10 +68,10 @@ public class LeagueServiceImpl implements LeagueService {
 							leagueRepository.save(leaugue);
 						}
 						else {
-							System.out.println("League was not created - no country");
+							LOGGER.info("League was not created - no country");
 						}
 					} catch (Exception e) {
-						System.out.println("League was not created - mistake");
+						LOGGER.info("League was not created - mistake");
 					}
 				}
 			}

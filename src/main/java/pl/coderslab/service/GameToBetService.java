@@ -25,5 +25,7 @@ public interface GameToBetService {
 	String getTeamNameByBetOn(GameToBet game, String betOn);
 
 	BigDecimal getRateByBetOn(GameToBet game, String betOn);
+	
+	List<GameToBet> findActiveGames();
 
 }
