@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

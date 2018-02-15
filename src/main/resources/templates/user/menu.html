@@ -26,24 +26,26 @@
 				<div class="row">
 					<div class="col tborder mx-3 py-4"
 						style="background-color: #ffffff; height: 110px;">
-						<a> <img src="../images/choices.png" />Add new bet
+						<a th:href="@{/user/myBets}"> <img src="../images/choices.png" />See
+							bets
 						</a>
 					</div>
 					<div class="col tborder mx-3 py-4"
 						style="background-color: #ffffff; height: 110px;">
-						<a> <img src="../images/money.png" class="mr-3" />Add funds
+						<a th:href="@{/user/funds}"> <img src="../images/money.png"
+							class="mr-3" />Add funds
 						</a>
 					</div>
 					<div class="col tborder mx-3 py-4"
 						style="background-color: #ffffff; height: 110px;">
-						<a> <img src="../images/paper-plane.png" class="mr-2" />Send
-							message
+						<a th:href="@{/user/sendMessage}"> <img
+							src="../images/paper-plane.png" class="mr-2" />Send message
 						</a>
 					</div>
 					<div class="col tborder mx-3 py-4"
 						style="background-color: #ffffff; height: 110px;">
-						<a> <img src="../images/add-user.png " class="mr-2" />Invite
-							friends
+						<a th:href="@{/user/addFriends}"> <img
+							src="../images/add-user.png " class="mr-2" />Invite friends
 						</a>
 					</div>
 				</div>
@@ -135,7 +137,7 @@
 							<table class="table table-striped usertbl">
 								<thead>
 									<tr>
-									<th scope="col">Do not obsv.</th>
+										<th scope="col">Do not obsv.</th>
 										<th scope="col">Sport</th>
 										<th scope="col">Competition</th>
 										<th scope="col">Teams</th>
@@ -146,8 +148,8 @@
 										<th scope="col">Away</th>
 									</tr>
 								</thead>
-								<tbody id = "userLiveResultsObserved">
-								
+								<tbody id="userLiveResultsObserved">
+
 
 								</tbody>
 							</table>
@@ -297,7 +299,7 @@
 							setInterval(updateUserpage4, 1000);
 						});
 	</script>
-	
-	
+
+
 </body>
 </html>

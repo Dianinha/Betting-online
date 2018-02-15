@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.util.HashSet;
 import java.util.List;
@@ -49,7 +49,6 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User createUser(User user) {
-		System.out.println(user);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		Set<Role> userRoles = new HashSet<>();
 		userRoles.add(roleRepository.findByName("ROLE_USER"));
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User finfByWallet(Wallet wallet) {
+	public User findByWallet(Wallet wallet) {
 		return userRepository.findByWallet(wallet);
 	}
 

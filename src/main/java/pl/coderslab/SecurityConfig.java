@@ -13,7 +13,7 @@ import pl.coderslab.service.implementation.SpringDataUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled=true)
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
@@ -25,23 +25,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SpringDataUserDetailsService customUserDetailsService() {
 		return new SpringDataUserDetailsService();
 	}
-	
+
 	@Bean
-	public LoginHandler handler(){
+	public LoginHandler handler() {
 		return new LoginHandler();
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable();
-		http.authorizeRequests()
-				.anyRequest().permitAll().and().formLogin().successHandler(handler()).loginPage("/login").and().logout()
-				.logoutSuccessUrl("/login").permitAll();
+		http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().formLogin().successHandler(handler())
+				.loginPage("/login").and().logout().logoutSuccessUrl("/login").permitAll();
 
 	}
-	
-	
-	
-	
 
 }
