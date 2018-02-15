@@ -40,6 +40,22 @@ public class UserServiceImpl implements UserService {
 		super();
 	}
 
+	/**Constructor for tests only
+	 * 
+	 * @param userRepository
+	 * @param passwordEncoder
+	 * @param roleRepository
+	 * @param walletService
+	 */
+	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder,
+			RoleRepository roleRepository, WalletService walletService) {
+		super();
+		this.roleRepository=roleRepository;
+		this.passwordEncoder=passwordEncoder;
+		this.userRepository=userRepository;
+		this.walletService=walletService;
+	}
+
 	@Override
 	public User saveUser(User user) {
 

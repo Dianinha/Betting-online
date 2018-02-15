@@ -1,6 +1,10 @@
 package pl.coderslab.repositories;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -88,14 +92,29 @@ public class UserRepositoryTest {
 		assertEquals(result, user1);
 	}
 
-	// @Test
-	// public void testFindByUsernameStatsWith() {
-	// fail("Not yet implemented");
-	// }
-	//
-	// @Test
-	// public void testFindByEmailStatsWith() {
-	// fail("Not yet implemented");
-	// }
+	@Test
+	public void testFindByUsernameStatsWith() {
+		// given
+
+		// when
+		List<User> result = userRepository.findByUsernameStatsWith("d");
+		List<User> expected = new ArrayList<>();
+		expected.add(user1);
+		expected.add(user3);
+		// then
+		assertThat(result).hasSameElementsAs(expected);
+	}
+
+	@Test
+	public void testFindByEmailStatsWith() {
+		// given
+
+		// when
+		List<User> result = userRepository.findByEmailStatsWith("di");
+		List<User> expected = new ArrayList<>();
+		expected.add(user1);
+		// then
+		assertThat(result).hasSameElementsAs(expected);
+	}
 
 }
