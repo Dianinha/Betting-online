@@ -92,7 +92,7 @@ public class UserControllerForWalletOnly {
 	public String creditCardOption(Model model, Authentication authentication) {
 		List<CreditCardInfo> userCreditCards = null;
 		User user = userService.getAuthenticatedUser(authentication);
-			userCreditCards = creditService.findByUser(user);
+		userCreditCards = creditService.findByUser(user);
 		if (userCreditCards.size() != 0) {
 			model.addAttribute("creditCards", userCreditCards);
 		}
@@ -297,6 +297,29 @@ public class UserControllerForWalletOnly {
 			model.addAttribute("message", "Something was wrong. Credit card data was not deleted.");
 			return "user/creditCards";
 		}
+
+	}
+
+	@RequestMapping(value = "/withdrawal", method = RequestMethod.GET)
+	public String withdrawalOfFunds(Model model) {
+		return "user/withdrawal";
+
+	}
+
+	@RequestMapping(value = "/withdrawal", method = RequestMethod.POST)
+	public String withdrawalOfFundsPOST(Model model, Authentication authentication,
+			@RequestParam("amount") double amount, @RequestParam("account") Long account, HttpSession session) {
+		User user = userService.getAuthenticatedUser(authentication);
+		Wallet wallet = walletService.findByUser(user);
+		if (walletService.hasWalletSufficientFunds(wallet, BigDecimal.valueOf(amount+20))) {
+			walletService.substractFunds(wallet, BigDecimal.valueOf(amount));
+			model.addAttribute("message", "Money has been transfered.");
+			session.setAttribute("currentFunds", wallet.getAmount());
+		}
+		else {
+			model.addAttribute("message", "You do not have sufficient funds for this operation. Remenber that You cannot transfer extra 20 pln gift for registration back");
+		}
+		return "user/withdrawal";
 
 	}
 }
