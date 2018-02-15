@@ -455,4 +455,9 @@ public class EventServiceImpl implements EventService {
 		return (event.getStatus().equals("FT")) ? true : false;
 	}
 
+	@Override
+	public Event findById(long id) {
+		return eventRepo.findOne(id);
+	}
+
 }

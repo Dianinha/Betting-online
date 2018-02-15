@@ -46,5 +46,7 @@ public interface EventService {
 	 * Creates fake events and changes its score and time in the game
 	 */
 	void createFakeEvents();
+	
+	Event findById(long id);
 
 }

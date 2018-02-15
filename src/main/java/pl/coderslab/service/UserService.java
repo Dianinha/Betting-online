@@ -28,5 +28,9 @@ public interface UserService {
 	List<User> findByUSernameStartsWith(String username);
 
 	User getAuthenticatedUser(Authentication auth);
+	
+	boolean checkIfUsernameIsTaken (String username);
+	
+	boolean checkIfEmailIsTakien (String email);
 
 }

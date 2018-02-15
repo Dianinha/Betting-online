@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.math.BigDecimal;
 
@@ -25,7 +25,7 @@ public class WalletServiceImpl implements WalletService {
 	public Wallet createWallet(User user) {
 		Wallet wallet = new Wallet();
 		wallet.setUser(user);
-		wallet.setAmount(new BigDecimal(0));
+		wallet.setAmount(BigDecimal.valueOf(20.00));
 		return walletRepository.save(wallet);
 	}
 
@@ -45,10 +45,14 @@ public class WalletServiceImpl implements WalletService {
 
 	@Override
 	public Wallet substractFunds(Wallet wallet, BigDecimal amount) {
-		BigDecimal currentAmount = wallet.getAmount();
-		BigDecimal newAmount = currentAmount.subtract(amount);
-		wallet.setAmount(newAmount);
-		return walletRepository.save(wallet);
+		if (hasWalletSufficientFunds(wallet, amount)) {
+			BigDecimal currentAmount = wallet.getAmount();
+			BigDecimal newAmount = currentAmount.subtract(amount);
+			wallet.setAmount(newAmount);
+			return walletRepository.save(wallet);
+		}
+		return wallet;
+		 
 	}
 
 	@Override

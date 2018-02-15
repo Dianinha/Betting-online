@@ -23,19 +23,18 @@ import pl.coderslab.service.WalletService;
 public class UserServiceImpl implements UserService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private WalletService walletService;
-	
 
 	public UserServiceImpl() {
 		super();
@@ -43,16 +42,16 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User saveUser(User user) {
-		
+
 		return userRepository.save(user);
-		
+
 	}
 
 	@Override
 	public User createUser(User user) {
 		System.out.println(user);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		Set<Role> userRoles= new HashSet<>();
+		Set<Role> userRoles = new HashSet<>();
 		userRoles.add(roleRepository.findByName("ROLE_USER"));
 		user.setRoles(userRoles);
 		Set<User> friends = new HashSet<>();
@@ -84,13 +83,13 @@ public class UserServiceImpl implements UserService {
 	public User changePassword(String password, User user) {
 		User userToChangePassword = userRepository.findOne(user.getId());
 		user.setPassword(passwordEncoder.encode(password));
-		
+
 		return userRepository.save(userToChangePassword);
 	}
 
 	@Override
 	public boolean checkPassword(String password, User user) {
-		
+
 		return passwordEncoder.matches(password, user.getPassword());
 	}
 
@@ -107,13 +106,33 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getAuthenticatedUser(Authentication auth) {
 		User user = null;
-		
+
 		try {
 			user = userRepository.findByUsername(auth.getName());
 		} catch (Exception e) {
 			LOGGER.info("Fail to authenticate user");
 		}
 		return user;
+	}
+
+	@Override
+	public boolean checkIfUsernameIsTaken(String username) {
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public boolean checkIfEmailIsTakien(String email) {
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }

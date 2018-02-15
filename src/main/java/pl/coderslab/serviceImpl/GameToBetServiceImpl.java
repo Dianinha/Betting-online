@@ -543,16 +543,24 @@ public class GameToBetServiceImpl implements GameToBetService {
 	 */
 	@Override
 	public String getTeamNameByBetOn(GameToBet game, String betOn) {
-		if (betOn.equals("home")) {
-			return "home in game : " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
-		} else if (betOn.equals("draw")) {
-			return "draw in game: " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
-
-		} else if (betOn.equals("away")) {
-			return "away in game: " + game.getEvent().getHomeTeamName() + " vs. " + game.getEvent().getAwayTeamName();
-		} else {
-			return "Bet unrecognized";
+		String result = "";
+		String vs = " vs. ";
+		switch (betOn) {
+		case "home":
+			result = "home in game : " + game.getEvent().getHomeTeamName() + vs
+					+ game.getEvent().getAwayTeamName();
+			break;
+		case "draw":
+			result = "draw in game: " + game.getEvent().getHomeTeamName() + vs + game.getEvent().getAwayTeamName();
+			break;
+		case "away":
+			result = "away in game: " + game.getEvent().getHomeTeamName() + vs + game.getEvent().getAwayTeamName();
+			break;
+		default:
+			result = "Bet unrecognized";
+			break;
 		}
+		return result;
 
 	}
 

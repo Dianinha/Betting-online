@@ -1,4 +1,4 @@
-package pl.coderslab.serviceImpl;
+package pl.coderslab.service.implementation;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -86,7 +86,6 @@ public class MessageServiceImpl implements MessageService {
 		Message message = new Message();
 		message.setSender(sender);
 		message.setRecievers(recievers);
-		message.setTime(LocalDateTime.now());
 		message.setTitle("You have group bet request from: " + sender.getUsername());
 		message.setContent("User " + sender.getUsername() + " wants You to join in group betting! Possible win: "
 				+ betService.calculatePossilbeWinInGroupBet(groupBet) + " with the amount: "
@@ -107,19 +106,6 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void createRequestAcceptedMessage(User accepted, User reciever) {
-		Message message = new Message();
-		message.setTitle("Invitation accepted");
-		message.setContent("Your invite has been accepted: " + accepted.getUsername()
-				+ " is Your new friends. You can now send messages to each other and invite to group bets.");
-		message.setSender(accepted);
-		List<User> recievers = new ArrayList<>();
-		recievers.add(reciever);
-		message.setRecievers(recievers);
-		sendMessage(message);
-	}
-
-	@Override
 	public void createInvitationAcceptedMessage(User sender, User reciever) {
 		Message message = new Message();
 		message.setTitle("Invitation accepted");
@@ -127,7 +113,7 @@ public class MessageServiceImpl implements MessageService {
 				+ " is Your new friends. You can now send messages to each other and invite to group bets.");
 		message.setSender(sender);
 		message = addReciever(message, reciever);
-		sendMessage(message);		
+		sendMessage(message);
 	}
 
 }

@@ -1,6 +1,10 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 
+*.log
+Dianinhalogs.log
+logs.log
+
 ### STS ###
 .apt_generated
 .classpath
