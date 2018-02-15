@@ -470,7 +470,7 @@ public class BetServiceImpl implements BetService {
 
 	@Override
 	public List<MultipleBet> findMultipleBetsByUserAndStatus(BetStatus status, User user) {
-		return multipleBetRepository.findByUser(BetStatus.PLACED, user);
+		return multipleBetRepository.findByUser(status, user);
 	}
 
 	@Override

@@ -10,18 +10,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import pl.coderslab.model.Event;
-import pl.coderslab.model.Standing;
 import pl.coderslab.service.BetService;
 import pl.coderslab.service.EventService;
+import pl.coderslab.service.FakeService;
 import pl.coderslab.service.GameToBetService;
 import pl.coderslab.service.StandingService;
-import pl.coderslab.service.implementation.EventServiceImpl;
 
 @Component
 public class SheduledTasks {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("DianinhaLogger");
-	
+
 	@Autowired
 	private EventService eventService;
 
@@ -33,6 +32,9 @@ public class SheduledTasks {
 
 	@Autowired
 	private StandingService standingService;
+
+	@Autowired
+	FakeService faker;
 
 	@Scheduled(cron = "0 18 18 1/1 * ?")
 	public void createEvents() {
@@ -48,27 +50,39 @@ public class SheduledTasks {
 
 	}
 
-	// @Scheduled(fixedRate = 30000)
-	// public void updateLiveEvents() {
-	// eventService.updateliveEvents();
-	// gameService.updateLiveEventsGamesToBet();
-	// System.out.println("games upadted");
-	// }
-	//
-	// @Scheduled(fixedRate = 30000)
-	// public void checkBets() {
-	// betService.checkBetsForTodayGames();
-	// betService.checkMultiBetsForTodayGames();
-	// System.out.println("bets updated");
-	// }
+	//@Scheduled(fixedRate = 30000)
+	//public void updateLiveEvents() {
+		//eventService.updateliveEvents();
+		//gameService.updateLiveEventsGamesToBet();
+		//System.out.println("games upadted");
+	//}
 
-//	@Scheduled(fixedRate = 60000)
-//	public void fakeEvents() {
+	@Scheduled(fixedRate = 30000)
+	public void checkBets() {
+		betService.checkBetsForTodayGames();
+		betService.checkMultiBetsForTodayGames();
+		System.out.println("bets updated");
+	}
+
+	// @Scheduled(fixedRate = 60000)
+	// public void fakeEvents() {
+	// eventService.createFakeEvents();
+	// List<Event> events = eventService.findByDate(LocalDate.now());
+	// gameService.createGamesToBetFromEvents(events);
+	// gameService.updateLiveEventsGamesToBet();
+	// System.out.println("created fake events");
+	// }
 //
-//		eventService.createFakeEvents();
-//		List<Event> events = eventService.findByDate(LocalDate.now());
-//		gameService.createGamesToBetFromEvents(events);
-//		gameService.updateLiveEventsGamesToBet();
-//		System.out.println("created fake events");
-//	}
+	@Scheduled(cron = "55 21 00 1/1 * ?")
+	public void fakeIt() {
+		faker.createFakeEvents();
+		faker.createFakeGameToBet();
+	}
+	@Scheduled(fixedRate = 15000)
+	public void fakeItAndSimulateIt() {
+		faker.symulateFakeEvents();
+		gameService.updateLiveEventsGamesToBet();
+	}
+	
+	
 }

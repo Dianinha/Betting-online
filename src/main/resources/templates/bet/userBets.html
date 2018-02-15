@@ -162,13 +162,13 @@
 					<tbody th:if="${oldMultiBets}">
 
 						<tr th:each="bets: ${oldMultiBets}">
-						<tr th:each="singleBet: ${bets.bets}">
+						<tr th:each="singleBetM: ${bets.bets}">
 							<td
-								th:text="${singleBet.game.event.homeTeamName}+ ' vs ' + ${singleBet.game.event.awayTeamName}"
+								th:text="${singleBetM.game.event.homeTeamName}+ ' vs ' + ${singleBetM.game.event.awayTeamName}"
 								style="color: #df2935"></td>
-							<td th:text="'Your bet was on: ' + ${singleBet.betOn}"></td>
+							<td th:text="'Your bet was on: ' + ${singleBetM.betOn}"></td>
 							<td></td>
-							<td th:text="${singleBet.betResult}"></td>
+							<td th:text="${singleBetM.betResult}"></td>
 						</tr>
 						<td></td>
 						<td></td>

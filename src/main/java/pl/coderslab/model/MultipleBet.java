@@ -148,8 +148,9 @@ public class MultipleBet {
 
 	@Override
 	public String toString() {
-		return "MultipleBet [id=" + id + ", bet=" + bets + ", user=" + user + ", joinedRating=" + joinedRating
-				+ ", joinedAmount=" + joinedAmount + "]";
+		return "MultipleBet [id=" + id + ", user=" + user.getUsername() + ", joinedRating=" + joinedRating
+				+ ", joinedAmount=" + joinedAmount + ", status=" + status + ", result=" + result + ", groupBetPossible="
+				+ groupBetPossible + ", isItAGroupBet=" + isItAGroupBet + "]";
 	}
 
 }

@@ -19,7 +19,7 @@
 
 </head>
 
-<body style="padding-top:0px">
+<body style="padding-top: 0px">
 
 	<nav class="navbar navbar-expand-lg navbar-light">
 		<a class="navbar-brand" href="#"> <img src="logo.png" width="184"
@@ -54,9 +54,10 @@
 				<div>
 					<h1 style="color: #e7e8e8; text-align: center" class="pt-5">Just
 						Start The Game.</h1>
-					<h2 style="color: #e7e8e8; text-align: center">Gain 10£ for
+					<h2 style="color: #e7e8e8; text-align: center">Gain 20 PLN for
 						register</h2>
-					<form class="form-inline my-3 ml-auto">
+					<form th:action="@{/register}" method="get"
+						class="form-inline my-3 ml-auto">
 
 						<button class="btn btn-lg btn-outline-success my-3 mx-auto"
 							type="submit">Join</button>

@@ -71,6 +71,9 @@ public class UserControllerForBetsOnly {
 			model.addAttribute("multiBets", currentMultiBets);
 		}
 		List<MultipleBet> pastMultiBets = betService.findMultipleBetsByUserAndStatus(BetStatus.FINALIZED, user);
+		for (MultipleBet multipleBet : pastMultiBets) {
+			System.out.println(multipleBet);
+		}
 		if (!pastMultiBets.isEmpty()) {
 			model.addAttribute("oldMultiBets", pastMultiBets);
 		}

@@ -202,16 +202,23 @@ public class GameToBetServiceImpl implements GameToBetService {
 	 * IF less than 7 matched where played by any of the Teams I just get numbers
 	 * from H2H (if I have any)
 	 * 
-	 * IF I have decent data I add: weight: 0.1 draws for Home team divided by whole
-	 * matches played from league standing weight: 0.1 draws for Away team divided
-	 * by whole matches played from league standing weight 0.15 draws in home played
-	 * games for home team divided by matched played in home weight 0.15 draws in
-	 * away played games for away team divided by matched played in away weight 0.15
-	 * from H2H number of draws for Home team divided by number of last game played
-	 * by Home (should be 10) weight 0.15 from H2H number of draws for Away team
-	 * divided by number of last game played by Away (should be 10) weight 0.15
-	 * number of draws between two teams divided by 5 (in my H2H i get last 5 games)
-	 * 0.0125 which is calculated 0.05 multiplied by 0.25 which is constant for
+	 * IF I have decent data I add:
+	 * <ul>
+	 * <li>weight: 0.1 draws for Home team divided by whole matches played from
+	 * league standing</li>
+	 * <li>weight: 0.1 draws for Away team divided by whole matches played from
+	 * league standing</li>
+	 * <li>weight 0.15 draws in home played games for home team divided by matched
+	 * played in home</li>
+	 * <li>weight 0.15 draws in away played games for away team divided by matched
+	 * played in away</li>
+	 * <li>weight 0.15 from H2H number of draws for Home team divided by number of
+	 * last game played by Home (should be 10)</li>
+	 * <li>weight 0.15 from H2H number of draws for Away team divided by number of
+	 * last game played by Away (should be 10)</li>
+	 * <li>weight 0.15 number of draws between two teams divided by 5 (in my H2H i
+	 * get last 5 games)</li>
+	 * <li>0.0125 which is calculated 0.05 multiplied by 0.25 which is constant for
 	 * draws
 	 * </p>
 	 * 
@@ -264,17 +271,23 @@ public class GameToBetServiceImpl implements GameToBetService {
 	 * That is why constHome and contsAway are created, so I will not divide by
 	 * zero.
 	 * </p>
-	 * If I have sufficient data I calculate if: weight 0.05 home all won matches in
-	 * league divided by all played weight 0.05 away all lost matches divided by
-	 * away all played weight 0.2 home matches won home in league divided by all
-	 * played in home weight 0.2 away matches lost in away in league divided by all
-	 * played in away weight 0.15 from H2H number of last wins for home divided by
-	 * number of games (should be 10) weight 0.15 from H2H number of last loses for
-	 * away divided by number of games (should be 10) weight 0.15 number of times
-	 * that home team won with away team in last 5 games 0.0125 which is calculated
-	 * 0.05 multiplied by 0.25 which is constant (my own) for home team that plays
-	 * in house
-	 * 
+	 * If I have sufficient data I calculate it:
+	 * <ul>
+	 * <li>weight 0.05 home all won matches in league divided by all played</li>
+	 * <li>weight 0.05 away all lost matches divided by away all played</li>
+	 * <li>weight 0.2 home matches won home in league divided by all played in
+	 * home</li>
+	 * <li>weight 0.2 away matches lost in away in league divided by all played in
+	 * away</li>
+	 * <li>weight 0.15 from H2H number of last wins for home divided by number of
+	 * games (should be 10)</li>
+	 * <li>weight 0.15 from H2H number of last loses for away divided by number of
+	 * games (should be 10)</li>
+	 * <li>weight 0.15 number of times that home team won with away team in last 5
+	 * games</li>
+	 * <li>0.0125 which is calculated 0.05 multiplied by 0.25 which is constant (my
+	 * own) for home team that plays in house
+	 * </ul>
 	 * 
 	 * @param home
 	 * @param away
@@ -452,70 +465,39 @@ public class GameToBetServiceImpl implements GameToBetService {
 						}
 						int homeScore = event.getHomeTeamScore();
 						int awayScore = event.getAwayTeamScore();
-						double mySecretX = 0;
+
 						int scoreDifference = homeScore - awayScore;
 
 						if (minutesIn > 80) {
 							game.setActive(false);
 							gameRepository.save(game);
 						} else {
-							double homeProbabilityFromTime = 0.00;
-							double drawProbabilityFromTime = 0.00;
-							/**
-							 * Depending on score I have different constants that represents the weights of
-							 * probabilities mySecretX is very secret and I cannot talk about it. Sorry.
-							 * OK... so it fixes the problem that occurs if there is like 10 minutes in the
-							 * game and one team already scored like 3 goals. So the probability from just
-							 * standings and H2H matter less and the actual score is more important. Not
-							 * perfect but still it works.
-							 * 
-							 */
-							if (scoreDifference >= 3) {
-								mySecretX = 0.2;
-								homeProbabilityFromTime = 0.989;
-								drawProbabilityFromTime = 0.01;
+							double[] consts = getConstances(scoreDifference, game);
+							double mySecretX = consts[0];
+							double homeProbabilityFromTime = consts[1];
+							double drawProbabilityFromTime = consts[2];
+							double awayProbabilityFromTime = consts[3];
 
-							} else if (scoreDifference == 2) {
-								mySecretX = 0.5;
-								homeProbabilityFromTime = 0.95;
-								drawProbabilityFromTime = 0.04;
-
-							} else if (scoreDifference == 1) {
-								mySecretX = 0.85;
-								homeProbabilityFromTime = 0.7;
-								drawProbabilityFromTime = 0.26;
-
-							} else if (scoreDifference == 0) {
-								mySecretX = 1.0;
-								homeProbabilityFromTime = 0.3 * (game.getOddsToWinHome()
-										/ (game.getOddsToWinHome() + game.getOddsToWinAway()));
-								drawProbabilityFromTime = 0.7;
-
-							} else if (scoreDifference == -1) {
-								mySecretX = 0.85;
-								homeProbabilityFromTime = 0.04;
-								drawProbabilityFromTime = 0.26;
-
-							} else if (scoreDifference == -2) {
-								mySecretX = 0.5;
-								homeProbabilityFromTime = 0.01;
-								drawProbabilityFromTime = 0.04;
-							} else if (scoreDifference <= -3) {
-								mySecretX = 0.2;
-								homeProbabilityFromTime = 0.001;
-								drawProbabilityFromTime = 0.01;
-							}
 							int minutesToBetEnd = 80 - minutesIn;
 							double percentOfGameThatIsLeft = (double) (minutesToBetEnd) / 80.00;
-							double oddsForHome = mySecretX * (game.getOddsToWinHome() * percentOfGameThatIsLeft)
-									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
-							double oddsForDraw = mySecretX * game.getOddsToWinDraw() * percentOfGameThatIsLeft
-									+ (2.0 - mySecretX) * ((1 - percentOfGameThatIsLeft) * drawProbabilityFromTime);
-							double oddsForAway = 1 - oddsForHome - oddsForDraw;
-							System.out.println("Home: " + oddsForHome + "Draw: " + oddsForDraw + "Away " + oddsForAway);
+
+							double oddsForHome = liveRecalculatedOddsForHomeWin(mySecretX, homeProbabilityFromTime,
+									game, percentOfGameThatIsLeft);
+							double oddsForDraw = liveRecalculatedOddsForDraw(mySecretX, drawProbabilityFromTime, game,
+									percentOfGameThatIsLeft);
+							double oddsForAway = liveRecalculatedOddsForAwayWin(mySecretX, awayProbabilityFromTime,
+									game, percentOfGameThatIsLeft);
+							System.out
+									.println("Home: " + oddsForHome + " Draw: " + oddsForDraw + " Away " + oddsForAway);
 							game.setRateHome(generateRate(oddsForHome));
 							game.setRateDraw(generateRate(oddsForDraw));
 							game.setRateAway(generateRate(oddsForAway));
+							System.out.println("Home: " + game.getRateHome() + " Draw: " + game.getRateDraw() + " Away "
+									+ game.getRateAway());
+
+							System.out.println(
+									game.getEvent().getHomeTeamScore() + " : " + game.getEvent().getAwayTeamScore());
+							System.out.println();
 							gameRepository.save(game);
 						}
 
@@ -526,6 +508,96 @@ public class GameToBetServiceImpl implements GameToBetService {
 			}
 
 		}
+	}
+
+	private double liveRecalculatedOddsForHomeWin(double mySecretX, double homeProbabilityFromTime, GameToBet game,
+			double percentOfGameThatIsLeft) {
+		if (percentOfGameThatIsLeft > 0.75) {
+			return mySecretX * game.getOddsToWinHome() * 0.75 + (2.0 - mySecretX) * 0.25 * homeProbabilityFromTime;
+		}
+		return mySecretX * (game.getOddsToWinHome() * percentOfGameThatIsLeft)
+				+ (2.0 - mySecretX) * ((1.0 - percentOfGameThatIsLeft) * homeProbabilityFromTime);
+
+	}
+
+	private double liveRecalculatedOddsForAwayWin(double mySecretX, double awayProbabilityFromTime, GameToBet game,
+			double percentOfGameThatIsLeft) {
+		if (percentOfGameThatIsLeft > 0.75) {
+			return mySecretX * game.getOddsToWinAway() * 0.75 + (2.0 - mySecretX) * 0.25 * awayProbabilityFromTime;
+
+		}
+		return mySecretX * (game.getOddsToWinAway() * percentOfGameThatIsLeft)
+				+ (2.0 - mySecretX) * ((1.0 - percentOfGameThatIsLeft) * awayProbabilityFromTime);
+
+	}
+
+	private double liveRecalculatedOddsForDraw(double mySecretX, double drawProbabilityFromTime, GameToBet game,
+			double percentOfGameThatIsLeft) {
+		if (percentOfGameThatIsLeft > 0.75) {
+			return mySecretX * game.getOddsToWinDraw() * 0.75 + (2.0 - mySecretX) * 0.25 * drawProbabilityFromTime;
+		}
+		return mySecretX * game.getOddsToWinDraw() * percentOfGameThatIsLeft
+				+ (2.0 - mySecretX) * ((1.0 - percentOfGameThatIsLeft) * drawProbabilityFromTime);
+
+	}
+
+	/**
+	 * 
+	 */
+	private double[] getConstances(int scoreDifference, GameToBet game) {
+		double[] contst = new double[4];
+		/**
+		 * Depending on score I have different constants that represents the weights of
+		 * probabilities mySecretX is very secret and I cannot talk about it. Sorry.
+		 * OK... so it fixes the problem that occurs if there is like 10 minutes in the
+		 * game and one team already scored like 3 goals. So the probability from just
+		 * standings and H2H matter less and the actual score is more important. Not
+		 * perfect but still it works.
+		 * 
+		 */
+		if (scoreDifference >= 3) {
+			contst[0] = 0.2;
+			contst[1] = 0.989;
+			contst[2] = 0.01;
+			contst[3] = 0.001;
+
+		} else if (scoreDifference == 2) {
+			contst[0] = 0.5;
+			contst[1] = 0.95;
+			contst[2] = 0.04;
+			contst[3] = 0.01;
+
+		} else if (scoreDifference == 1) {
+			contst[0] = 0.85;
+			contst[1] = 0.7;
+			contst[2] = 0.26;
+			contst[3] = 0.04;
+
+		} else if (scoreDifference == 0) {
+			contst[0] = 1.0;
+			contst[1] = 0.3 * (game.getOddsToWinHome() / (game.getOddsToWinHome() + game.getOddsToWinAway()));
+			contst[2] = 0.7;
+			contst[3] = 0.3 * (game.getOddsToWinAway() / (game.getOddsToWinHome() + game.getOddsToWinAway()));
+
+		} else if (scoreDifference == -1) {
+			contst[0] = 0.85;
+			contst[1] = 0.04;
+			contst[2] = 0.26;
+			contst[3] = 0.7;
+
+		} else if (scoreDifference == -2) {
+			contst[0] = 0.5;
+			contst[1] = 0.01;
+			contst[2] = 0.04;
+			contst[3] = 0.95;
+		} else if (scoreDifference <= -3) {
+			contst[0] = 0.2;
+			contst[1] = 0.001;
+			contst[2] = 0.01;
+			contst[3] = 0.989;
+		}
+		return contst;
+
 	}
 
 	/**
@@ -547,8 +619,7 @@ public class GameToBetServiceImpl implements GameToBetService {
 		String vs = " vs. ";
 		switch (betOn) {
 		case "home":
-			result = "home in game : " + game.getEvent().getHomeTeamName() + vs
-					+ game.getEvent().getAwayTeamName();
+			result = "home in game : " + game.getEvent().getHomeTeamName() + vs + game.getEvent().getAwayTeamName();
 			break;
 		case "draw":
 			result = "draw in game: " + game.getEvent().getHomeTeamName() + vs + game.getEvent().getAwayTeamName();

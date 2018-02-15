@@ -86,6 +86,7 @@ public class APIController {
 		address.setFlatNumber(userAddress.getFlatNumber());
 		address.setStreetNumber(userAddress.getStreetNumber());
 		address.setStreetName(userAddress.getStreetName());
+		address.setZipCode(userAddress.getZipCode());
 		try {
 			user = userService.createUser(user);
 			addressService.create(address, user);
