@@ -1,6 +1,8 @@
 # Betting-online
 Webpage for betting online
 
+Please visit my the WIKI section - You will find pictures there.
+
 I M P O R T A N T
 - create database called "BettingSite"
 - do not change the port from 5555
